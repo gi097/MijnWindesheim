@@ -2,6 +2,7 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -28,7 +29,11 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public void saveScheduleData(String id, String date, String start, String end, String name, String room, String teacher, String classId) {
-        database.execSQL("INSERT OR IGNORE INTO `subject` (`id`, `date`, `start`, `end`, `name`, `room`, `teacher`, `class_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, teacher, classId});
+        try {
+            database.execSQL("INSERT INTO `subject` (`id`, `date`, `start`, `end`, `name`, `room`, `teacher`, `class_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, teacher, classId});
+        } catch (SQLiteConstraintException ex) {
+            database.execSQL("UPDATE `subject` SET `end` = ? WHERE `id` = ?", new String[]{end, id});
+        }
     }
 
     public void clearScheduleData(String date) {
