@@ -99,13 +99,17 @@ class ScheduleHandler {
                     subject = les;
                     break;
                 case 7:
-                    String[] lessonSplit = les.split(":");
-                    if (lessonSplit[0].length() == 1) {
+                    String[] startSplit = les.split(":");
+                    if (startSplit[0].length() == 1) {
                         les = 0 + les;
                     }
                     start = les;
                     break;
                 case 8:
+                    String[] endSplit = les.split(":");
+                    if (endSplit[0].length() == 1) {
+                        les = 0 + les;
+                    }
                     end = les;
                     break;
                 case 11:
