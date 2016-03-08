@@ -99,13 +99,17 @@ class ScheduleHandler {
                     subject = les;
                     break;
                 case 7:
+                    String[] lessonSplit = les.split(":");
+                    if (lessonSplit[0].length() == 1) {
+                        les = 0 + les;
+                    }
                     start = les;
                     break;
                 case 8:
                     end = les;
                     break;
                 case 11:
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id + date, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, teacher, classId);
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, teacher, classId);
                     countTd = 0;
                     break;
                 default:

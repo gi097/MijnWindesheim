@@ -16,7 +16,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private static SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
-        super(context, "schedulestore.db", null, 1);
+        super(context, "schedulestore.db", null, 2);
     }
 
     public void open() {
@@ -25,7 +25,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `id` TEXT UNIQUE, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `teacher` TEXT, `class_id` TEXT)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `teacher` TEXT, `class_id` TEXT)");
     }
 
     public void saveScheduleData(String id, String date, String start, String end, String name, String room, String teacher, String classId) {
@@ -45,13 +45,15 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public Cursor getLessons(String date, String classId) {
-        return database.rawQuery("SELECT * FROM `subject` WHERE `date` = ? AND `class_id` = ?", new String[]{date, classId});
+        return database.rawQuery("SELECT _id, `id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `teacher`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? GROUP BY `id` ORDER BY `start`", new String[]{date, classId});
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
-
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            database.execSQL("DROP TABLE `subject`");
+            database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `teacher` TEXT, `class_id` TEXT)");
+        }
     }
 
 }

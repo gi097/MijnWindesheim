@@ -95,9 +95,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     monthString = "december";
             }
             ((ScheduleActivity) context).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
-            if (getListAdapter() == null) {
-                new ScheduleFetcher().execute();
-            }
+            new ScheduleFetcher().execute();
         }
     }
 
