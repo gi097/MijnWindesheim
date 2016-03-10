@@ -121,6 +121,7 @@ public class ChooseTypeFragment extends Fragment {
                 this.componentId.add(jsonObject.getInt("id"));
             } catch (JSONException e) {
                 alertConnectionProblem();
+                break;
             }
         }
     }
