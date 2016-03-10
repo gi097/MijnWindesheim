@@ -97,9 +97,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     monthString = "december";
             }
             ((ScheduleActivity) context).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
-            if (getListAdapter() == null) {
-                new ScheduleFetcher().execute();
-            }
+            new ScheduleFetcher().execute();
         }
     }
 
@@ -151,7 +149,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout != null && adapter == null) {
                 swipeRefreshLayout.setRefreshing(true);
             }
         }
@@ -181,12 +179,14 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            if (!adapter.isEmpty()) {
+            if (adapter != null && !adapter.isEmpty()) {
                 TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
                 emptyTextView.setVisibility(View.GONE);
-                setListAdapter(adapter);
+                if (getListAdapter() == null) {
+                    setListAdapter(adapter);
+                }
             }
-            if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
                 swipeRefreshLayout.setRefreshing(false);
             }
         }
