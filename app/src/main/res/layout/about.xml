@@ -28,6 +28,7 @@
             android:layout_height="fill_parent">
 
             <TextView
+                android:id="@+id/about_title"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|left|top"
@@ -35,7 +36,6 @@
                 android:layout_marginRight="16.0dip"
                 android:layout_marginTop="224.0dip"
                 android:gravity="center"
-                android:text="@string/app_name"
                 android:textColor="#ff000000"
                 android:textSize="26.0dip" />
 

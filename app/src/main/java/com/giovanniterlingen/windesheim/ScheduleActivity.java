@@ -43,8 +43,8 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.commit();
         }
         componentId = sharedPreferences.getString("componentId", "");
-        type = sharedPreferences.getInt("type", 1);
-        if (componentId.length() == 0) {
+        type = sharedPreferences.getInt("type", 0);
+        if (componentId.length() == 0 || type == 0) {
             Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);

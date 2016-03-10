@@ -31,9 +31,9 @@ class NotificationThread extends Thread {
         mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
         preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         String componentId = preferences.getString("componentId", "");
-        int type = preferences.getInt("type", 1);
+        int type = preferences.getInt("type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        while (isRunning()) {
+        while (isRunning() && componentId.length() > 0 && type != 0) {
             try {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();

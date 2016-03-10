@@ -30,16 +30,16 @@ class ScheduleAdapter extends CursorAdapter {
         TextView lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
         TextView lessonTime = (TextView) view.findViewById(R.id.schedule_list_row_time);
         TextView lessonRoom = (TextView) view.findViewById(R.id.schedule_list_row_room);
-        TextView lessonTeacher = (TextView) view.findViewById(R.id.schedule_list_row_component);
+        TextView lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
 
         String lessonSubject = cursor.getString(5);
         String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
         String lessonLocation = cursor.getString(6);
-        String lessonTeachers = cursor.getString(7);
+        String lessonComponents = cursor.getString(7);
 
         lessonName.setText(lessonSubject);
         lessonTime.setText(lessonTimes);
         lessonRoom.setText(lessonLocation);
-        lessonTeacher.setText(lessonTeachers);
+        lessonComponent.setText(lessonComponents);
     }
 }
