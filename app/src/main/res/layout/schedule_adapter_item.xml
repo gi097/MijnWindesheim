@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
-        android:id="@+id/schedule_list_row_teacher"
+        android:id="@+id/schedule_list_row_component"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/schedule_list_row_name"
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/schedule_list_row_name"
-        android:layout_below="@+id/schedule_list_row_teacher"
+        android:layout_below="@+id/schedule_list_row_component"
         android:layout_marginBottom="5.0dip"
         android:textColor="@color/colorSecondaryText"
         android:textSize="14.0sp" />

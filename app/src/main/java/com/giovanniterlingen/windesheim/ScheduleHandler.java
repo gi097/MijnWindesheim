@@ -16,10 +16,10 @@ import java.util.Date;
  */
 class ScheduleHandler {
 
-    public static String getClassesFromServer() throws Exception {
+    public static String getListFromServer(int type) throws Exception {
 
         StringBuilder stringBuffer = new StringBuilder("");
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?ajaxCommand=getPageConfig&type=1");
+        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?ajaxCommand=getPageConfig&type=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
@@ -39,9 +39,9 @@ class ScheduleHandler {
 
     }
 
-    public static BufferedReader getScheduleFromServer(String id, Date date) throws Exception {
+    public static BufferedReader getScheduleFromServer(String id, Date date, int type) throws Exception {
 
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/lessoninfodlg.do?date=" + new SimpleDateFormat("yyyyMMdd").format(date) + "&starttime=0800&endtime=2300&elemid=" + id + "&elemtype=1");
+        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/lessoninfodlg.do?date=" + new SimpleDateFormat("yyyyMMdd").format(date) + "&starttime=0800&endtime=2300&elemid=" + id + "&elemtype=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");
@@ -52,7 +52,7 @@ class ScheduleHandler {
         return new BufferedReader(new InputStreamReader(inputStream));
     }
 
-    public static void saveSchedule(BufferedReader reader, Date date, String classId) throws Exception {
+    public static void saveSchedule(BufferedReader reader, Date date, String componentId, int type) throws Exception {
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         int countTd = 0;
         String module = null;
@@ -60,7 +60,7 @@ class ScheduleHandler {
         String id = null;
         String start = null;
         String end = null;
-        String teacher = null;
+        String component = null;
         String room = null;
         String line;
         ApplicationLoader.scheduleDatabase.clearScheduleData(simpleDateFormat.format(date));
@@ -75,16 +75,31 @@ class ScheduleHandler {
                         module = line.replaceAll("\\s+", "").replace("<tooltip>", "").replace("</tooltip>", "");
                     }
                     break;
+                case 2:
+                    if (line.contains("</span>")) {
+                        if (les.split("</span>")[0].split("\">").length != 2 && type == 2) {
+                            component = "";
+                            break;
+                        } else {
+                            if (type == 2) {
+                                component = les.split("</span>")[0].split("\">")[1];
+                            }
+                            break;
+                        }
+                    }
+                    break;
                 case 3:
                     id = les;
                     break;
                 case 4:
                     if (line.contains("</span>")) {
-                        if (les.split("</span>")[0].split("\">").length != 2) {
-                            teacher = "";
+                        if (les.split("</span>")[0].split("\">").length != 2 && type == 1) {
+                            component = "";
                             break;
                         } else {
-                            teacher = les.split("</span>")[0].split("\">")[1];
+                            if (type == 1) {
+                                component = les.split("</span>")[0].split("\">")[1];
+                            }
                             break;
                         }
                     }
@@ -113,7 +128,7 @@ class ScheduleHandler {
                     end = les;
                     break;
                 case 11:
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, teacher, classId);
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId);
                     countTd = 0;
                     break;
                 default:

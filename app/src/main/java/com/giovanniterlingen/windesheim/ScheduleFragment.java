@@ -25,7 +25,8 @@ import java.util.Date;
  */
 public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private static String classId;
+    private static String componentId;
+    private static int type;
     private Date date;
     private Context context;
     private ScheduleAdapter adapter;
@@ -36,12 +37,13 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        classId = getArguments().getString("classId");
+        componentId = getArguments().getString("componentId");
+        type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("Date");
         context = getActivity();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), classId);
+        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
         if (scheduleDay != null && scheduleDay.getCount() > 0) {
             adapter = new ScheduleAdapter(context, scheduleDay, 0);
             setListAdapter(adapter);
@@ -95,7 +97,9 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     monthString = "december";
             }
             ((ScheduleActivity) context).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
-            new ScheduleFetcher().execute();
+            if (getListAdapter() == null) {
+                new ScheduleFetcher().execute();
+            }
         }
     }
 
@@ -139,36 +143,10 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
 
     @Override
     public void onRefresh() {
-        new SwipeScheduleFetcher().execute();
+        new ScheduleFetcher().execute();
     }
 
     private class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... param) {
-            try {
-                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(classId, date), date, classId);
-            } catch (Exception e) {
-                alertConnectionProblem();
-            }
-            Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), classId);
-            adapter = new ScheduleAdapter(context, scheduleDay, 0);
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(Void param) {
-            super.onPostExecute(param);
-            if (!adapter.isEmpty()) {
-                TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
-                emptyTextView.setVisibility(View.GONE);
-                setListAdapter(adapter);
-            }
-        }
-    }
-
-    private class SwipeScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -181,12 +159,21 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         @Override
         protected Void doInBackground(Void... param) {
             try {
-                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(classId, date), date, classId);
+                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
             } catch (Exception e) {
                 alertConnectionProblem();
             }
-            Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), classId);
-            adapter = new ScheduleAdapter(context, scheduleDay, 0);
+            final Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
+            if (adapter == null) {
+                adapter = new ScheduleAdapter(context, scheduleDay, 0);
+            } else {
+                ApplicationLoader.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.changeCursor(scheduleDay);
+                    }
+                });
+            }
             return null;
         }
 

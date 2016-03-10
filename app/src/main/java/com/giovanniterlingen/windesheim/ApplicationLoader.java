@@ -56,7 +56,7 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        String classId = preferences.getString("classId", "");
+        String classId = preferences.getString("componentId", "");
         if (classId.length() != 0) {
             notificationThread = new NotificationThread();
             notificationThread.start();

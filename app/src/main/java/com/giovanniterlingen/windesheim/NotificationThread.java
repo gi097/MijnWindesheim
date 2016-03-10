@@ -30,14 +30,15 @@ class NotificationThread extends Thread {
     public void run() {
         mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
         preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
-        String classId = preferences.getString("classId", "");
+        String componentId = preferences.getString("componentId", "");
+        int type = preferences.getInt("type", 1);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         while (isRunning()) {
             try {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
-                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(classId, date), date, classId);
-                Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), classId);
+                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
+                Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue(calendar)) {
                         createNotification("Er zijn geen lessen gevonden voor vandaag");
@@ -52,7 +53,7 @@ class NotificationThread extends Thread {
                         subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
-                        Cursor secondCursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), classId);
+                        Cursor secondCursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                         if (secondCursor.moveToFirst() && cursor.getPosition() + 1 < secondCursor.getCount()) {
                             secondCursor.moveToPosition(cursor.getPosition() + 1);
                         }
@@ -63,16 +64,36 @@ class NotificationThread extends Thread {
                                 long diffHours = (difference / (1000 * 60 * 60)) % 24;
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
-                                        notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
+                                        if (type == 1) {
+                                            notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
+                                        }
+                                        if (type == 2) {
+                                            notificationText = "U heeft over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
+                                        }
                                     } else {
-                                        notificationText = "Je hebt over " + diffHours + " uur meerdere lessen";
+                                        if (type == 1) {
+                                            notificationText = "Je hebt over " + diffHours + " uur meerdere lessen";
+                                        }
+                                        if (type == 2) {
+                                            notificationText = "U heeft over " + diffHours + " uur meerdere lessen";
+                                        }
                                     }
                                 } else {
                                     if (diffMinutes >= 1) {
                                         if (diffMinutes == 1) {
-                                            notificationText = "Je hebt over " + diffMinutes + " minuut meerdere lessen";
+                                            if (type == 1) {
+                                                notificationText = "Je hebt over " + diffMinutes + " minuut meerdere lessen";
+                                            }
+                                            if (type == 2) {
+                                                notificationText = "U heeft over " + diffMinutes + " minuut meerdere lessen";
+                                            }
                                         } else {
-                                            notificationText = "Je hebt over " + diffMinutes + " minuten meerdere lessen";
+                                            if (type == 1) {
+                                                notificationText = "Je hebt over " + diffMinutes + " minuten meerdere lessen";
+                                            }
+                                            if (type == 2) {
+                                                notificationText = "U heeft over " + diffMinutes + " minuten meerdere lessen";
+                                            }
                                         }
                                     }
                                 }
@@ -86,16 +107,36 @@ class NotificationThread extends Thread {
                                 long diffHours = (difference / (1000 * 60 * 60)) % 24;
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
-                                        notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+                                        if (type == 1) {
+                                            notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+                                        }
+                                        if (type == 2) {
+                                            notificationText = "U heeft over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+                                        }
                                     } else {
-                                        notificationText = "Je hebt over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
+                                        if (type == 1) {
+                                            notificationText = "Je hebt over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
+                                        }
+                                        if (type == 2) {
+                                            notificationText = "U heeft over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
+                                        }
                                     }
                                 } else {
                                     if (diffMinutes >= 1) {
                                         if (diffMinutes == 1) {
-                                            notificationText = "Je hebt over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            if (type == 1) {
+                                                notificationText = "Je hebt over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            }
+                                            if (type == 2) {
+                                                notificationText = "U heeft over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            }
                                         } else {
-                                            notificationText = "Je hebt over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            if (type == 1) {
+                                                notificationText = "Je hebt over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            }
+                                            if (type == 2) {
+                                                notificationText = "U heeft over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            }
                                         }
                                     }
                                 }
@@ -107,7 +148,12 @@ class NotificationThread extends Thread {
                     }
                 }
                 while (checkIfNeedsContinue(calendar)) {
-                    createNotification("Je hebt geen lessen meer vandaag :)");
+                    if (type == 1) {
+                        createNotification("Je hebt geen lessen meer vandaag :)");
+                    }
+                    if (type == 2) {
+                        createNotification("U hoeft geen les meer te geven vandaag :)");
+                    }
                     Thread.sleep(1000);
                 }
                 if (cursor != null) {

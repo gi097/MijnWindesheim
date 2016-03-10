@@ -17,7 +17,6 @@ import android.view.MenuItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A scheduler app for Windesheim students
@@ -26,15 +25,27 @@ import java.util.Date;
  */
 public class ScheduleActivity extends AppCompatActivity {
 
-    private static String classId;
+    private static String componentId;
+    private static int type;
     private SharedPreferences sharedPreferences;
+    private Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
-        classId = sharedPreferences.getString("classId", "");
-        if (classId.length() == 0) {
-            Intent intent = new Intent(ScheduleActivity.this, ClassesActivity.class);
+        // Fix previous versions
+        String classId = sharedPreferences.getString("classId", "");
+        if (classId.length() > 0) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("componentId", classId);
+            editor.putInt("type", 1);
+            editor.remove("classId");
+            editor.commit();
+        }
+        componentId = sharedPreferences.getString("componentId", "");
+        type = sharedPreferences.getInt("type", 1);
+        if (componentId.length() == 0) {
+            Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);
             finish();
@@ -55,8 +66,6 @@ public class ScheduleActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mPager);
 
         // Check which page we need
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
         if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
             mPager.setCurrentItem(1);
         }
@@ -88,7 +97,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_change_class) {
-            Intent intent = new Intent(ScheduleActivity.this, ClassesActivity.class);
+            Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
             startActivity(intent);
             return true;
         }
@@ -147,7 +156,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
             Fragment fragment = new ScheduleFragment();
             Bundle args = new Bundle();
-            args.putString("classId", classId);
+            args.putString("componentId", componentId);
+            args.putInt("type", type);
             args.putSerializable("Date", calendar.getTime());
             fragment.setArguments(args);
 
@@ -161,6 +171,9 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
+            if (position == 0 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY || position == 1 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                return "Vandaag";
+            }
             switch (position) {
                 case 0:
                 case 5:

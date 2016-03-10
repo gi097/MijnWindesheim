@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/class_item"
+        android:id="@+id/component_item"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="5dip"

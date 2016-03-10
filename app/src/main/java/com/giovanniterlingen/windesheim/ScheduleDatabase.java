@@ -16,7 +16,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private static SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
-        super(context, "schedulestore.db", null, 2);
+        super(context, "schedulestore.db", null, 3);
     }
 
     public void open() {
@@ -25,14 +25,14 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `teacher` TEXT, `class_id` TEXT)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT)");
     }
 
-    public void saveScheduleData(String id, String date, String start, String end, String name, String room, String teacher, String classId) {
+    public void saveScheduleData(String id, String date, String start, String end, String name, String room, String component, String componentId) {
         try {
-            database.execSQL("INSERT INTO `subject` (`id`, `date`, `start`, `end`, `name`, `room`, `teacher`, `class_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, teacher, classId});
+            database.execSQL("INSERT INTO `subject` (`component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, component, componentId});
         } catch (SQLiteConstraintException ex) {
-            database.execSQL("UPDATE `subject` SET `end` = ? WHERE `id` = ?", new String[]{end, id});
+            database.execSQL("UPDATE `subject` SET `end` = ? WHERE `component_id` = ?", new String[]{end, id});
         }
     }
 
@@ -44,16 +44,14 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         database.execSQL("DELETE FROM `subject` WHERE `date` < ?", new String[]{date});
     }
 
-    public Cursor getLessons(String date, String classId) {
-        return database.rawQuery("SELECT _id, `id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `teacher`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? GROUP BY `id` ORDER BY `start`", new String[]{date, classId});
+    public Cursor getLessons(String date, String componentId) {
+        return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? GROUP BY `component_id` ORDER BY `start`", new String[]{date, componentId});
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            database.execSQL("DROP TABLE `subject`");
-            database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `teacher` TEXT, `class_id` TEXT)");
-        }
+        database.execSQL("DROP TABLE `subject`");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT)");
     }
 
 }
