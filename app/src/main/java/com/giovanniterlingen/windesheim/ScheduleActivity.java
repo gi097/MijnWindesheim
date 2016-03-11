@@ -1,7 +1,5 @@
 package com.giovanniterlingen.windesheim;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -31,7 +29,6 @@ public class ScheduleActivity extends AppCompatActivity {
     private static String componentId;
     private static int type;
     private SharedPreferences sharedPreferences;
-    private Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +43,18 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.commit();
         }
         editor.remove("notifications");
-        int notification_type = sharedPreferences.getInt("notifications_type", 0);
         componentId = sharedPreferences.getString("componentId", "");
         type = sharedPreferences.getInt("type", 0);
-        if (componentId.length() == 0 || type == 0 || notification_type == 0) {
+        if (componentId.length() == 0 || type == 0) {
             Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);
             finish();
             return;
+        }
+        if (sharedPreferences.getInt("notifications_type", 0) == 0) {
+            editor.putInt("notifications_type", 5);
+            editor.commit();
         }
         ApplicationLoader.postInitApplication();
         super.onCreate(savedInstanceState);
@@ -63,14 +63,17 @@ public class ScheduleActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Instantiate a ViewPager and a PagerAdapter.
+        setViewPager();
+    }
+
+    private void setViewPager() {
+        Calendar calendar = Calendar.getInstance();
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
-        // Check which page we need
         if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
             mPager.setCurrentItem(1);
         }
@@ -83,6 +86,12 @@ public class ScheduleActivity extends AppCompatActivity {
         if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
             mPager.setCurrentItem(4);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setViewPager();
     }
 
     @Override
@@ -146,7 +155,6 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-
             Calendar calendar = Calendar.getInstance();
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
                 calendar.add(Calendar.DATE, 2);
@@ -170,7 +178,7 @@ public class ScheduleActivity extends AppCompatActivity {
             Bundle args = new Bundle();
             args.putString("componentId", componentId);
             args.putInt("type", type);
-            args.putSerializable("Date", calendar.getTime());
+            args.putSerializable("date", calendar.getTime());
             fragment.setArguments(args);
 
             return fragment;
@@ -183,6 +191,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
+            Calendar calendar = Calendar.getInstance();
             if (position == 0 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY || position == 1 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 return "Vandaag";
             }

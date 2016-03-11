@@ -39,7 +39,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         super.onCreate(savedInstanceState);
         componentId = getArguments().getString("componentId");
         type = getArguments().getInt("type");
-        date = (Date) getArguments().getSerializable("Date");
+        date = (Date) getArguments().getSerializable("date");
         context = getActivity();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");

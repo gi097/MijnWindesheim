@@ -42,7 +42,7 @@ public class ChooseTypeActivity extends AppCompatActivity {
 
             Fragment fragment = new ChooseTypeFragment();
             Bundle args = new Bundle();
-            args.putInt("Position", position);
+            args.putInt("position", position);
             fragment.setArguments(args);
 
             return fragment;

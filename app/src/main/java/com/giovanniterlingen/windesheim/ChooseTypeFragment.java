@@ -45,7 +45,7 @@ public class ChooseTypeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getActivity();
-        int position = getArguments().getInt("Position");
+        int position = getArguments().getInt("position");
         if (position == 0) {
             type = 1;
         }
@@ -94,7 +94,7 @@ public class ChooseTypeFragment extends Fragment {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("componentId", componentId.get(componentList.indexOf(listView.getItemAtPosition(arg2))).toString());
-				editor.putInt("notifications_type", 5);
+                editor.putInt("notifications_type", 5);
                 editor.putInt("type", type);
                 editor.commit();
 

@@ -20,9 +20,9 @@ public class ApplicationLoader extends Application {
 
     public static volatile Context applicationContext;
     public static volatile ScheduleDatabase scheduleDatabase;
+    public static volatile NotificationThread notificationThread;
     private static volatile boolean applicationInited = false;
     private static volatile Handler applicationHandler;
-    public static volatile NotificationThread notificationThread;
 
     public static void startPushService() {
 
