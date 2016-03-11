@@ -1,5 +1,7 @@
 package com.giovanniterlingen.windesheim;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,16 +38,18 @@ public class ScheduleActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         // Fix previous versions
         String classId = sharedPreferences.getString("classId", "");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (classId.length() > 0) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("componentId", classId);
             editor.putInt("type", 1);
             editor.remove("classId");
             editor.commit();
         }
+        editor.remove("notifications");
+        int notification_type = sharedPreferences.getInt("notifications_type", 0);
         componentId = sharedPreferences.getString("componentId", "");
         type = sharedPreferences.getInt("type", 0);
-        if (componentId.length() == 0 || type == 0) {
+        if (componentId.length() == 0 || type == 0 || notification_type == 0) {
             Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);
@@ -83,47 +88,54 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_schedule, menu);
-        menu.findItem(R.id.action_notifications).setChecked(sharedPreferences.getBoolean("notifications", false));
+        menu.add(0, 0, 0, "Rooster wijzigen");
+
+        SubMenu subMenu = menu.addSubMenu(1, 1, 1, "Notificaties");
+        subMenu.add(2, 2, 2, "60 minuten");
+        subMenu.add(2, 3, 3, "30 minuten");
+        subMenu.add(2, 4, 4, "15 minuten");
+        subMenu.add(2, 5, 5, "Altijd aan");
+        subMenu.add(2, 6, 6, "Uit");
+
+        subMenu.setGroupCheckable(2, true, true);
+        menu.add(0, 7, 2, "Over deze app");
+
+        int notification_type = sharedPreferences.getInt("notifications_type", 0);
+        menu.findItem(notification_type).setChecked(true);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_change_class) {
-            Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        if (id == R.id.action_notifications) {
+        if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            if (item.isChecked()) {
-                item.setChecked(false);
-                editor.putBoolean("notifications", false);
-                editor.commit();
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), "Notificaties uitgeschakeld", Snackbar.LENGTH_SHORT);
-                snackbar.show();
-            } else {
-                item.setChecked(true);
-                editor.putBoolean("notifications", true);
-                editor.commit();
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), "Notificaties ingeschakeld", Snackbar.LENGTH_SHORT);
-                snackbar.show();
+            switch (id) {
+                case 0:
+                    Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
+                    startActivity(intent);
+                    return true;
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    item.setChecked(true);
+                    editor.putInt("notifications_type", id);
+                    editor.commit();
+                    if (ApplicationLoader.notificationThread != null) {
+                        ApplicationLoader.notificationThread.clearNotification();
+                    }
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), "Notificatie-instellingen zijn gewijzigd", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                    return true;
+                case 7:
+                    Intent intent2 = new Intent(ScheduleActivity.this, About.class);
+                    startActivity(intent2);
+                    return true;
             }
-            return true;
         }
-        if (id == R.id.action_about) {
-            Intent intent = new Intent(ScheduleActivity.this, About.class);
-            startActivity(intent);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

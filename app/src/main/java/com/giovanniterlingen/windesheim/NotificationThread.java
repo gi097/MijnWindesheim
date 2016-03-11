@@ -33,7 +33,7 @@ class NotificationThread extends Thread {
         String componentId = preferences.getString("componentId", "");
         int type = preferences.getInt("type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        while (isRunning() && componentId.length() > 0 && type != 0) {
+        while (isRunning() && componentId.length() > 0 && type != 0 && preferences.getInt("notifications_type", 0) != 0) {
             try {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
@@ -41,7 +41,7 @@ class NotificationThread extends Thread {
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue(calendar)) {
-                        createNotification("Er zijn geen lessen gevonden voor vandaag");
+                        createNotification("Er zijn geen lessen gevonden voor vandaag", false);
                         Thread.sleep(1000);
                     }
                 } else {
@@ -59,6 +59,7 @@ class NotificationThread extends Thread {
                         }
                         if (secondCursor.getString(3) != null && secondCursor.getString(3).equals(subjectTimeString)) {
                             while (System.currentTimeMillis() < subjectTime && checkIfNeedsContinue(calendar)) {
+                                int notificationType = preferences.getInt("notifications_type", 0);
                                 long difference = subjectTime - System.currentTimeMillis();
                                 long diffMinutes = (difference / (1000 * 60)) % 60;
                                 long diffHours = (difference / (1000 * 60 * 60)) % 24;
@@ -97,11 +98,17 @@ class NotificationThread extends Thread {
                                         }
                                     }
                                 }
-                                createNotification(notificationText);
+                                if (notificationType == 5) {
+                                    createNotification(notificationText, true);
+                                }
+                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
+                                    createNotification(notificationText, false);
+                                }
                                 Thread.sleep(1000);
                             }
                         } else {
                             while (System.currentTimeMillis() < subjectTime && checkIfNeedsContinue(calendar)) {
+                                int notificationType = preferences.getInt("notifications_type", 0);
                                 long difference = subjectTime - System.currentTimeMillis();
                                 long diffMinutes = (difference / (1000 * 60)) % 60;
                                 long diffHours = (difference / (1000 * 60 * 60)) % 24;
@@ -140,7 +147,12 @@ class NotificationThread extends Thread {
                                         }
                                     }
                                 }
-                                createNotification(notificationText);
+                                if (notificationType == 5) {
+                                    createNotification(notificationText, true);
+                                }
+                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
+                                    createNotification(notificationText, false);
+                                }
                                 Thread.sleep(1000);
                             }
                         }
@@ -149,10 +161,10 @@ class NotificationThread extends Thread {
                 }
                 while (checkIfNeedsContinue(calendar)) {
                     if (type == 1) {
-                        createNotification("Je hebt geen lessen meer vandaag :)");
+                        createNotification("Je hebt geen lessen meer vandaag :)", false);
                     }
                     if (type == 2) {
-                        createNotification("U hoeft geen les meer te geven vandaag :)");
+                        createNotification("U hoeft geen les meer te geven vandaag :)", false);
                     }
                     Thread.sleep(1000);
                 }
@@ -162,7 +174,7 @@ class NotificationThread extends Thread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                createNotification("Probleem bij het ophalen van de gegevens");
+                createNotification("Probleem bij het ophalen van de gegevens", false);
                 while (!ApplicationLoader.isNetworkAvailable()) {
                     try {
                         Thread.sleep(1000);
@@ -183,8 +195,9 @@ class NotificationThread extends Thread {
         running = setRunning;
     }
 
-    private void createNotification(final String notificationText) {
-        if (preferences.getBoolean("notifications", false)) {
+    private void createNotification(String notificationText, boolean onGoing) {
+        int notificationType = preferences.getInt("notifications_type", 0);
+        if (notificationType != 0 && notificationType != 6) {
             if (lastNotification.equals(notificationText)) {
                 return;
             }
@@ -198,15 +211,20 @@ class NotificationThread extends Thread {
                     .setContentText(notificationText)
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
-                    .setOngoing(true)
+                    .setOngoing(onGoing)
+                    .setAutoCancel(onGoing)
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(notificationText))
                     .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
             mNotificationManager.notify(0, mBuilder.build());
         } else {
-            lastNotification = "";
-            mNotificationManager.cancel(0);
+            clearNotification();
         }
+    }
+
+    public void clearNotification() {
+        lastNotification = "";
+        mNotificationManager.cancel(0);
     }
 
     private boolean checkIfNeedsContinue(Calendar calendar) {

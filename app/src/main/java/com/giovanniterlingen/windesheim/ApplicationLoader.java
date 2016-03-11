@@ -22,7 +22,7 @@ public class ApplicationLoader extends Application {
     public static volatile ScheduleDatabase scheduleDatabase;
     private static volatile boolean applicationInited = false;
     private static volatile Handler applicationHandler;
-    private static volatile NotificationThread notificationThread;
+    public static volatile NotificationThread notificationThread;
 
     public static void startPushService() {
 
