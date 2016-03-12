@@ -71,6 +71,7 @@ public class ScheduleActivity extends AppCompatActivity {
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setOffscreenPageLimit(9); // Will decrease performance, but care.
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
@@ -100,7 +101,7 @@ public class ScheduleActivity extends AppCompatActivity {
         menu.add(0, 0, 0, "Rooster wijzigen");
 
         SubMenu subMenu = menu.addSubMenu(1, 1, 1, "Notificaties");
-        subMenu.add(2, 2, 2, "60 minuten");
+        subMenu.add(2, 2, 2, "1 uur");
         subMenu.add(2, 3, 3, "30 minuten");
         subMenu.add(2, 4, 4, "15 minuten");
         subMenu.add(2, 5, 5, "Altijd aan");
@@ -118,7 +119,7 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (sharedPreferences != null) {
+        if (sharedPreferences != null && type != 0) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             switch (id) {
                 case 0:
@@ -126,9 +127,56 @@ public class ScheduleActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case 2:
+                    item.setChecked(true);
+                    editor.putInt("notifications_type", id);
+                    editor.commit();
+                    if (ApplicationLoader.notificationThread != null) {
+                        ApplicationLoader.notificationThread.clearNotification();
+                    }
+                    if (type == 1) {
+                        showSnackbar("Je ontvangt 1 uur van tevoren een notificatie");
+                    }
+                    if (type == 2) {
+                        showSnackbar("U ontvangt 1 uur van tevoren een notificatie");
+                    }
+                    return true;
                 case 3:
+                    item.setChecked(true);
+                    editor.putInt("notifications_type", id);
+                    editor.commit();
+                    if (ApplicationLoader.notificationThread != null) {
+                        ApplicationLoader.notificationThread.clearNotification();
+                    }
+                    if (type == 1) {
+                        showSnackbar("Je ontvangt 30 minuten van tevoren een notificatie");
+                    }
+                    if (type == 2) {
+                        showSnackbar("U ontvangt 30 minuten van tevoren een notificatie");
+                    }
+                    return true;
                 case 4:
+                    item.setChecked(true);
+                    editor.putInt("notifications_type", id);
+                    editor.commit();
+                    if (ApplicationLoader.notificationThread != null) {
+                        ApplicationLoader.notificationThread.clearNotification();
+                    }
+                    if (type == 1) {
+                        showSnackbar("Je ontvangt 15 minuten van tevoren een notificatie");
+                    }
+                    if (type == 2) {
+                        showSnackbar("U ontvangt 15 minuten van tevoren een notificatie");
+                    }
+                    return true;
                 case 5:
+                    item.setChecked(true);
+                    editor.putInt("notifications_type", id);
+                    editor.commit();
+                    if (ApplicationLoader.notificationThread != null) {
+                        ApplicationLoader.notificationThread.clearNotification();
+                    }
+                    showSnackbar("Permanente notificatie is ingeschakeld");
+                    return true;
                 case 6:
                     item.setChecked(true);
                     editor.putInt("notifications_type", id);
@@ -136,8 +184,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), "Notificatie-instellingen zijn gewijzigd", Snackbar.LENGTH_SHORT);
-                    snackbar.show();
+                    showSnackbar("Notificaties zijn uitgeschakeld");
                     return true;
                 case 7:
                     Intent intent2 = new Intent(ScheduleActivity.this, About.class);
@@ -146,6 +193,11 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSnackbar(String text) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), text, Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

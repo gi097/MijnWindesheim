@@ -212,7 +212,7 @@ class NotificationThread extends Thread {
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
                     .setOngoing(onGoing)
-                    .setAutoCancel(onGoing)
+                    .setAutoCancel(true)
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(notificationText))
                     .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
