@@ -1,5 +1,6 @@
 package com.giovanniterlingen.windesheim;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -39,7 +40,7 @@ class NotificationThread extends Thread {
                 Date date = calendar.getTime();
                 ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor != null && cursor.getCount() == 0) {
+                if (cursor != null && cursor.getCount() == 0 && preferences.getInt("notifications_type", 0) == 5) {
                     while (checkIfNeedsContinue(calendar)) {
                         createNotification("Er zijn geen lessen gevonden voor vandaag", false);
                         Thread.sleep(1000);
@@ -160,10 +161,10 @@ class NotificationThread extends Thread {
                     }
                 }
                 while (checkIfNeedsContinue(calendar)) {
-                    if (type == 1) {
+                    if (type == 1 && preferences.getInt("notifications_type", 0) == 5) {
                         createNotification("Je hebt geen lessen meer vandaag :)", false);
                     }
-                    if (type == 2) {
+                    if (type == 2 && preferences.getInt("notifications_type", 0) == 5) {
                         createNotification("U hoeft geen les meer te geven vandaag :)", false);
                     }
                     Thread.sleep(1000);
@@ -209,6 +210,8 @@ class NotificationThread extends Thread {
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
                     .setContentTitle(ApplicationLoader.applicationContext.getResources().getString(R.string.app_name))
                     .setContentText(notificationText)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setDefaults(Notification.DEFAULT_ALL)
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
                     .setOngoing(onGoing)

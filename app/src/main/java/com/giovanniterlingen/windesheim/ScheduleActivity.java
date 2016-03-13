@@ -133,12 +133,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    if (type == 1) {
-                        showSnackbar("Je ontvangt 1 uur van tevoren een notificatie");
-                    }
-                    if (type == 2) {
-                        showSnackbar("U ontvangt 1 uur van tevoren een notificatie");
-                    }
+                    showSnackbar("Melding wordt 1 uur voor de les weergegeven");
                     return true;
                 case 3:
                     item.setChecked(true);
@@ -147,12 +142,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    if (type == 1) {
-                        showSnackbar("Je ontvangt 30 minuten van tevoren een notificatie");
-                    }
-                    if (type == 2) {
-                        showSnackbar("U ontvangt 30 minuten van tevoren een notificatie");
-                    }
+                    showSnackbar("Melding wordt 30 min. voor de les weergegeven");
                     return true;
                 case 4:
                     item.setChecked(true);
@@ -161,12 +151,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    if (type == 1) {
-                        showSnackbar("Je ontvangt 15 minuten van tevoren een notificatie");
-                    }
-                    if (type == 2) {
-                        showSnackbar("U ontvangt 15 minuten van tevoren een notificatie");
-                    }
+                    showSnackbar("Melding wordt 15 min. voor de les weergegeven");
                     return true;
                 case 5:
                     item.setChecked(true);
