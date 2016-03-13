@@ -198,7 +198,7 @@ class NotificationThread extends Thread {
 
     private void createNotification(String notificationText, boolean onGoing) {
         int notificationType = preferences.getInt("notifications_type", 0);
-        if (notificationType != 0 && notificationType != 6) {
+        if (notificationType != 0 && notificationType != 6 || mNotificationManager == null) {
             if (lastNotification.equals(notificationText)) {
                 return;
             }
@@ -227,7 +227,9 @@ class NotificationThread extends Thread {
 
     public void clearNotification() {
         lastNotification = "";
-        mNotificationManager.cancel(0);
+        if (mNotificationManager != null) {
+            mNotificationManager.cancel(0);
+        }
     }
 
     private boolean checkIfNeedsContinue(Calendar calendar) {
