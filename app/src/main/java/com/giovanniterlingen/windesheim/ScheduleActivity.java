@@ -127,23 +127,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case 2:
-                    item.setChecked(true);
-                    editor.putInt("notifications_type", id);
-                    editor.commit();
-                    if (ApplicationLoader.notificationThread != null) {
-                        ApplicationLoader.notificationThread.clearNotification();
-                    }
-                    showSnackbar("Melding wordt 1 uur voor de les weergegeven");
-                    return true;
                 case 3:
-                    item.setChecked(true);
-                    editor.putInt("notifications_type", id);
-                    editor.commit();
-                    if (ApplicationLoader.notificationThread != null) {
-                        ApplicationLoader.notificationThread.clearNotification();
-                    }
-                    showSnackbar("Melding wordt 30 min. voor de les weergegeven");
-                    return true;
                 case 4:
                     item.setChecked(true);
                     editor.putInt("notifications_type", id);
@@ -151,7 +135,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    showSnackbar("Melding wordt 15 min. voor de les weergegeven");
+                    showSnackbar("Notificatie-interval gewijzigd");
                     return true;
                 case 5:
                     item.setChecked(true);

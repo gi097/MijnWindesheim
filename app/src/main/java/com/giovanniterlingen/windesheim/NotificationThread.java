@@ -38,10 +38,13 @@ class NotificationThread extends Thread {
             try {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
-                ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor != null && cursor.getCount() == 0 && preferences.getInt("notifications_type", 0) == 5) {
-                    while (checkIfNeedsContinue(calendar)) {
+                if (cursor == null || !cursor.moveToFirst()) {
+                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
+                    cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
+                }
+                if (cursor != null && cursor.getCount() == 0) {
+                    while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
                         createNotification("Er zijn geen lessen gevonden voor vandaag", false);
                         Thread.sleep(1000);
                     }
@@ -160,11 +163,11 @@ class NotificationThread extends Thread {
                         secondCursor.close();
                     }
                 }
-                while (checkIfNeedsContinue(calendar)) {
-                    if (type == 1 && preferences.getInt("notifications_type", 0) == 5) {
+                while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
+                    if (type == 1) {
                         createNotification("Je hebt geen lessen meer vandaag :)", false);
                     }
-                    if (type == 2 && preferences.getInt("notifications_type", 0) == 5) {
+                    if (type == 2) {
                         createNotification("U hoeft geen les meer te geven vandaag :)", false);
                     }
                     Thread.sleep(1000);
@@ -175,7 +178,7 @@ class NotificationThread extends Thread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                createNotification("Probleem bij het ophalen van de gegevens", false);
+                createNotification("Probleem bij het ophalen van de gegevens", true);
                 while (!ApplicationLoader.isNetworkAvailable()) {
                     try {
                         Thread.sleep(1000);
@@ -215,7 +218,7 @@ class NotificationThread extends Thread {
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
                     .setOngoing(onGoing)
-                    .setAutoCancel(true)
+                    .setAutoCancel(!onGoing)
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(notificationText))
                     .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
