@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 
 import java.text.DateFormat;
@@ -216,9 +215,14 @@ class NotificationThread extends Thread {
                 return;
             }
             lastNotification = notificationText;
+
+            Intent intent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, (int) System.currentTimeMillis(), intent, 0);
+
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
                     .setContentTitle(ApplicationLoader.applicationContext.getResources().getString(R.string.app_name))
                     .setContentText(notificationText)
+                    .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
                     .setOngoing(onGoing)
                     .setAutoCancel(!onGoing)
@@ -230,14 +234,6 @@ class NotificationThread extends Thread {
                         .setPriority(Notification.PRIORITY_HIGH)
                         .setDefaults(Notification.DEFAULT_ALL);
             }
-
-            Intent resultIntent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(ApplicationLoader.applicationContext);
-            stackBuilder.addParentStack(ScheduleActivity.class);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            mBuilder.setContentIntent(resultPendingIntent);
-
             mNotificationManager.notify(0, mBuilder.build());
         } else {
             clearNotification();
