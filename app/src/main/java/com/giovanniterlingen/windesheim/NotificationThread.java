@@ -40,13 +40,13 @@ class NotificationThread extends Thread {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor == null || !cursor.moveToFirst()) {
+                if (cursor == null || cursor.getCount() == 0) {
                     ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 }
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
-                        createNotification("Er zijn geen lessen gevonden voor vandaag", false);
+                        createNotification("Er zijn geen lessen gevonden voor vandaag", false, false);
                         Thread.sleep(1000);
                     }
                 } else {
@@ -71,43 +71,47 @@ class NotificationThread extends Thread {
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (type == 1) {
-                                            notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
+                                            notificationText = "Je hebt ";
                                         }
                                         if (type == 2) {
-                                            notificationText = "U heeft over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
+                                            notificationText = "U heeft ";
                                         }
+                                        notificationText += "over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + "meerdere lessen";
                                     } else {
                                         if (type == 1) {
-                                            notificationText = "Je hebt over " + diffHours + " uur meerdere lessen";
+                                            notificationText = "Je hebt ";
                                         }
                                         if (type == 2) {
-                                            notificationText = "U heeft over " + diffHours + " uur meerdere lessen";
+                                            notificationText = "U heeft ";
                                         }
+                                        notificationText += "over " + diffHours + " uur meerdere lessen";
                                     }
                                 } else {
                                     if (diffMinutes >= 1) {
                                         if (diffMinutes == 1) {
                                             if (type == 1) {
-                                                notificationText = "Je hebt over " + diffMinutes + " minuut meerdere lessen";
+                                                notificationText = "Je hebt ";
                                             }
                                             if (type == 2) {
-                                                notificationText = "U heeft over " + diffMinutes + " minuut meerdere lessen";
+                                                notificationText = "U heeft ";
                                             }
+                                            notificationText += "over " + diffMinutes + " minuut meerdere lessen";
                                         } else {
                                             if (type == 1) {
-                                                notificationText = "Je hebt over " + diffMinutes + " minuten meerdere lessen";
+                                                notificationText = "Je hebt ";
                                             }
                                             if (type == 2) {
-                                                notificationText = "U heeft over " + diffMinutes + " minuten meerdere lessen";
+                                                notificationText = "U heeft ";
                                             }
+                                            notificationText += "over " + diffMinutes + " minuten meerdere lessen";
                                         }
                                     }
                                 }
                                 if (notificationType == 5) {
-                                    createNotification(notificationText, true);
+                                    createNotification(notificationText, true, false);
                                 }
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false);
+                                    createNotification(notificationText, false, true);
                                 }
                                 Thread.sleep(1000);
                             }
@@ -120,43 +124,48 @@ class NotificationThread extends Thread {
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (type == 1) {
-                                            notificationText = "Je hebt over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+                                            notificationText = "Je hebt ";
                                         }
                                         if (type == 2) {
-                                            notificationText = "U heeft over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+                                            notificationText = "U heeft ";
                                         }
+                                        notificationText += "over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
+
                                     } else {
                                         if (type == 1) {
-                                            notificationText = "Je hebt over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            notificationText = "Je hebt ";
                                         }
                                         if (type == 2) {
-                                            notificationText = "U heeft over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
+                                            notificationText = "U heeft ";
                                         }
+                                        notificationText += "over " + diffHours + " uur " + cursor.getString(5) + " in " + cursor.getString(6);
                                     }
                                 } else {
                                     if (diffMinutes >= 1) {
                                         if (diffMinutes == 1) {
                                             if (type == 1) {
-                                                notificationText = "Je hebt over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
+                                                notificationText = "Je hebt ";
                                             }
                                             if (type == 2) {
-                                                notificationText = "U heeft over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
+                                                notificationText = "U heeft ";
                                             }
+                                            notificationText += "over " + diffMinutes + " minuut " + cursor.getString(5) + " in " + cursor.getString(6);
                                         } else {
                                             if (type == 1) {
-                                                notificationText = "Je hebt over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
+                                                notificationText = "Je hebt ";
                                             }
                                             if (type == 2) {
-                                                notificationText = "U heeft over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
+                                                notificationText = "U heeft ";
                                             }
+                                            notificationText += "over " + diffMinutes + " minuten " + cursor.getString(5) + " in " + cursor.getString(6);
                                         }
                                     }
                                 }
                                 if (notificationType == 5) {
-                                    createNotification(notificationText, true);
+                                    createNotification(notificationText, true, false);
                                 }
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false);
+                                    createNotification(notificationText, false, true);
                                 }
                                 Thread.sleep(1000);
                             }
@@ -166,10 +175,10 @@ class NotificationThread extends Thread {
                 }
                 while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
                     if (type == 1) {
-                        createNotification("Je hebt geen lessen meer vandaag :)", false);
+                        createNotification("Je hebt geen lessen meer vandaag :)", false, false);
                     }
                     if (type == 2) {
-                        createNotification("U hoeft geen les meer te geven vandaag :)", false);
+                        createNotification("U hoeft geen les meer te geven vandaag :)", false, false);
                     }
                     Thread.sleep(1000);
                 }
@@ -179,7 +188,7 @@ class NotificationThread extends Thread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                createNotification("Probleem bij het ophalen van de gegevens", true);
+                createNotification("Probleem bij het ophalen van de gegevens", false, false);
                 while (!ApplicationLoader.isNetworkAvailable()) {
                     try {
                         Thread.sleep(1000);
@@ -200,56 +209,36 @@ class NotificationThread extends Thread {
         running = setRunning;
     }
 
-    private void createNotification(String notificationText, boolean onGoing) {
+    private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
         int notificationType = preferences.getInt("notifications_type", 0);
         if (notificationType != 0 && notificationType != 6 || mNotificationManager == null) {
             if (lastNotification.equals(notificationText)) {
                 return;
             }
             lastNotification = notificationText;
-
-            if (onGoing) {
-                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
-                        .setContentTitle(ApplicationLoader.applicationContext.getResources().getString(R.string.app_name))
-                        .setContentText(notificationText)
-                        .setSmallIcon(R.drawable.notifybar)
-                        .setOngoing(true)
-                        .setAutoCancel(false)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(notificationText))
-                        .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
-
-                Intent resultIntent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(ApplicationLoader.applicationContext);
-                stackBuilder.addParentStack(ScheduleActivity.class);
-                stackBuilder.addNextIntent(resultIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                mBuilder.setContentIntent(resultPendingIntent);
-
-                mNotificationManager.notify(0, mBuilder.build());
-            } else {
-                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
-                        .setContentTitle(ApplicationLoader.applicationContext.getResources().getString(R.string.app_name))
-                        .setContentText(notificationText)
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
+                    .setContentTitle(ApplicationLoader.applicationContext.getResources().getString(R.string.app_name))
+                    .setContentText(notificationText)
+                    .setSmallIcon(R.drawable.notifybar)
+                    .setOngoing(onGoing)
+                    .setAutoCancel(!onGoing)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(notificationText))
+                    .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
+            if (headsUp) {
+                mBuilder
                         .setPriority(Notification.PRIORITY_HIGH)
-                        .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
-                        .setLights(0, 0, 0)
-                        .setSmallIcon(R.drawable.notifybar)
-                        .setOngoing(false)
-                        .setAutoCancel(true)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(notificationText))
-                        .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
-
-                Intent resultIntent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(ApplicationLoader.applicationContext);
-                stackBuilder.addParentStack(ScheduleActivity.class);
-                stackBuilder.addNextIntent(resultIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                mBuilder.setContentIntent(resultPendingIntent);
-
-                mNotificationManager.notify(0, mBuilder.build());
+                        .setDefaults(Notification.DEFAULT_ALL);
             }
+
+            Intent resultIntent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(ApplicationLoader.applicationContext);
+            stackBuilder.addParentStack(ScheduleActivity.class);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+
+            mNotificationManager.notify(0, mBuilder.build());
         } else {
             clearNotification();
         }
