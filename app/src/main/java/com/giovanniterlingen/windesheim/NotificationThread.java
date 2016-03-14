@@ -235,7 +235,7 @@ class NotificationThread extends Thread {
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(ApplicationLoader.applicationContext);
             stackBuilder.addParentStack(ScheduleActivity.class);
             stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             mBuilder.setContentIntent(resultPendingIntent);
 
             mNotificationManager.notify(0, mBuilder.build());
