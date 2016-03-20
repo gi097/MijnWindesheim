@@ -8,7 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +29,8 @@ public class ScheduleActivity extends AppCompatActivity {
     private static String componentId;
     private static int type;
     private SharedPreferences sharedPreferences;
+    private Calendar onPauseCalendar;
+    private ViewPager mPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,10 +70,9 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private void setViewPager() {
         Calendar calendar = Calendar.getInstance();
-        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(9); // Will decrease performance, but care.
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
@@ -90,9 +91,21 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        onPauseCalendar = Calendar.getInstance();
+    }
+
+    @Override
     public void onResume() {
+        // Lets check if day has changed while app was in background
         super.onResume();
-        setViewPager();
+        Calendar calendar = Calendar.getInstance();
+        if (onPauseCalendar != null && calendar.getTimeInMillis() < onPauseCalendar.getTimeInMillis()
+                || onPauseCalendar != null && onPauseCalendar.get(Calendar.YEAR) != calendar.get(Calendar.YEAR)
+                || onPauseCalendar != null && onPauseCalendar.get(Calendar.DAY_OF_YEAR) != calendar.get(Calendar.DAY_OF_YEAR)) {
+            setViewPager();
+        }
     }
 
     @Override
@@ -108,7 +121,8 @@ public class ScheduleActivity extends AppCompatActivity {
         subMenu.add(2, 6, 6, "Uit");
 
         subMenu.setGroupCheckable(2, true, true);
-        menu.add(0, 7, 2, "Over deze app");
+        menu.add(0, 7, 2, "Lessen herstellen");
+        menu.add(0, 8, 3, "Over deze app");
 
         int notification_type = sharedPreferences.getInt("notifications_type", 0);
         menu.findItem(notification_type).setChecked(true);
@@ -156,9 +170,19 @@ public class ScheduleActivity extends AppCompatActivity {
                     showSnackbar("Notificaties zijn uitgeschakeld");
                     return true;
                 case 7:
+                    ApplicationLoader.scheduleDatabase.restoreLessons();
+                    ApplicationLoader.restartNotificationThread();
+                    int position = mPager.getCurrentItem();
+                    ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+                    mPager.setAdapter(mPagerAdapter);
+                    mPager.setCurrentItem(position);
+                    showSnackbar("Verborgen lessen zijn hersteld");
+                    return true;
+                case 8:
                     Intent intent2 = new Intent(ScheduleActivity.this, About.class);
                     startActivity(intent2);
                     return true;
+
             }
         }
         return super.onOptionsItemSelected(item);
@@ -169,7 +193,7 @@ public class ScheduleActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -213,7 +237,11 @@ public class ScheduleActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             Calendar calendar = Calendar.getInstance();
-            if (position == 0 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY || position == 1 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+            if (position == 0 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                    || position == 1 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY
+                    || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY
+                    || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY
+                    || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 return "Vandaag";
             }
             switch (position) {

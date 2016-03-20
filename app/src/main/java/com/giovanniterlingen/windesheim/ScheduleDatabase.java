@@ -2,7 +2,6 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -16,7 +15,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private static SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
-        super(context, "schedulestore.db", null, 3);
+        super(context, "schedulestore.db", null, 4);
     }
 
     public void open() {
@@ -25,33 +24,47 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
     }
 
-    public void saveScheduleData(String id, String date, String start, String end, String name, String room, String component, String componentId) {
-        try {
-            database.execSQL("INSERT INTO `subject` (`component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, component, componentId});
-        } catch (SQLiteConstraintException ex) {
-            database.execSQL("UPDATE `subject` SET `end` = ? WHERE `component_id` = ?", new String[]{end, id});
-        }
+    public void saveScheduleData(String id, String date, String start, String end, String name, String room, String component, String componentId, int visible) {
+        database.execSQL("INSERT INTO `subject` (`component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id`, `visible`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, " + visible + ")", new String[]{id, date, start, end, name, room, component, componentId});
     }
 
     public void clearScheduleData(String date) {
-        database.execSQL("DELETE FROM `subject` WHERE `date` = ?", new String[]{date});
+        database.execSQL("DELETE FROM `subject` WHERE `date` = ? AND `visible` = 1", new String[]{date});
     }
 
     public void clearOldScheduleData(String date) {
         database.execSQL("DELETE FROM `subject` WHERE `date` < ?", new String[]{date});
     }
 
+    public void clearLessons(long id) {
+        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = " + id, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                database.execSQL("UPDATE `subject` SET `visible` = 0 WHERE `component_id` = ?", new String[]{cursor.getString(0)});
+            }
+            cursor.close();
+        }
+    }
+
+    public void restoreLessons() {
+        database.execSQL("UPDATE `subject` SET `visible` = 1 WHERE `visible` = 0");
+    }
+
     public Cursor getLessons(String date, String componentId) {
-        return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? GROUP BY `component_id` ORDER BY `start`", new String[]{date, componentId});
+        return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? AND `visible` = 1 GROUP BY `component_id` ORDER BY `start`", new String[]{date, componentId});
+    }
+
+    public Cursor getFilteredLessons() {
+        return database.rawQuery("SELECT `component_id` FROM `subject` WHERE `visible` = 0 GROUP BY `component_id`", null);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         database.execSQL("DROP TABLE `subject`");
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER DEFAULT 1)");
     }
 
 }

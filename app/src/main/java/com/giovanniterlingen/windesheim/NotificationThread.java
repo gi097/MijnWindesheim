@@ -174,10 +174,10 @@ class NotificationThread extends Thread {
                 }
                 while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
                     if (type == 1) {
-                        createNotification("Je hebt geen lessen meer vandaag :)", false, false);
+                        createNotification("Je hebt geen komende lessen meer vandaag :)", false, false);
                     }
                     if (type == 2) {
-                        createNotification("U hoeft geen les meer te geven vandaag :)", false, false);
+                        createNotification("U heeft geen komende lessen meer vandaag :)", false, false);
                     }
                     Thread.sleep(1000);
                 }
@@ -187,15 +187,16 @@ class NotificationThread extends Thread {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                createNotification("Probleem bij het ophalen van de gegevens", false, false);
-                while (!ApplicationLoader.isNetworkAvailable()) {
-                    try {
+                try {
+                    createNotification("Probleem bij het ophalen van de gegevens", false, false);
+                    while (!ApplicationLoader.isNetworkAvailable()) {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e1) {
-                        this.interrupt();
                     }
+                    Thread.sleep(1000);
+                    ApplicationLoader.restartNotificationThread();
+                } catch (InterruptedException e1) {
+                    this.interrupt();
                 }
-                ApplicationLoader.restartNotificationThread();
             }
         }
     }

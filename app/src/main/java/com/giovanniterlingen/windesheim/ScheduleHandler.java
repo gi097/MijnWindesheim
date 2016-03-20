@@ -1,5 +1,7 @@
 package com.giovanniterlingen.windesheim;
 
+import android.database.Cursor;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,7 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A scheduler app for Windesheim students
@@ -63,6 +67,11 @@ class ScheduleHandler {
         String component = null;
         String room = null;
         String line;
+        Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
+        List<String> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            list.add(cursor.getString(0));
+        }
         ApplicationLoader.scheduleDatabase.clearScheduleData(simpleDateFormat.format(date));
         while ((line = reader.readLine()) != null) {
             if (line.contains("<td>")) {
@@ -128,12 +137,13 @@ class ScheduleHandler {
                     end = les;
                     break;
                 case 11:
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId);
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
                     countTd = 0;
                     break;
                 default:
                     break;
             }
         }
+        cursor.close();
     }
 }
