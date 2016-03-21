@@ -6,4 +6,5 @@
     <color name="colorPrimaryText">#00418C</color>
     <color name="colorSecondaryText">#727272</color>
     <color name="colorBackground">#FAFAFA</color>
+    <color name="colorBackgroundTint">#EEEEEE</color>
 </resources>

@@ -58,6 +58,9 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.putInt("notifications_type", 5);
             editor.commit();
         }
+        if (ApplicationLoader.notificationThread != null && !ApplicationLoader.notificationThread.isRunning()) {
+            ApplicationLoader.restartNotificationThread();
+        }
         ApplicationLoader.postInitApplication();
         super.onCreate(savedInstanceState);
 
@@ -100,6 +103,9 @@ public class ScheduleActivity extends AppCompatActivity {
     public void onResume() {
         // Lets check if day has changed while app was in background
         super.onResume();
+        if (ApplicationLoader.notificationThread != null && !ApplicationLoader.notificationThread.isRunning()) {
+            ApplicationLoader.restartNotificationThread();
+        }
         Calendar calendar = Calendar.getInstance();
         if (onPauseCalendar != null && calendar.getTimeInMillis() < onPauseCalendar.getTimeInMillis()
                 || onPauseCalendar != null && onPauseCalendar.get(Calendar.YEAR) != calendar.get(Calendar.YEAR)

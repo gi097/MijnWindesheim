@@ -39,6 +39,7 @@ class NotificationThread extends Thread {
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
+                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 if (cursor == null || cursor.getCount() == 0) {
                     ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
@@ -57,11 +58,7 @@ class NotificationThread extends Thread {
                         subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
-                        Cursor secondCursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                        if (secondCursor.moveToFirst() && cursor.getPosition() + 1 < secondCursor.getCount()) {
-                            secondCursor.moveToPosition(cursor.getPosition() + 1);
-                        }
-                        if (secondCursor.getString(3) != null && secondCursor.getString(3).equals(subjectTimeString)) {
+                        if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount() && cursor1.moveToPosition(cursor.getPosition() + 1) && cursor1.getString(3) != null && subjectTimeString.equals(cursor1.getString(3))) {
                             while (System.currentTimeMillis() < subjectTime && checkIfNeedsContinue(calendar)) {
                                 int notificationType = preferences.getInt("notifications_type", 0);
                                 long difference = subjectTime - System.currentTimeMillis();
@@ -129,7 +126,6 @@ class NotificationThread extends Thread {
                                             notificationText = "U heeft ";
                                         }
                                         notificationText += "over " + diffHours + " uur en " + diffMinutes + (diffMinutes == 1 ? " minuut " : " minuten ") + cursor.getString(5) + " in " + cursor.getString(6);
-
                                     } else {
                                         if (type == 1) {
                                             notificationText = "Je hebt ";
@@ -169,7 +165,6 @@ class NotificationThread extends Thread {
                                 Thread.sleep(1000);
                             }
                         }
-                        secondCursor.close();
                     }
                 }
                 while (checkIfNeedsContinue(calendar) && preferences.getInt("notifications_type", 0) == 5) {
@@ -184,29 +179,24 @@ class NotificationThread extends Thread {
                 if (cursor != null) {
                     cursor.close();
                 }
+                if (cursor1 != null) {
+                    cursor1.close();
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                try {
-                    createNotification("Probleem bij het ophalen van de gegevens", false, false);
-                    while (!ApplicationLoader.isNetworkAvailable()) {
-                        Thread.sleep(1000);
-                    }
-                    Thread.sleep(1000);
-                    ApplicationLoader.restartNotificationThread();
-                } catch (InterruptedException e1) {
-                    this.interrupt();
-                }
+                createNotification("Probleem bij het ophalen van de gegevens", false, false);
+                stopRunning();
             }
         }
     }
 
-    private boolean isRunning() {
+    public boolean isRunning() {
         return running;
     }
 
-    public void setRunning(boolean setRunning) {
-        running = setRunning;
+    public void stopRunning() {
+        running = false;
     }
 
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {

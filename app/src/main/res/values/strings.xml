@@ -3,8 +3,5 @@
     <string name="about_description">Een rooster-app voor studenten en docenten van Windesheim</string>
     <string name="about_footer">Gemaakt door Giovanni Terlingen - 1e jaars HBO-ICT student</string>
     <string name="schedule_not_found">Er is geen rooster voor deze dag gevonden</string>
-    <string name="menuitem_change_schedule">Rooster wijzigen</string>
-    <string name="menuitem_notifications">Notificaties</string>
-    <string name="menuitem_about">Over deze app</string>
     <string name="logo_description">Windesheim logo</string>
 </resources>

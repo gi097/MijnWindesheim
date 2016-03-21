@@ -13,10 +13,10 @@ import android.widget.TextView;
  *
  * @author Giovanni Terlingen
  */
-class ScheduleAdapter extends CursorAdapter {
+public class ScheduleAdapter extends CursorAdapter {
 
-    public ScheduleAdapter(Context context, Cursor cursor, int flags) {
-        super(context, cursor, flags);
+    public ScheduleAdapter(Context context, Cursor cursor) {
+        super(context, cursor, 0);
     }
 
     @Override

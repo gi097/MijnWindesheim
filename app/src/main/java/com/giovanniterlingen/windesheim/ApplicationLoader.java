@@ -6,8 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
@@ -67,15 +65,9 @@ public class ApplicationLoader extends Application {
         applicationHandler.post(runnable);
     }
 
-    public static boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     public static void restartNotificationThread() {
         if (notificationThread != null) {
-            notificationThread.setRunning(false);
+            notificationThread.stopRunning();
             notificationThread = null;
         }
         notificationThread = new NotificationThread();

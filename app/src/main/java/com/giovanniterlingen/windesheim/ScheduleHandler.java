@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A scheduler app for Windesheim students
@@ -67,12 +68,23 @@ class ScheduleHandler {
         String component = null;
         String room = null;
         String line;
+
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         List<String> list = new ArrayList<>();
         while (cursor.moveToNext()) {
             list.add(cursor.getString(0));
         }
+        cursor.close();
+
+        Cursor cursor1 = ApplicationLoader.scheduleDatabase.getIds();
+        List<String> list1 = new ArrayList<>();
+        while (cursor1.moveToNext()) {
+            list1.add(cursor1.getString(0));
+        }
+        cursor1.close();
+
         ApplicationLoader.scheduleDatabase.clearScheduleData(simpleDateFormat.format(date));
+
         while ((line = reader.readLine()) != null) {
             if (line.contains("<td>")) {
                 countTd++;
@@ -98,6 +110,12 @@ class ScheduleHandler {
                     }
                     break;
                 case 3:
+                    if (les.equals("")) {
+                        Random random = new Random();
+                        do {
+                            les = Integer.toString(1000000 + random.nextInt(9000000));
+                        } while (list1.contains(les));
+                    }
                     id = les;
                     break;
                 case 4:
@@ -144,6 +162,5 @@ class ScheduleHandler {
                     break;
             }
         }
-        cursor.close();
     }
 }

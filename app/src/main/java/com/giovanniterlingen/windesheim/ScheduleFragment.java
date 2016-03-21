@@ -1,6 +1,5 @@
 package com.giovanniterlingen.windesheim;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -32,7 +31,6 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     private static String componentId;
     private static int type;
     private Date date;
-    private Context context;
     private ScheduleAdapter adapter;
     private DateFormat simpleDateFormat;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -45,12 +43,11 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         componentId = getArguments().getString("componentId");
         type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
-        context = getActivity();
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
         if (scheduleDay != null && scheduleDay.getCount() > 0) {
-            adapter = new ScheduleAdapter(context, scheduleDay, 0);
+            adapter = new ScheduleAdapter(getActivity(), scheduleDay);
             setListAdapter(adapter);
         }
     }
@@ -132,7 +129,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                 case 11:
                     monthString = "december";
             }
-            ((ScheduleActivity) context).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
+            ((ScheduleActivity) getActivity()).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
             if (getListAdapter() == null) {
                 new ScheduleFetcher(true).execute();
             } else {
@@ -159,7 +156,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context)
+                new AlertDialog.Builder(getActivity())
                         .setTitle("Probleem met verbinden!")
                         .setMessage("De gegevens konden niet worden opgevraagd. Controleer je internetverbinding en probeer het opnieuw.")
                         .setIcon(R.drawable.ic_launcher)
@@ -183,7 +180,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context)
+                new AlertDialog.Builder(getActivity())
                         .setTitle("Weet je het zeker?")
                         .setMessage("Alle lessen van dit vak met deze klas of docent worden verborgen, deze kunnen hersteld worden via het menu.")
                         .setIcon(R.drawable.ic_launcher)
@@ -213,7 +210,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
 
     public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
-        private boolean fetchData;
+        private final boolean fetchData;
         private Cursor scheduleDay;
 
         public ScheduleFetcher(boolean fetchData) {
@@ -247,7 +244,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             super.onPostExecute(param);
             TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
             if (adapter == null) {
-                adapter = new ScheduleAdapter(context, scheduleDay, 0);
+                adapter = new ScheduleAdapter(getActivity(), scheduleDay);
             } else {
                 adapter.changeCursor(scheduleDay);
             }

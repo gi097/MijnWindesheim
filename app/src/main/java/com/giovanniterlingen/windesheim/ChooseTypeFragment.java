@@ -1,6 +1,5 @@
 package com.giovanniterlingen.windesheim;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -40,6 +40,7 @@ public class ChooseTypeFragment extends Fragment {
     private ListView listView;
     private int type;
     private Context context;
+    private ProgressBar spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class ChooseTypeFragment extends Fragment {
             dataSearch.setHint("Typ hier uw naam of code");
         }
         listView = (ListView) view.findViewById(R.id.listview);
+        spinner = (ProgressBar) view.findViewById(R.id.progress_bar);
         dataSearch.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
                 if (adapter != null) {
@@ -79,7 +81,6 @@ public class ChooseTypeFragment extends Fragment {
             }
 
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                listView.setAdapter(adapter);
             }
 
             public void afterTextChanged(Editable arg0) {
@@ -153,16 +154,10 @@ public class ChooseTypeFragment extends Fragment {
 
     private class ComponentFetcher extends AsyncTask<Void, Void, Void> {
 
-        private ProgressDialog progressDailog;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDailog = new ProgressDialog(context);
-            progressDailog.setMessage("Gegevens downloaden...");
-            progressDailog.setIndeterminate(false);
-            progressDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDailog.show();
+            spinner.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -180,7 +175,8 @@ public class ChooseTypeFragment extends Fragment {
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            progressDailog.dismiss();
+            spinner.setVisibility(View.GONE);
+            listView.setAdapter(adapter);
         }
     }
 }
