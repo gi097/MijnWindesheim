@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A scheduler app for Windesheim students
@@ -60,13 +59,13 @@ class ScheduleHandler {
     public static void saveSchedule(BufferedReader reader, Date date, String componentId, int type) throws Exception {
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         int countTd = 0;
-        String module = null;
-        String subject = null;
-        String id = null;
-        String start = null;
-        String end = null;
-        String component = null;
-        String room = null;
+        String module = "";
+        String subject = "";
+        String id = "";
+        String start = "";
+        String end = "";
+        String component = "";
+        String room = "";
         String line;
 
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
@@ -109,15 +108,6 @@ class ScheduleHandler {
                         }
                     }
                     break;
-                case 3:
-                    if (les.equals("")) {
-                        Random random = new Random();
-                        do {
-                            les = Integer.toString(1000000 + random.nextInt(9000000));
-                        } while (list1.contains(les));
-                    }
-                    id = les;
-                    break;
                 case 4:
                     if (line.contains("</span>")) {
                         if (les.split("</span>")[0].split("\">").length != 2 && type == 1) {
@@ -154,9 +144,23 @@ class ScheduleHandler {
                     }
                     end = les;
                     break;
+                case 9:
+                    if (!les.matches(".*\\d.*")) {
+                        break;
+                    }
+                    id = les;
+                    break;
                 case 11:
+                    // end reached, let's reset fields to prevent duplicates
                     ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
                     countTd = 0;
+                    module = "";
+                    subject = "";
+                    id = "";
+                    start = "";
+                    end = "";
+                    component = "";
+                    room = "";
                     break;
                 default:
                     break;

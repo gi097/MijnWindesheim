@@ -36,6 +36,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     private SwipeRefreshLayout swipeRefreshLayout;
     private ViewGroup viewGroup;
     private long onLongClickId;
+    private boolean isShowing = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,6 +154,10 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     }
 
     private void alertConnectionProblem() {
+        if (isShowing) {
+            return;
+        }
+        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -165,11 +170,13 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                     public void onClick(DialogInterface dialog, int id) {
                                         new ScheduleFetcher(true).execute();
                                         dialog.cancel();
+                                        isShowing = false;
                                     }
                                 })
                         .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+                                isShowing = false;
                             }
                         }).show();
             }
@@ -177,12 +184,16 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     }
 
     private void showPromptDialog() {
+        if (isShowing) {
+            return;
+        }
+        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
                         .setTitle("Weet je het zeker?")
-                        .setMessage("Alle lessen van dit vak met deze klas of docent worden verborgen, deze kunnen hersteld worden via het menu.")
+                        .setMessage("Alle lessen van dit vak met deze klas of docent worden verborgen, deze kunnen worden hersteld via het menu.")
                         .setIcon(R.drawable.ic_launcher)
                         .setPositiveButton("Verbergen",
                                 new DialogInterface.OnClickListener() {
@@ -192,11 +203,14 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                         Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.schedule_coordinator_layout), "Lessen zijn verborgen", Snackbar.LENGTH_SHORT);
                                         snackbar.show();
                                         ApplicationLoader.restartNotificationThread();
+                                        dialog.cancel();
+                                        isShowing = false;
                                     }
                                 })
                         .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+                                isShowing = false;
                             }
                         }).show();
             }

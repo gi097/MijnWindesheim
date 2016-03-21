@@ -41,6 +41,7 @@ public class ChooseTypeFragment extends Fragment {
     private int type;
     private Context context;
     private ProgressBar spinner;
+    private boolean isShowing = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,14 @@ public class ChooseTypeFragment extends Fragment {
         }
         if (position == 1) {
             type = 2;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter == null) {
+            new ComponentFetcher().execute();
         }
     }
 
@@ -81,6 +90,9 @@ public class ChooseTypeFragment extends Fragment {
             }
 
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                if (adapter == null) {
+                    new ComponentFetcher().execute();
+                }
             }
 
             public void afterTextChanged(Editable arg0) {
@@ -108,7 +120,6 @@ public class ChooseTypeFragment extends Fragment {
 
         });
 
-        new ComponentFetcher().execute();
         return view;
     }
 
@@ -128,6 +139,10 @@ public class ChooseTypeFragment extends Fragment {
     }
 
     private void alertConnectionProblem() {
+        if (isShowing || !getUserVisibleHint()) {
+            return;
+        }
+        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -135,17 +150,18 @@ public class ChooseTypeFragment extends Fragment {
                         .setTitle("Probleem met verbinden!")
                         .setMessage("De gegevens konden niet worden opgevraagd. Controleer je internetverbinding en probeer het opnieuw.")
                         .setIcon(R.drawable.ic_launcher)
-                        .setNeutralButton("Verbinden",
+                        .setPositiveButton("Verbinden",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
+                                        new ComponentFetcher().execute();
                                         dialog.cancel();
+                                        isShowing = false;
                                     }
                                 })
-                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                new ComponentFetcher().execute();
+                        .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+                                isShowing = false;
                             }
                         }).show();
             }
@@ -163,8 +179,7 @@ public class ChooseTypeFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                String fetchedData = ScheduleHandler.getListFromServer(type);
-                buildClassArray(new JSONObject(fetchedData).getJSONArray("elements"));
+                buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type)).getJSONArray("elements"));
                 adapter = new ArrayAdapter<>(context, R.layout.component_adapter_item, R.id.component_item, componentList);
             } catch (Exception e) {
                 alertConnectionProblem();
