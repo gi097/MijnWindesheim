@@ -34,8 +34,8 @@ import java.util.ArrayList;
  */
 public class ChooseTypeFragment extends Fragment {
 
-    private final ArrayList<Integer> componentId = new ArrayList<>();
-    private final ArrayList<String> componentList = new ArrayList<>();
+    private ArrayList<Integer> componentId;
+    private ArrayList<String> componentList;
     private ArrayAdapter<String> adapter;
     private ListView listView;
     private int type;
@@ -125,10 +125,9 @@ public class ChooseTypeFragment extends Fragment {
 
 
     private void buildClassArray(JSONArray jsonArray) {
-        JSONObject jsonObject;
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
-                jsonObject = jsonArray.getJSONObject(i);
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
                 this.componentList.add(jsonObject.getString("name") + " - " + jsonObject.getString("longName"));
                 this.componentId.add(jsonObject.getInt("id"));
             } catch (JSONException e) {
@@ -174,6 +173,8 @@ public class ChooseTypeFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             spinner.setVisibility(View.VISIBLE);
+            componentId = new ArrayList<>();
+            componentList = new ArrayList<>();
         }
 
         @Override

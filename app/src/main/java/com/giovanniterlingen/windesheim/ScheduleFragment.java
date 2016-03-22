@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -37,6 +38,8 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     private ViewGroup viewGroup;
     private long onLongClickId;
     private boolean isShowing = false;
+    private TextView emptyTextView;
+    private ProgressBar spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,9 +135,9 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             }
             ((ScheduleActivity) getActivity()).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
             if (getListAdapter() == null) {
-                new ScheduleFetcher(true).execute();
+                new ScheduleFetcher(true, true).execute();
             } else {
-                new ScheduleFetcher(false).execute();
+                new ScheduleFetcher(false, true).execute();
             }
         }
     }
@@ -146,9 +149,10 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         swipeRefreshLayout = (SwipeRefreshLayout) viewGroup.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryText, R.color.colorPrimary);
-        if (getListAdapter() == null) {
-            TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
-            emptyTextView.setVisibility(View.VISIBLE);
+        emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
+        spinner = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
+        if (getListAdapter() != null) {
+            emptyTextView.setVisibility(View.GONE);
         }
         return viewGroup;
     }
@@ -168,7 +172,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                         .setPositiveButton("Verbinden",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        new ScheduleFetcher(true).execute();
+                                        new ScheduleFetcher(true, false).execute();
                                         dialog.cancel();
                                         isShowing = false;
                                     }
@@ -199,7 +203,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         ApplicationLoader.scheduleDatabase.clearLessons(onLongClickId);
-                                        new ScheduleFetcher(false).execute();
+                                        new ScheduleFetcher(false, false).execute();
                                         Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.schedule_coordinator_layout), "Lessen zijn verborgen", Snackbar.LENGTH_SHORT);
                                         snackbar.show();
                                         ApplicationLoader.restartNotificationThread();
@@ -219,23 +223,30 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
 
     @Override
     public void onRefresh() {
-        new ScheduleFetcher(true).execute();
+        new ScheduleFetcher(true, false).execute();
     }
 
     public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         private final boolean fetchData;
+        private final boolean showSpinner;
         private Cursor scheduleDay;
 
-        public ScheduleFetcher(boolean fetchData) {
+        public ScheduleFetcher(boolean fetchData, boolean showSpinner) {
             this.fetchData = fetchData;
+            this.showSpinner = showSpinner;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             if (swipeRefreshLayout != null && adapter == null) {
-                swipeRefreshLayout.setRefreshing(true);
+                if (showSpinner) {
+                    emptyTextView.setVisibility(View.GONE);
+                    spinner.setVisibility(View.VISIBLE);
+                } else {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
             }
         }
 
@@ -256,7 +267,6 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
             if (adapter == null) {
                 adapter = new ScheduleAdapter(getActivity(), scheduleDay);
             } else {
@@ -270,8 +280,12 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             if (getListAdapter() == null) {
                 setListAdapter(adapter);
             }
-            if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
+            if (showSpinner) {
+                spinner.setVisibility(View.GONE);
+            } else {
+                if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
         }
     }
