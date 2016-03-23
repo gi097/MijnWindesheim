@@ -176,17 +176,12 @@ public class ScheduleActivity extends AppCompatActivity {
                     showSnackbar("Notificaties zijn uitgeschakeld");
                     return true;
                 case 7:
-                    ApplicationLoader.scheduleDatabase.restoreLessons();
-                    ApplicationLoader.restartNotificationThread();
-                    int position = mPager.getCurrentItem();
-                    ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-                    mPager.setAdapter(mPagerAdapter);
-                    mPager.setCurrentItem(position);
-                    showSnackbar("Verborgen lessen zijn hersteld");
+                    Intent intent2 = new Intent(ScheduleActivity.this, HiddenLessonsActivity.class);
+                    startActivity(intent2);
                     return true;
                 case 8:
-                    Intent intent2 = new Intent(ScheduleActivity.this, About.class);
-                    startActivity(intent2);
+                    Intent intent3 = new Intent(ScheduleActivity.this, About.class);
+                    startActivity(intent3);
                     return true;
 
             }

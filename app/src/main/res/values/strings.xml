@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Windesheim</string>
     <string name="about_description">Een rooster-app voor studenten en docenten van Windesheim</string>
-    <string name="about_footer">Gemaakt door Giovanni Terlingen - 1e jaars HBO-ICT student</string>
+    <string name="about_footer">Ontwikkeld door Giovanni Terlingen</string>
+    <string name="hidden_schedule_not_found">Er zijn geen verborgen lessen gevonden</string>
     <string name="schedule_not_found">Er is geen rooster voor deze dag gevonden</string>
     <string name="logo_description">Windesheim logo</string>
+    <string name="hidden_schedule_label">Verborgen lessen</string>
+    <string name="restore">Herstellen</string>
 </resources>

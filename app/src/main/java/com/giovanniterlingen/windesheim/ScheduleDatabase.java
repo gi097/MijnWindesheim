@@ -43,18 +43,28 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = " + id, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                database.execSQL("UPDATE `subject` SET `visible` = 0 WHERE `component_id` = ?", new String[]{cursor.getString(0)});
+                database.execSQL("UPDATE `subject` SET `visible` = 0 WHERE `component_id` = ? AND `visible` = 1", new String[]{cursor.getString(0)});
             }
             cursor.close();
         }
     }
 
-    public void restoreLessons() {
-        database.execSQL("UPDATE `subject` SET `visible` = 1 WHERE `visible` = 0");
+    public void restoreLessons(long id) {
+        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = " + id, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                database.execSQL("UPDATE `subject` SET `visible` = 1 WHERE `component_id` = ? AND `visible` = 0", new String[]{cursor.getString(0)});
+            }
+            cursor.close();
+        }
     }
 
     public Cursor getLessons(String date, String componentId) {
         return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? AND `visible` = 1 GROUP BY `component_id` ORDER BY `start`, `name`", new String[]{date, componentId});
+    }
+
+    public Cursor getFilteredLessonsForAdapter() {
+        return database.rawQuery("SELECT `_id`, `name`, `component` FROM `subject` WHERE `visible` = 0 GROUP BY `component_id` ORDER BY `name`", null);
     }
 
     public Cursor getFilteredLessons() {

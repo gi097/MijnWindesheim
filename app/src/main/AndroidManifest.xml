@@ -32,6 +32,11 @@
             android:name=".About"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HiddenLessonsActivity"
+            android:launchMode="singleTask"
+            android:label="@string/hidden_schedule_label"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".NotificationService"
