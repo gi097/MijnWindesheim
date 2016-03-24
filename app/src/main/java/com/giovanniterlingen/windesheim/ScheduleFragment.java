@@ -90,7 +90,9 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     @Override
     public void onResume() {
         super.onResume();
-        new ScheduleFetcher(false, true).execute();
+        if (getUserVisibleHint()) {
+            new ScheduleFetcher(false, false).execute();
+        }
     }
 
     @Override

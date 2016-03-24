@@ -63,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:background="@android:color/transparent"
+                    android:clickable="true"
                     android:foreground="?attr/selectableItemBackground"
                     android:text="@string/restore"
                     android:textColor="@color/colorAccent" />

@@ -2,11 +2,15 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * A scheduler app for Windesheim students
@@ -31,11 +35,28 @@ public class ScheduleAdapter extends CursorAdapter {
         TextView lessonRoom = (TextView) view.findViewById(R.id.schedule_list_row_room);
         TextView lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
 
-        String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+        long databaseDateStart = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(3).replaceAll(":", ""));
+        long databaseDateEnd = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(4).replaceAll(":", ""));
+        long currentDate = Long.parseLong(simpleDateFormat.format(new Date()));
 
         lessonName.setText(cursor.getString(5));
-        lessonTime.setText(lessonTimes);
         lessonRoom.setText(cursor.getString(6));
         lessonComponent.setText(cursor.getString(7));
+
+        if (databaseDateStart < currentDate && databaseDateEnd > currentDate) {
+            String lessonTimes = "BEGONNEN, DUURT TOT " +  cursor.getString(4);
+            lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            lessonTime.setText(lessonTimes);
+            return;
+        }
+        if (databaseDateEnd < currentDate) {
+            String lessonTimes = "AFGELOPEN";
+            lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            lessonTime.setText(lessonTimes);
+            return;
+        }
+        String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
+        lessonTime.setText(lessonTimes);
     }
 }
