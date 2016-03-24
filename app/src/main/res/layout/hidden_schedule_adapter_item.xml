@@ -10,6 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
         card_view:cardCornerRadius="2.0dip"
         card_view:cardUseCompatPadding="true">
 
@@ -59,12 +61,10 @@
 
                 <Button
                     android:id="@+id/restore_button"
+                    style="?attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:foreground="?attr/selectableItemBackground"
                     android:text="@string/restore"
                     android:textColor="@color/colorAccent" />
 
