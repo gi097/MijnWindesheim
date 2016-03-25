@@ -47,7 +47,7 @@ public class ApplicationLoader extends Application {
         String classId = preferences.getString("componentId", "");
         if (classId.length() != 0) {
             notificationThread = new NotificationThread();
-            notificationThread.startNotifications();
+            notificationThread.start();
         }
     }
 
@@ -61,7 +61,7 @@ public class ApplicationLoader extends Application {
             notificationThread = null;
         }
         notificationThread = new NotificationThread();
-        notificationThread.startNotifications();
+        notificationThread.start();
     }
 
     @Override

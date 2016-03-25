@@ -38,7 +38,7 @@
     <string name="lesson_one_hour_one_minute">You have %1$s about 1 hour and 1 minute in %2$s</string>
     <string name="lesson_one_minute">You have %1$s about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
-    <string name="lesson_started">STARTED, FINISHED AT</string>
+    <string name="lesson_started">STARTED, ENDS AT</string>
     <string name="logo_description">Windesheim logo</string>
     <string name="march">march</string>
     <string name="may">may</string>
