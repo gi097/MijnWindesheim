@@ -13,11 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleAdapter extends CursorAdapter {
+class ScheduleAdapter extends CursorAdapter {
 
     public ScheduleAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
@@ -45,18 +45,19 @@ public class ScheduleAdapter extends CursorAdapter {
         lessonComponent.setText(cursor.getString(7));
 
         if (databaseDateStart < currentDate && databaseDateEnd > currentDate) {
-            String lessonTimes = "BEGONNEN, DUURT TOT " +  cursor.getString(4);
+            String lessonTimes = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_started) + " " + cursor.getString(4);
             lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             lessonTime.setText(lessonTimes);
             return;
         }
         if (databaseDateEnd < currentDate) {
-            String lessonTimes = "AFGELOPEN";
+            String lessonTimes = ApplicationLoader.applicationContext.getResources().getString(R.string.finished);
             lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             lessonTime.setText(lessonTimes);
             return;
         }
         String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
+        lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
         lessonTime.setText(lessonTimes);
     }
 }

@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -35,7 +35,6 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     private ScheduleAdapter adapter;
     private DateFormat simpleDateFormat;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ViewGroup viewGroup;
     private long onLongClickId;
     private boolean isShowing = false;
     private TextView emptyTextView;
@@ -73,7 +72,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 0, 0, "Verberg deze les");
+        menu.add(0, 0, 0, getResources().getString(R.string.hide_lesson));
     }
 
     @Override
@@ -91,7 +90,11 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint()) {
-            new ScheduleFetcher(false, false).execute();
+            if (getListAdapter() == null) {
+                new ScheduleFetcher(false, true).execute();
+            } else {
+                new ScheduleFetcher(false, false).execute();
+            }
         }
     }
 
@@ -106,40 +109,40 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             String monthString = null;
             switch (month) {
                 case 0:
-                    monthString = "januari";
+                    monthString = getResources().getString(R.string.january);
                     break;
                 case 1:
-                    monthString = "februari";
+                    monthString = getResources().getString(R.string.february);
                     break;
                 case 2:
-                    monthString = "maart";
+                    monthString = getResources().getString(R.string.march);
                     break;
                 case 3:
-                    monthString = "april";
+                    monthString = getResources().getString(R.string.april);
                     break;
                 case 4:
-                    monthString = "mei";
+                    monthString = getResources().getString(R.string.may);
                     break;
                 case 5:
-                    monthString = "juni";
+                    monthString = getResources().getString(R.string.june);
                     break;
                 case 6:
-                    monthString = "juli";
+                    monthString = getResources().getString(R.string.july);
                     break;
                 case 7:
-                    monthString = "augustus";
+                    monthString = getResources().getString(R.string.august);
                     break;
                 case 8:
-                    monthString = "september";
+                    monthString = getResources().getString(R.string.september);
                     break;
                 case 9:
-                    monthString = "oktober";
+                    monthString = getResources().getString(R.string.october);
                     break;
                 case 10:
-                    monthString = "november";
+                    monthString = getResources().getString(R.string.november);
                     break;
                 case 11:
-                    monthString = "december";
+                    monthString = getResources().getString(R.string.december);
             }
             ((ScheduleActivity) getActivity()).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
             if (getListAdapter() == null) {
@@ -153,7 +156,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_schedule, container, false);
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_schedule, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) viewGroup.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryText, R.color.colorPrimary);
@@ -174,10 +177,10 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Probleem met verbinden!")
-                        .setMessage("De gegevens konden niet worden opgevraagd. Controleer je internetverbinding en probeer het opnieuw.")
+                        .setTitle(getResources().getString(R.string.alert_connection_title))
+                        .setMessage(getResources().getString(R.string.alert_connection_description))
                         .setIcon(R.drawable.ic_launcher)
-                        .setPositiveButton("Verbinden",
+                        .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         new ScheduleFetcher(true, false).execute();
@@ -185,12 +188,13 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                         isShowing = false;
                                     }
                                 })
-                        .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                isShowing = false;
-                            }
-                        }).show();
+                        .setNegativeButton(getResources().getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        isShowing = false;
+                                    }
+                                }).show();
             }
         });
     }
@@ -204,22 +208,22 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Weet je het zeker?")
-                        .setMessage("Alle lessen van dit vak met deze klas of docent worden verborgen, deze kunnen worden hersteld via het menu.")
+                        .setTitle(getResources().getString(R.string.confirmation))
+                        .setMessage(getResources().getString(R.string.deletion_description))
                         .setIcon(R.drawable.ic_launcher)
-                        .setPositiveButton("Verbergen",
+                        .setPositiveButton(getResources().getString(R.string.hide),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         ApplicationLoader.scheduleDatabase.clearLessons(onLongClickId);
                                         new ScheduleFetcher(false, false).execute();
-                                        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.schedule_coordinator_layout), "Lessen zijn verborgen", Snackbar.LENGTH_SHORT);
+                                        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.schedule_coordinator_layout), getResources().getString(R.string.lesson_hidden), Snackbar.LENGTH_SHORT);
                                         snackbar.show();
                                         ApplicationLoader.restartNotificationThread();
                                         dialog.cancel();
                                         isShowing = false;
                                     }
                                 })
-                        .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                                 isShowing = false;

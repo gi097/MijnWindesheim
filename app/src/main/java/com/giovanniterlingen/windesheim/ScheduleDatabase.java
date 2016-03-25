@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -69,10 +69,6 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
 
     public Cursor getFilteredLessons() {
         return database.rawQuery("SELECT `component_id` FROM `subject` WHERE `visible` = 0 GROUP BY `component_id`", null);
-    }
-
-    public Cursor getIds() {
-        return database.rawQuery("SELECT `component_id` FROM `subject`", null);
     }
 
     @Override

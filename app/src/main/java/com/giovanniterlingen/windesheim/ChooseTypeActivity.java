@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -33,6 +33,7 @@ public class ChooseTypeActivity extends AppCompatActivity {
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -57,11 +58,11 @@ public class ChooseTypeActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Klassen";
+                    return getResources().getString(R.string.pager_item_classes);
                 case 1:
-                    return "Docenten";
+                    return getResources().getString(R.string.pager_item_teachers);
                 default:
-                    return null;
+                    return "";
             }
         }
     }

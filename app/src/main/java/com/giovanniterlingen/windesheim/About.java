@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -20,13 +20,10 @@ public class About extends AppCompatActivity {
         String versionCode;
         try {
             versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            String title = getResources().getString(R.string.app_name) + " " + versionCode;
+            aboutTitle.setText(title);
         } catch (PackageManager.NameNotFoundException e) {
-            versionCode = null;
-        }
-        if (versionCode != null) {
-            aboutTitle.setText("Windesheim " + versionCode);
-        } else {
-            aboutTitle.setText("Windesheim");
+            aboutTitle.setText(getResources().getString(R.string.app_name));
         }
     }
 

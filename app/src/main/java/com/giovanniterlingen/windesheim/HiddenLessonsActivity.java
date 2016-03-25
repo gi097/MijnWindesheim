@@ -2,6 +2,7 @@ package com.giovanniterlingen.windesheim;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -9,11 +10,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
 public class HiddenLessonsActivity extends AppCompatActivity {
+
+    private static View view;
+
+    public static void showSnackbar() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_restored), Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +37,7 @@ public class HiddenLessonsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        view = findViewById(R.id.schedule_coordinator_layout);
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter();
         HiddenLessonsAdapter adapter = new HiddenLessonsAdapter(HiddenLessonsActivity.this, cursor);
         ListView listView = (ListView) findViewById(R.id.listview);

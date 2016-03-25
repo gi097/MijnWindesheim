@@ -10,7 +10,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -28,16 +28,6 @@ public class ApplicationLoader extends Application {
                 NotificationService.class));
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
-            // Calendar cal = Calendar.getInstance();
-            // PendingIntent pintent =
-            // PendingIntent.getService(applicationContext, 0, new
-            // Intent(applicationContext, NotificationsService.class),
-            // 0);
-            // AlarmManager alarm = (AlarmManager)
-            // applicationContext.getSystemService(Context.ALARM_SERVICE);
-            // alarm.setRepeating(AlarmManager.RTC_WAKEUP,
-            // cal.getTimeInMillis(), 30000, pintent);
-
             PendingIntent pintent = PendingIntent.getService(
                     applicationContext, 0, new Intent(applicationContext,
                             NotificationService.class), 0);
@@ -57,7 +47,7 @@ public class ApplicationLoader extends Application {
         String classId = preferences.getString("componentId", "");
         if (classId.length() != 0) {
             notificationThread = new NotificationThread();
-            notificationThread.start();
+            notificationThread.startNotifications();
         }
     }
 
@@ -71,7 +61,7 @@ public class ApplicationLoader extends Application {
             notificationThread = null;
         }
         notificationThread = new NotificationThread();
-        notificationThread.start();
+        notificationThread.startNotifications();
     }
 
     @Override

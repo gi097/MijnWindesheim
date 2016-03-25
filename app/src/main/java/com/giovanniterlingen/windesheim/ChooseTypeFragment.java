@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -71,14 +71,14 @@ public class ChooseTypeFragment extends Fragment {
         TextView descriptionTextview = (TextView) view.findViewById(R.id.description_textview);
         EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
         if (type == 1) {
-            chooseTextview.setText("Kies je klas");
-            descriptionTextview.setText("Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je standaard rooster in te stellen.");
-            dataSearch.setHint("Typ hier je klas");
+            chooseTextview.setText(getResources().getString(R.string.choose_class));
+            descriptionTextview.setText(getResources().getString(R.string.choose_class_description));
+            dataSearch.setHint(getResources().getString(R.string.choose_class_hint));
         }
         if (type == 2) {
-            chooseTextview.setText("Kies uw naam of docentcode");
-            descriptionTextview.setText("U kunt hier uw docentcode zoeken en daar vervolgens op klikken om deze als uw standaard rooster in te stellen.");
-            dataSearch.setHint("Typ hier uw naam of code");
+            chooseTextview.setText(getResources().getString(R.string.choose_teacher));
+            descriptionTextview.setText(getResources().getString(R.string.choose_teacher_description));
+            dataSearch.setHint(getResources().getString(R.string.choose_teacher_hint));
         }
         listView = (ListView) view.findViewById(R.id.listview);
         spinner = (ProgressBar) view.findViewById(R.id.progress_bar);
@@ -146,10 +146,10 @@ public class ChooseTypeFragment extends Fragment {
             @Override
             public void run() {
                 new AlertDialog.Builder(context)
-                        .setTitle("Probleem met verbinden!")
-                        .setMessage("De gegevens konden niet worden opgevraagd. Controleer je internetverbinding en probeer het opnieuw.")
+                        .setTitle(getResources().getString(R.string.alert_connection_title))
+                        .setMessage(getResources().getString(R.string.alert_connection_description))
                         .setIcon(R.drawable.ic_launcher)
-                        .setPositiveButton("Verbinden",
+                        .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         new ComponentFetcher().execute();
@@ -157,7 +157,7 @@ public class ChooseTypeFragment extends Fragment {
                                         isShowing = false;
                                     }
                                 })
-                        .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                                 isShowing = false;

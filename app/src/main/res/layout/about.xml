@@ -7,7 +7,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#fffafafa">
+        android:background="@color/colorBackground">
 
         <FrameLayout
             android:layout_width="fill_parent"
@@ -31,9 +31,11 @@
                 android:id="@+id/about_title"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|left|top"
+                android:layout_gravity="center|start|top"
+                android:layout_marginEnd="16.0dip"
                 android:layout_marginLeft="18.0dip"
                 android:layout_marginRight="16.0dip"
+                android:layout_marginStart="18.0dip"
                 android:layout_marginTop="224.0dip"
                 android:gravity="center"
                 android:textColor="#ff000000"
@@ -42,7 +44,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|left|top"
+                android:layout_gravity="center|start|top"
                 android:layout_marginLeft="16.0dip"
                 android:layout_marginRight="16.0dip"
                 android:layout_marginTop="266.0dip"
@@ -62,7 +64,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|left|top"
+                android:layout_gravity="center|start|top"
                 android:layout_marginLeft="16.0dip"
                 android:layout_marginRight="16.0dip"
                 android:layout_marginTop="266.0dip"

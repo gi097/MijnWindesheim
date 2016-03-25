@@ -14,14 +14,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
 class ScheduleHandler {
 
     public static String getListFromServer(int type) throws Exception {
-
         StringBuilder stringBuffer = new StringBuilder("");
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?ajaxCommand=getPageConfig&type=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
@@ -44,7 +43,6 @@ class ScheduleHandler {
     }
 
     public static BufferedReader getScheduleFromServer(String id, Date date, int type) throws Exception {
-
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/lessoninfodlg.do?date=" + new SimpleDateFormat("yyyyMMdd").format(date) + "&starttime=0800&endtime=2300&elemid=" + id + "&elemtype=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
@@ -74,13 +72,6 @@ class ScheduleHandler {
             list.add(cursor.getString(0));
         }
         cursor.close();
-
-        Cursor cursor1 = ApplicationLoader.scheduleDatabase.getIds();
-        List<String> list1 = new ArrayList<>();
-        while (cursor1.moveToNext()) {
-            list1.add(cursor1.getString(0));
-        }
-        cursor1.close();
 
         ApplicationLoader.scheduleDatabase.clearScheduleData(simpleDateFormat.format(date));
 

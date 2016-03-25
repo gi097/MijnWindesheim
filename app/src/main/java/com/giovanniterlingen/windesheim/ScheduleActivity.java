@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
@@ -30,7 +30,6 @@ public class ScheduleActivity extends AppCompatActivity {
     private static int type;
     private SharedPreferences sharedPreferences;
     private Calendar onPauseCalendar;
-    private ViewPager mPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +72,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private void setViewPager() {
         Calendar calendar = Calendar.getInstance();
-        mPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -117,18 +116,18 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menu.add(0, 0, 0, "Rooster wijzigen");
+        menu.add(0, 0, 0, getResources().getString(R.string.menuitem_change_schedule));
 
-        SubMenu subMenu = menu.addSubMenu(1, 1, 1, "Notificaties");
-        subMenu.add(2, 2, 2, "1 uur");
-        subMenu.add(2, 3, 3, "30 minuten");
-        subMenu.add(2, 4, 4, "15 minuten");
-        subMenu.add(2, 5, 5, "Altijd aan");
-        subMenu.add(2, 6, 6, "Uit");
+        SubMenu subMenu = menu.addSubMenu(1, 1, 1, getResources().getString(R.string.menuitem_notifications));
+        subMenu.add(2, 2, 2, getResources().getString(R.string.menuitem_one_hour));
+        subMenu.add(2, 3, 3, getResources().getString(R.string.menuitem_thirty_minutes));
+        subMenu.add(2, 4, 4, getResources().getString(R.string.menuitem_fifteen_minutes));
+        subMenu.add(2, 5, 5, getResources().getString(R.string.menuitem_always_on));
+        subMenu.add(2, 6, 6, getResources().getString(R.string.menuitem_off));
 
         subMenu.setGroupCheckable(2, true, true);
-        menu.add(0, 7, 2, "Lessen herstellen");
-        menu.add(0, 8, 3, "Over deze app");
+        menu.add(0, 7, 2, getResources().getString(R.string.menuitem_restore_lessons));
+        menu.add(0, 8, 3, getResources().getString(R.string.menuitem_about));
 
         int notification_type = sharedPreferences.getInt("notifications_type", 0);
         menu.findItem(notification_type).setChecked(true);
@@ -155,7 +154,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    showSnackbar("Notificatie-interval gewijzigd");
+                    showSnackbar(getResources().getString(R.string.notification_interval_changed));
                     return true;
                 case 5:
                     item.setChecked(true);
@@ -164,7 +163,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    showSnackbar("Permanente notificatie is ingeschakeld");
+                    showSnackbar(getResources().getString(R.string.persistent_notification));
                     return true;
                 case 6:
                     item.setChecked(true);
@@ -173,7 +172,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
-                    showSnackbar("Notificaties zijn uitgeschakeld");
+                    showSnackbar(getResources().getString(R.string.notifications_turned_off));
                     return true;
                 case 7:
                     Intent intent2 = new Intent(ScheduleActivity.this, HiddenLessonsActivity.class);
@@ -195,6 +194,7 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -243,26 +243,26 @@ public class ScheduleActivity extends AppCompatActivity {
                     || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY
                     || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY
                     || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
-                return "Vandaag";
+                return getResources().getString(R.string.today);
             }
             switch (position) {
                 case 0:
                 case 5:
-                    return "Maandag";
+                    return getResources().getString(R.string.monday);
                 case 1:
                 case 6:
-                    return "Dinsdag";
+                    return getResources().getString(R.string.tuesday);
                 case 2:
                 case 7:
-                    return "Woensdag";
+                    return getResources().getString(R.string.wednesday);
                 case 3:
                 case 8:
-                    return "Donderdag";
+                    return getResources().getString(R.string.thursday);
                 case 4:
                 case 9:
-                    return "Vrijdag";
+                    return getResources().getString(R.string.friday);
                 default:
-                    return null;
+                    return "";
             }
         }
     }

@@ -3,7 +3,6 @@ package com.giovanniterlingen.windesheim;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 /**
- * A scheduler app for Windesheim students
+ * A schedule app for Windesheim students
  *
  * @author Giovanni Terlingen
  */
-public class HiddenLessonsAdapter extends CursorAdapter {
-
-    private Activity activity;
+class HiddenLessonsAdapter extends CursorAdapter {
 
     public HiddenLessonsAdapter(Activity context, Cursor cursor) {
         super(context, cursor, 0);
-        this.activity = context;
     }
 
     @Override
@@ -31,7 +27,7 @@ public class HiddenLessonsAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(final View view, Context context, final Cursor cursor) {
         TextView lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
         TextView lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
         lessonName.setText(cursor.getString(1));
@@ -43,12 +39,11 @@ public class HiddenLessonsAdapter extends CursorAdapter {
             public void onClick(View v) {
                 cursor.moveToPosition(position);
                 ApplicationLoader.scheduleDatabase.restoreLessons(cursor.getLong(0));
-                Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.schedule_coordinator_layout), "Lessen zijn hersteld", Snackbar.LENGTH_SHORT);
-                snackbar.show();
+                HiddenLessonsActivity.showSnackbar();
                 ApplicationLoader.restartNotificationThread();
                 changeCursor(ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter());
                 if (isEmpty()) {
-                    TextView emptyTextView = (TextView) activity.findViewById(R.id.hidden_schedule_not_found);
+                    TextView emptyTextView = (TextView) view.findViewById(R.id.hidden_schedule_not_found);
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
             }
