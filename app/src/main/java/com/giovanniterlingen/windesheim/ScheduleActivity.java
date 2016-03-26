@@ -154,6 +154,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
+                    ApplicationLoader.restartNotificationThread();
                     showSnackbar(getResources().getString(R.string.notification_interval_changed));
                     return true;
                 case 5:
@@ -163,6 +164,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
+                    ApplicationLoader.restartNotificationThread();
                     showSnackbar(getResources().getString(R.string.persistent_notification));
                     return true;
                 case 6:
@@ -172,6 +174,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (ApplicationLoader.notificationThread != null) {
                         ApplicationLoader.notificationThread.clearNotification();
                     }
+                    ApplicationLoader.restartNotificationThread();
                     showSnackbar(getResources().getString(R.string.notifications_turned_off));
                     return true;
                 case 7:
