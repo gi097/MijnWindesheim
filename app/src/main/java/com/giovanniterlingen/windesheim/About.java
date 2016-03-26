@@ -1,8 +1,8 @@
 package com.giovanniterlingen.windesheim;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 /**
@@ -10,7 +10,7 @@ import android.widget.TextView;
  *
  * @author Giovanni Terlingen
  */
-public class About extends AppCompatActivity {
+public class About extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

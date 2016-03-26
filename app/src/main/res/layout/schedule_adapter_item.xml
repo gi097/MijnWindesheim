@@ -48,8 +48,8 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="2.0dip"
-                android:background="#ECECEC" />
+                android:layout_height="1.0dip"
+                android:background="?android:attr/listDivider" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

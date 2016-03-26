@@ -14,16 +14,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
+            android:name=".LaunchActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.Launch">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.INFO"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ScheduleActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChooseTypeActivity"
             android:launchMode="singleTask"
@@ -32,7 +36,7 @@
         <activity
             android:name=".About"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.About"/>
         <activity
             android:name=".HiddenLessonsActivity"
             android:label="@string/hidden_schedule_label"
