@@ -2,7 +2,7 @@
 <layer-list android:opacity="opaque"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@android:color/white" />
-    <item android:bottom="16.0dip">
+    <item android:bottom="56.0dip">
         <bitmap android:gravity="center" android:src="@drawable/product_logo_windesheim" />
     </item>
     <item android:bottom="96.0dip">
