@@ -30,6 +30,18 @@ public class HiddenLessonsActivity extends AppCompatActivity {
         });
     }
 
+    public static void showEmptyTextView() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    TextView emptyTextView = (TextView) view.findViewById(R.id.hidden_schedule_not_found);
+                    emptyTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +56,7 @@ public class HiddenLessonsActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
-            TextView emptyTextView = (TextView) findViewById(R.id.hidden_schedule_not_found);
-            emptyTextView.setVisibility(View.VISIBLE);
+            showEmptyTextView();
         }
     }
 

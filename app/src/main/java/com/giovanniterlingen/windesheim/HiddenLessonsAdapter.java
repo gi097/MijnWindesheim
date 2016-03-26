@@ -43,8 +43,7 @@ class HiddenLessonsAdapter extends CursorAdapter {
                 ApplicationLoader.restartNotificationThread();
                 changeCursor(ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter());
                 if (isEmpty()) {
-                    TextView emptyTextView = (TextView) view.findViewById(R.id.hidden_schedule_not_found);
-                    emptyTextView.setVisibility(View.VISIBLE);
+                    HiddenLessonsActivity.showEmptyTextView();
                 }
             }
         });
