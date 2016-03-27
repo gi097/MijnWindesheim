@@ -16,11 +16,13 @@
         <activity
             android:name=".LaunchActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launch">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.INFO"/>
+                <category android:name="android.intent.category.INFO" />
             </intent-filter>
         </activity>
         <activity
@@ -36,7 +38,8 @@
         <activity
             android:name=".About"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.About"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.About" />
         <activity
             android:name=".HiddenLessonsActivity"
             android:label="@string/hidden_schedule_label"

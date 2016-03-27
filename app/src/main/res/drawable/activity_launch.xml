@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list android:opacity="opaque"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
     <item android:drawable="@android:color/white" />
-    <item android:bottom="56.0dip">
-        <bitmap android:gravity="center" android:src="@drawable/product_logo_windesheim" />
-    </item>
-    <item android:bottom="96.0dip">
-        <bitmap android:gravity="bottom|center" android:src="@drawable/giovanni_logo_dark" />
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/product_logo_windesheim" />
     </item>
 </layer-list>
