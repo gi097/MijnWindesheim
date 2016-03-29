@@ -15,7 +15,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for Windesheim students
@@ -27,6 +26,7 @@ public class NotificationThread extends Thread {
     private boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
+    private Calendar calendar;
 
     @Override
     public void run() {
@@ -40,7 +40,7 @@ public class NotificationThread extends Thread {
         long currentTimeMillis;
         while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0) {
             try {
-                Calendar calendar = Calendar.getInstance();
+                calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
@@ -49,12 +49,12 @@ public class NotificationThread extends Thread {
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 }
                 if (cursor != null && cursor.getCount() == 0) {
-                    while (checkIfNeedsContinue(calendar) && notificationType == 5) {
+                    while (checkIfNeedsContinue() && notificationType == 5) {
                         createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        Thread.sleep(1000);
+                        Thread.sleep(5000);
                     }
                 } else {
-                    while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue(calendar)) {
+                    while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
                         String subjectTimeString = cursor.getString(3);
                         String[] subjectTimes = subjectTimeString.split(":");
                         Calendar subjectCalendar = Calendar.getInstance();
@@ -62,10 +62,10 @@ public class NotificationThread extends Thread {
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
                         if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount() && cursor1.moveToPosition(cursor.getPosition() + 1) && cursor1.getString(3) != null && subjectTimeString.equals(cursor1.getString(3))) {
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue(calendar)) {
+                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
                                 long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(difference);
-                                long diffHours = TimeUnit.MILLISECONDS.toHours(difference);
+                                long diffMinutes = (difference / 60000) % 60;
+                                long diffHours = (difference / 3600000) % 24;
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
@@ -103,13 +103,13 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                Thread.sleep(1000);
+                                Thread.sleep(5000);
                             }
                         } else {
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue(calendar)) {
+                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
                                 long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(difference);
-                                long diffHours = TimeUnit.MILLISECONDS.toHours(difference);
+                                long diffMinutes = (difference / 60000) % 60;
+                                long diffHours = (difference / 3600000) % 24;
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
@@ -147,14 +147,14 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                Thread.sleep(1000);
+                                Thread.sleep(5000);
                             }
                         }
                     }
                 }
-                while (checkIfNeedsContinue(calendar) && notificationType == 5) {
+                while (checkIfNeedsContinue() && notificationType == 5) {
                     createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 }
                 if (cursor != null) {
                     cursor.close();
@@ -218,7 +218,7 @@ public class NotificationThread extends Thread {
         }
     }
 
-    private boolean checkIfNeedsContinue(Calendar calendar) {
+    private boolean checkIfNeedsContinue() {
         Calendar calendar1 = Calendar.getInstance();
         return (isRunning() && calendar1.getTimeInMillis() >= calendar.getTimeInMillis() && calendar.get(Calendar.YEAR) == calendar1.get(Calendar.YEAR) &&
                 calendar.get(Calendar.DAY_OF_YEAR) == calendar1.get(Calendar.DAY_OF_YEAR));

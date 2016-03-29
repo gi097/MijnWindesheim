@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.giovanniterlingen.windesheim"
-        minSdkVersion 9
+        minSdkVersion 7
         targetSdkVersion 23
-        versionCode 39
-        versionName "1.38"
+        versionCode 40
+        versionName "1.39"
     }
     buildTypes {
         release {
