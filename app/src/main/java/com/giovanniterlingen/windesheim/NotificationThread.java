@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for Windesheim students
@@ -35,6 +36,8 @@ public class NotificationThread extends Thread {
         String componentId = preferences.getString("componentId", "");
         int type = preferences.getInt("type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String notificationText = "";
+        long currentTimeMillis;
         while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0) {
             try {
                 Calendar calendar = Calendar.getInstance();
@@ -52,7 +55,6 @@ public class NotificationThread extends Thread {
                     }
                 } else {
                     while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue(calendar)) {
-                        String notificationText = "";
                         String subjectTimeString = cursor.getString(3);
                         String[] subjectTimes = subjectTimeString.split(":");
                         Calendar subjectCalendar = Calendar.getInstance();
@@ -60,10 +62,10 @@ public class NotificationThread extends Thread {
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
                         if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount() && cursor1.moveToPosition(cursor.getPosition() + 1) && cursor1.getString(3) != null && subjectTimeString.equals(cursor1.getString(3))) {
-                            while (System.currentTimeMillis() < subjectTime && checkIfNeedsContinue(calendar)) {
-                                long difference = subjectTime - System.currentTimeMillis();
-                                long diffMinutes = (difference / (1000 * 60)) % 60;
-                                long diffHours = (difference / (1000 * 60 * 60)) % 24;
+                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue(calendar)) {
+                                long difference = subjectTime - currentTimeMillis;
+                                long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(difference);
+                                long diffHours = TimeUnit.MILLISECONDS.toHours(difference);
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
@@ -104,10 +106,10 @@ public class NotificationThread extends Thread {
                                 Thread.sleep(1000);
                             }
                         } else {
-                            while (System.currentTimeMillis() < subjectTime && checkIfNeedsContinue(calendar)) {
-                                long difference = subjectTime - System.currentTimeMillis();
-                                long diffMinutes = (difference / (1000 * 60)) % 60;
-                                long diffHours = (difference / (1000 * 60 * 60)) % 24;
+                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue(calendar)) {
+                                long difference = subjectTime - currentTimeMillis;
+                                long diffMinutes = TimeUnit.MILLISECONDS.toMinutes(difference);
+                                long diffHours = TimeUnit.MILLISECONDS.toHours(difference);
                                 if (diffHours >= 1) {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
