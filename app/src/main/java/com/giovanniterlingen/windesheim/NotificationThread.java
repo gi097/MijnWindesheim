@@ -178,7 +178,7 @@ public class NotificationThread extends Thread {
     }
 
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
-        if (notificationType != 0 && notificationType != 6 || mNotificationManager == null) {
+        if (notificationType != 0 && notificationType != 6 && mNotificationManager != null) {
             if (lastNotification.equals(notificationText)) {
                 return;
             }
