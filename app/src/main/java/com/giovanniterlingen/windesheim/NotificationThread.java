@@ -159,11 +159,11 @@ public class NotificationThread extends Thread {
                             }
                         }
                     }
-                    while (notificationType == 5 && isToday()) {
-                        createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                        synchronized (lock) {
-                            lock.wait();
-                        }
+                }
+                while (notificationType == 5 && isToday()) {
+                    createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
+                    synchronized (lock) {
+                        lock.wait();
                     }
                 }
                 if (cursor != null) {
