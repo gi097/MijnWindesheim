@@ -51,7 +51,7 @@ public class NotificationThread extends Thread {
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue() && notificationType == 5) {
                         createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        Thread.sleep(60000);
+                        sleep(60000);
                     }
                 } else {
                     while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
@@ -103,7 +103,7 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                Thread.sleep(60000);
+                                sleep(60000);
                             }
                         } else {
                             while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
@@ -147,14 +147,14 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                Thread.sleep(60000);
+                                sleep(60000);
                             }
                         }
                     }
                 }
                 while (checkIfNeedsContinue() && notificationType == 5) {
                     createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    Thread.sleep(60000);
+                    sleep(60000);
                 }
                 if (cursor != null) {
                     cursor.close();
