@@ -22,11 +22,12 @@ import java.util.Date;
  * @author Giovanni Terlingen
  */
 public class NotificationThread extends Thread {
+
     private static String lastNotification = "";
     private boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
-    private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar;
 
     @Override
     public void run() {
@@ -51,7 +52,7 @@ public class NotificationThread extends Thread {
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue() && notificationType == 5) {
                         createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        sleep(60000);
+                        sleep(30000);
                     }
                 } else {
                     while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
@@ -103,9 +104,11 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                sleep(60000);
+                                sleep(30000);
                             }
                         } else {
+                            String lessonName = cursor.getString(5);
+                            String lessonLocation = cursor.getString(6);
                             while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
                                 long difference = subjectTime - currentTimeMillis;
                                 long diffMinutes = (difference / 60000) % 60;
@@ -114,47 +117,47 @@ public class NotificationThread extends Thread {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
                                             if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_one_minute, cursor.getString(5), cursor.getString(6));
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_one_minute, lessonName);
                                             } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_multiple_minutes, cursor.getString(5), diffMinutes, cursor.getString(6));
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_multiple_minutes, lessonName, diffMinutes);
                                             }
                                         } else {
                                             if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_one_minute, cursor.getString(5), diffHours, cursor.getString(6));
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_one_minute, lessonName, diffHours);
                                             } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_multiple_minutes, cursor.getString(5), diffHours, diffMinutes, cursor.getString(6));
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_multiple_minutes, lessonName, diffHours, diffMinutes);
                                             }
                                         }
                                     } else {
                                         if (diffHours == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour, cursor.getString(5), cursor.getString(6));
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour, lessonName);
                                         } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours, cursor.getString(5), diffHours, cursor.getString(6));
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours, lessonName, diffHours);
                                         }
                                     }
                                 } else {
                                     if (diffMinutes >= 1) {
                                         if (diffMinutes == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_minute, cursor.getString(5), cursor.getString(6));
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_minute, lessonName);
                                         } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_minutes, cursor.getString(5), diffMinutes, cursor.getString(6));
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_minutes, lessonName, diffMinutes);
                                         }
                                     }
                                 }
                                 if (notificationType == 5) {
-                                    createNotification(notificationText, true, false);
+                                    createNotification(notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : ""), true, false);
                                 }
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false, true);
+                                    createNotification(notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : ""), false, true);
                                 }
-                                sleep(60000);
+                                sleep(30000);
                             }
                         }
                     }
                 }
                 while (checkIfNeedsContinue() && notificationType == 5) {
                     createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    sleep(60000);
+                    sleep(30000);
                 }
                 if (cursor != null) {
                     cursor.close();
@@ -163,7 +166,7 @@ public class NotificationThread extends Thread {
                     cursor1.close();
                 }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                interrupt();
             } catch (Exception e) {
                 createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false, false);
                 stopRunning();
