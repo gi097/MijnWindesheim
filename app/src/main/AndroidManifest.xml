@@ -58,6 +58,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".TimeReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
-
 </manifest>
