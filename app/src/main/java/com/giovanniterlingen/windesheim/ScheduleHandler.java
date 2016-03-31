@@ -68,8 +68,6 @@ class ScheduleHandler {
         String line;
 
         List<String> list = new ArrayList<>();
-        List<String> list2 = new ArrayList<>();
-
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         while (cursor.moveToNext()) {
             list.add(cursor.getString(0));
@@ -146,10 +144,7 @@ class ScheduleHandler {
                     break;
                 case 11:
                     // end reached, let's reset fields to prevent duplicates
-                    if (!list2.contains(id)) {
-                        ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
-                        list2.add(id);
-                    }
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
                     countTd = 0;
                     module = "";
                     subject = "";
