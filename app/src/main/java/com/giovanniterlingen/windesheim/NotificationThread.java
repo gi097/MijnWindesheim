@@ -23,8 +23,10 @@ import java.util.Date;
  */
 public class NotificationThread extends Thread {
 
+    private volatile boolean running = true;
+    private final Object lock = new Object();
+
     private static String lastNotification = "";
-    private boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
     private Calendar calendar;
@@ -52,7 +54,9 @@ public class NotificationThread extends Thread {
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue() && notificationType == 5) {
                         createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        sleep(30000);
+                        synchronized (lock) {
+                            lock.wait(30000);
+                        }
                     }
                 } else {
                     while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
@@ -104,7 +108,9 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                sleep(30000);
+                                synchronized (lock) {
+                                    lock.wait(30000);
+                                }
                             }
                         } else {
                             String lessonName = cursor.getString(5);
@@ -150,14 +156,18 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : ""), false, true);
                                 }
-                                sleep(30000);
+                                synchronized (lock) {
+                                    lock.wait(30000);
+                                }
                             }
                         }
                     }
                 }
                 while (checkIfNeedsContinue() && notificationType == 5) {
                     createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    sleep(30000);
+                    synchronized (lock) {
+                        lock.wait(30000);
+                    }
                 }
                 if (cursor != null) {
                     cursor.close();
@@ -167,6 +177,7 @@ public class NotificationThread extends Thread {
                 }
             } catch (InterruptedException e) {
                 interrupt();
+                stopRunning();
             } catch (Exception e) {
                 createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false, false);
                 stopRunning();
@@ -180,6 +191,8 @@ public class NotificationThread extends Thread {
 
     public void stopRunning() {
         running = false;
+        interrupt();
+        notifyThread();
     }
 
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
@@ -211,6 +224,12 @@ public class NotificationThread extends Thread {
             mNotificationManager.notify(0, mBuilder.build());
         } else {
             clearNotification();
+        }
+    }
+
+    public void notifyThread() {
+        synchronized (lock) {
+            lock.notify();
         }
     }
 

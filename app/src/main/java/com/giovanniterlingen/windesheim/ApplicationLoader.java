@@ -16,11 +16,12 @@ import android.preference.PreferenceManager;
  */
 public class ApplicationLoader extends Application {
 
+    public static ScheduleDatabase scheduleDatabase;
+    public static NotificationThread notificationThread;
+
     public static volatile Context applicationContext;
-    public static volatile ScheduleDatabase scheduleDatabase;
-    public static volatile NotificationThread notificationThread;
+    public static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;
-    private static volatile Handler applicationHandler;
 
     public static void startPushService() {
 
