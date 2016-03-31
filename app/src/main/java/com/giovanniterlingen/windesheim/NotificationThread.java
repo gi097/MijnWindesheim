@@ -24,7 +24,6 @@ import java.util.Date;
 public class NotificationThread extends Thread {
 
     private volatile boolean running = true;
-    private final Object lock = new Object();
 
     private static String lastNotification = "";
     private NotificationManager mNotificationManager;
@@ -54,8 +53,8 @@ public class NotificationThread extends Thread {
                 if (cursor != null && cursor.getCount() == 0) {
                     while (checkIfNeedsContinue() && notificationType == 5) {
                         createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        synchronized (lock) {
-                            lock.wait(30000);
+                        synchronized (this) {
+                            wait(30000);
                         }
                     }
                 } else {
@@ -108,8 +107,8 @@ public class NotificationThread extends Thread {
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
                                     createNotification(notificationText, false, true);
                                 }
-                                synchronized (lock) {
-                                    lock.wait(30000);
+                                synchronized (this) {
+                                    wait(30000);
                                 }
                             }
                         } else {
@@ -150,14 +149,15 @@ public class NotificationThread extends Thread {
                                         }
                                     }
                                 }
+                                notificationText += notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : "");
                                 if (notificationType == 5) {
-                                    createNotification(notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : ""), true, false);
+                                    createNotification(notificationText, true, false);
                                 }
                                 if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : ""), false, true);
+                                    createNotification(notificationText, false, true);
                                 }
-                                synchronized (lock) {
-                                    lock.wait(30000);
+                                synchronized (this) {
+                                    wait(30000);
                                 }
                             }
                         }
@@ -165,8 +165,8 @@ public class NotificationThread extends Thread {
                 }
                 while (checkIfNeedsContinue() && notificationType == 5) {
                     createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    synchronized (lock) {
-                        lock.wait(30000);
+                    synchronized (this) {
+                        wait(30000);
                     }
                 }
                 if (cursor != null) {
@@ -176,7 +176,6 @@ public class NotificationThread extends Thread {
                     cursor1.close();
                 }
             } catch (InterruptedException e) {
-                interrupt();
                 stopRunning();
             } catch (Exception e) {
                 createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false, false);
@@ -191,8 +190,8 @@ public class NotificationThread extends Thread {
 
     public void stopRunning() {
         running = false;
-        interrupt();
         notifyThread();
+        interrupt();
     }
 
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
@@ -228,8 +227,8 @@ public class NotificationThread extends Thread {
     }
 
     public void notifyThread() {
-        synchronized (lock) {
-            lock.notify();
+        synchronized (this) {
+            notify();
         }
     }
 

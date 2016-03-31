@@ -55,6 +55,7 @@ class ScheduleHandler {
     }
 
     public static void saveSchedule(BufferedReader reader, Date date, String componentId, int type) throws Exception {
+
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         int countTd = 0;
         String module = "";
@@ -66,8 +67,10 @@ class ScheduleHandler {
         String room = "";
         String line;
 
-        Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         List<String> list = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+
+        Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         while (cursor.moveToNext()) {
             list.add(cursor.getString(0));
         }
@@ -143,7 +146,10 @@ class ScheduleHandler {
                     break;
                 case 11:
                     // end reached, let's reset fields to prevent duplicates
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
+                    if (!list2.contains(id)) {
+                        ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
+                        list2.add(id);
+                    }
                     countTd = 0;
                     module = "";
                     subject = "";
