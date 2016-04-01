@@ -66,5 +66,8 @@
                 <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".NotificationReceiver"
+            android:enabled="true" />
     </application>
 </manifest>

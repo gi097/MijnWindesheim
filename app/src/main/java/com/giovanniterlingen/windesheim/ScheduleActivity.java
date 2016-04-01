@@ -53,8 +53,8 @@ public class ScheduleActivity extends AppCompatActivity {
             finish();
             return;
         }
-        if (sharedPreferences.getInt("notifications_type", 0) == 0) {
-            editor.putInt("notifications_type", 5);
+        if (sharedPreferences.getInt("notifications_type", 0) == 0 || sharedPreferences.getInt("notifications_type", 0) == 5) {
+            editor.putInt("notifications_type", 6);
             editor.commit();
         }
         if (ApplicationLoader.notificationThread != null && !ApplicationLoader.notificationThread.isRunning()) {
@@ -122,7 +122,6 @@ public class ScheduleActivity extends AppCompatActivity {
         subMenu.add(2, 2, 2, getResources().getString(R.string.menuitem_one_hour));
         subMenu.add(2, 3, 3, getResources().getString(R.string.menuitem_thirty_minutes));
         subMenu.add(2, 4, 4, getResources().getString(R.string.menuitem_fifteen_minutes));
-        subMenu.add(2, 5, 5, getResources().getString(R.string.menuitem_always_on));
         subMenu.add(2, 6, 6, getResources().getString(R.string.menuitem_off));
 
         subMenu.setGroupCheckable(2, true, true);
@@ -130,8 +129,9 @@ public class ScheduleActivity extends AppCompatActivity {
         menu.add(0, 8, 3, getResources().getString(R.string.menuitem_about));
 
         int notification_type = sharedPreferences.getInt("notifications_type", 0);
-        menu.findItem(notification_type).setChecked(true);
-
+        if (notification_type >= 2 && notification_type <= 6) {
+            menu.findItem(notification_type).setChecked(true);
+        }
         return true;
     }
 
@@ -156,16 +156,6 @@ public class ScheduleActivity extends AppCompatActivity {
                     }
                     ApplicationLoader.restartNotificationThread();
                     showSnackbar(getResources().getString(R.string.notification_interval_changed));
-                    return true;
-                case 5:
-                    item.setChecked(true);
-                    editor.putInt("notifications_type", id);
-                    editor.commit();
-                    if (ApplicationLoader.notificationThread != null) {
-                        ApplicationLoader.notificationThread.clearNotification();
-                    }
-                    ApplicationLoader.restartNotificationThread();
-                    showSnackbar(getResources().getString(R.string.persistent_notification));
                     return true;
                 case 6:
                     item.setChecked(true);

@@ -1,5 +1,6 @@
 package com.giovanniterlingen.windesheim;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -28,7 +29,7 @@ public class NotificationThread extends Thread {
     private static String lastNotification = "";
     private NotificationManager mNotificationManager;
     private int notificationType;
-    private Calendar calendar;
+    private PendingIntent pendingIntent;
 
     @Override
     public void run() {
@@ -39,134 +40,69 @@ public class NotificationThread extends Thread {
         int type = preferences.getInt("type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String notificationText = "";
-        long currentTimeMillis;
-        while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0) {
+        while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0 && notificationType != 6) {
             try {
-                calendar = Calendar.getInstance();
+                Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor == null || cursor.getCount() == 0) {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
-                    cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                }
-                if (cursor != null && cursor.getCount() == 0) {
-                    while (checkIfNeedsContinue() && notificationType == 5) {
-                        createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
-                        synchronized (this) {
-                            wait(30000);
+                if (cursor != null && cursor.moveToNext()) {
+                    String subjectTimeString = cursor.getString(3);
+                    String[] subjectTimes = subjectTimeString.split(":");
+                    Calendar subjectCalendar = Calendar.getInstance();
+                    subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
+                    subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
+                    subjectCalendar.set(Calendar.SECOND, 0);
+                    subjectCalendar.set(Calendar.MILLISECOND, 0);
+                    long subjectTime = subjectCalendar.getTimeInMillis();
+                    if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount() && cursor1.moveToPosition(cursor.getPosition() + 1) && cursor1.getString(3) != null && subjectTimeString.equals(cursor1.getString(3))) {
+                        if (notificationType == 2) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour);
+                            subjectTime = subjectTime - 3600000;
                         }
-                    }
-                } else {
-                    while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
-                        String subjectTimeString = cursor.getString(3);
-                        String[] subjectTimes = subjectTimeString.split(":");
-                        Calendar subjectCalendar = Calendar.getInstance();
-                        subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
-                        subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
-                        long subjectTime = subjectCalendar.getTimeInMillis();
-                        if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount() && cursor1.moveToPosition(cursor.getPosition() + 1) && cursor1.getString(3) != null && subjectTimeString.equals(cursor1.getString(3))) {
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
-                                long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = (difference / 60000) % 60;
-                                long diffHours = (difference / 3600000) % 24;
-                                if (diffHours >= 1) {
-                                    if (diffMinutes != 0) {
-                                        if (diffHours == 1) {
-                                            if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_one_minute);
-                                            } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_multiple_minutes, diffMinutes);
-                                            }
-                                        } else {
-                                            if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_one_minute, diffHours);
-                                            } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_multiple_minutes, diffHours, diffMinutes);
-                                            }
-                                        }
-                                    } else {
-                                        if (diffHours == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours, diffHours);
-                                        }
-                                    }
-                                } else {
-                                    if (diffMinutes >= 1) {
-                                        if (diffMinutes == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_minute);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_minutes, diffMinutes);
-                                        }
-                                    }
-                                }
-                                if (notificationType == 5) {
-                                    createNotification(notificationText, true, false);
-                                }
-                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false, true);
-                                }
-                                synchronized (this) {
-                                    wait(30000);
-                                }
-                            }
-                        } else {
-                            String lessonName = cursor.getString(5);
-                            String lessonLocation = cursor.getString(6);
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
-                                long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = (difference / 60000) % 60;
-                                long diffHours = (difference / 3600000) % 24;
-                                if (diffHours >= 1) {
-                                    if (diffMinutes != 0) {
-                                        if (diffHours == 1) {
-                                            if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_one_minute, lessonName);
-                                            } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_multiple_minutes, lessonName, diffMinutes);
-                                            }
-                                        } else {
-                                            if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_one_minute, lessonName, diffHours);
-                                            } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_multiple_minutes, lessonName, diffHours, diffMinutes);
-                                            }
-                                        }
-                                    } else {
-                                        if (diffHours == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour, lessonName);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours, lessonName, diffHours);
-                                        }
-                                    }
-                                } else {
-                                    if (diffMinutes >= 1) {
-                                        if (diffMinutes == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_minute, lessonName);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_minutes, lessonName, diffMinutes);
-                                        }
-                                    }
-                                }
-                                notificationText += notificationText + (!lessonLocation.equals("") ? " in " + lessonLocation : "");
-                                if (notificationType == 5) {
-                                    createNotification(notificationText, true, false);
-                                }
-                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false, true);
-                                }
-                                synchronized (this) {
-                                    wait(30000);
-                                }
+                        if (notificationType == 3) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_thirty_minutes);
+                            subjectTime = subjectTime - 1800000;
+                        }
+                        if (notificationType == 4) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_fifteen_minutes);
+                            subjectTime = subjectTime - 900000;
+                        }
+                        if (!notificationText.equals("") && System.currentTimeMillis() < subjectTime) {
+                            Intent notificationIntent = new Intent(ApplicationLoader.applicationContext, NotificationReceiver.class);
+                            notificationIntent.putExtra("notification", notificationText);
+                            pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
+                            synchronized (this) {
+                                wait();
                             }
                         }
-                    }
-                }
-                while (checkIfNeedsContinue() && notificationType == 5) {
-                    createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
-                    synchronized (this) {
-                        wait(30000);
+                    } else {
+                        String lessonName = cursor.getString(5);
+                        String lessonLocation = cursor.getString(6);
+                        if (notificationType == 2) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour, lessonName, lessonLocation);
+                            subjectTime = subjectTime - 3600000;
+                        }
+                        if (notificationType == 3) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_thirty_minutes, lessonName, lessonLocation);
+                            subjectTime = subjectTime - 1800000;
+                        }
+                        if (notificationType == 4) {
+                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_fifteen_minutes, lessonName, lessonLocation);
+                            subjectTime = subjectTime - 900000;
+                        }
+                        if (!notificationText.equals("") && System.currentTimeMillis() < subjectTime) {
+                            Intent notificationIntent = new Intent(ApplicationLoader.applicationContext, NotificationReceiver.class);
+                            notificationIntent.putExtra("notification", notificationText);
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
+                            synchronized (this) {
+                                wait();
+                            }
+                        }
                     }
                 }
                 if (cursor != null) {
@@ -176,12 +112,13 @@ public class NotificationThread extends Thread {
                     cursor1.close();
                 }
             } catch (InterruptedException e) {
-                stopRunning();
+                interrupt();
             } catch (Exception e) {
-                createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false, false);
+                createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false);
                 stopRunning();
             }
         }
+
     }
 
     public boolean isRunning() {
@@ -194,7 +131,7 @@ public class NotificationThread extends Thread {
         interrupt();
     }
 
-    private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
+    public void createNotification(String notificationText, boolean headsUp) {
         if (notificationType != 0 && notificationType != 6 && mNotificationManager != null) {
             if (lastNotification.equals(notificationText)) {
                 return;
@@ -209,8 +146,8 @@ public class NotificationThread extends Thread {
                     .setContentText(notificationText)
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.notifybar)
-                    .setOngoing(onGoing)
-                    .setAutoCancel(!onGoing)
+                    .setOngoing(false)
+                    .setAutoCancel(true)
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(notificationText))
                     .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext, R.color.colorPrimary));
@@ -239,9 +176,10 @@ public class NotificationThread extends Thread {
         }
     }
 
-    private boolean checkIfNeedsContinue() {
-        Calendar calendar1 = Calendar.getInstance();
-        return (isRunning() && calendar1.getTimeInMillis() >= calendar.getTimeInMillis() && calendar.get(Calendar.YEAR) == calendar1.get(Calendar.YEAR) &&
-                calendar.get(Calendar.DAY_OF_YEAR) == calendar1.get(Calendar.DAY_OF_YEAR));
+    public void cancelAlarm() {
+        if (pendingIntent != null) {
+            AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+        }
     }
 }

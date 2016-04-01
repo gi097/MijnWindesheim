@@ -36,7 +36,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public void clearOldScheduleData(String date) {
-        database.execSQL("DELETE FROM `subject` WHERE `date` < ?", new String[]{date});
+        database.execSQL("DELETE FROM `subject` WHERE `date` < ? AND `visible` = 1", new String[]{date});
     }
 
     public void clearLessons(long id) {

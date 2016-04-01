@@ -14,6 +14,7 @@ public class TimeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (ApplicationLoader.notificationThread != null) {
             ApplicationLoader.notificationThread.notifyThread();
+            ApplicationLoader.notificationThread.cancelAlarm();
         }
     }
 }
