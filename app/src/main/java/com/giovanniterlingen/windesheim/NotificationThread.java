@@ -26,7 +26,6 @@ public class NotificationThread extends Thread {
 
     private volatile boolean running = true;
 
-    private static String lastNotification = "";
     private NotificationManager mNotificationManager;
     private int notificationType;
     private PendingIntent pendingIntent;
@@ -133,11 +132,6 @@ public class NotificationThread extends Thread {
 
     public void createNotification(String notificationText, boolean headsUp) {
         if (notificationType != 0 && notificationType != 6 && mNotificationManager != null) {
-            if (lastNotification.equals(notificationText)) {
-                return;
-            }
-            lastNotification = notificationText;
-
             Intent intent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, (int) System.currentTimeMillis(), intent, 0);
 
@@ -170,7 +164,6 @@ public class NotificationThread extends Thread {
     }
 
     public void clearNotification() {
-        lastNotification = "";
         if (mNotificationManager != null) {
             mNotificationManager.cancel(0);
         }
