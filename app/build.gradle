@@ -8,8 +8,8 @@ android {
         applicationId "com.giovanniterlingen.windesheim"
         minSdkVersion 7
         targetSdkVersion 23
-        versionCode 52
-        versionName "1.51"
+        versionCode 54
+        versionName "1.53"
     }
     buildTypes {
         release {

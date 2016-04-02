@@ -15,9 +15,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                String notification = intent.getStringExtra("notification");
-                ApplicationLoader.notificationThread.createNotification(notification, true);
                 ApplicationLoader.notificationThread.notifyThread();
+                ApplicationLoader.notificationThread.createNotification(intent.getStringExtra("notification"), true);
             }
         });
     }

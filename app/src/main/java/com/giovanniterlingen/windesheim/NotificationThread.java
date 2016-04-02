@@ -28,7 +28,6 @@ public class NotificationThread extends Thread {
 
     private NotificationManager mNotificationManager;
     private int notificationType;
-    private PendingIntent pendingIntent;
 
     @Override
     public void run() {
@@ -45,7 +44,7 @@ public class NotificationThread extends Thread {
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor != null && cursor.moveToNext()) {
+                while (cursor != null && cursor.moveToNext()) {
                     String subjectTimeString = cursor.getString(3);
                     String[] subjectTimes = subjectTimeString.split(":");
                     Calendar subjectCalendar = Calendar.getInstance();
@@ -68,13 +67,15 @@ public class NotificationThread extends Thread {
                             subjectTime = subjectTime - 900000;
                         }
                         if (!notificationText.equals("") && System.currentTimeMillis() < subjectTime) {
+                            cancelAlarm();
                             Intent notificationIntent = new Intent(ApplicationLoader.applicationContext, NotificationReceiver.class);
                             notificationIntent.putExtra("notification", notificationText);
-                            pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                             AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
-                            synchronized (this) {
-                                wait();
+                            if (android.os.Build.VERSION.SDK_INT >= 19) {
+                                alarmManager.setExact(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
+                            } else {
+                                alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
                             }
                         }
                     } else {
@@ -93,15 +94,20 @@ public class NotificationThread extends Thread {
                             subjectTime = subjectTime - 900000;
                         }
                         if (!notificationText.equals("") && System.currentTimeMillis() < subjectTime) {
+                            cancelAlarm();
                             Intent notificationIntent = new Intent(ApplicationLoader.applicationContext, NotificationReceiver.class);
                             notificationIntent.putExtra("notification", notificationText);
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                             AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
-                            synchronized (this) {
-                                wait();
+                            if (android.os.Build.VERSION.SDK_INT >= 19) {
+                                alarmManager.setExact(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
+                            } else {
+                                alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
                             }
                         }
+                    }
+                    synchronized (this) {
+                        wait();
                     }
                 }
                 if (cursor != null) {
@@ -110,6 +116,9 @@ public class NotificationThread extends Thread {
                 if (cursor1 != null) {
                     cursor1.close();
                 }
+                synchronized (this) {
+                    wait();
+                }
             } catch (InterruptedException e) {
                 interrupt();
             } catch (Exception e) {
@@ -117,7 +126,6 @@ public class NotificationThread extends Thread {
                 stopRunning();
             }
         }
-
     }
 
     public boolean isRunning() {
@@ -170,9 +178,9 @@ public class NotificationThread extends Thread {
     }
 
     public void cancelAlarm() {
-        if (pendingIntent != null) {
-            AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.cancel(pendingIntent);
-        }
+        Intent notificationIntent = new Intent(ApplicationLoader.applicationContext, NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 }
