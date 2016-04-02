@@ -77,6 +77,9 @@ public class NotificationThread extends Thread {
                             } else {
                                 alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
                             }
+                            synchronized (this) {
+                                wait();
+                            }
                         }
                     } else {
                         String lessonName = cursor.getString(5);
@@ -104,10 +107,10 @@ public class NotificationThread extends Thread {
                             } else {
                                 alarmManager.set(AlarmManager.RTC_WAKEUP, subjectTime, pendingIntent);
                             }
+                            synchronized (this) {
+                                wait();
+                            }
                         }
-                    }
-                    synchronized (this) {
-                        wait();
                     }
                 }
                 if (cursor != null) {
@@ -136,6 +139,7 @@ public class NotificationThread extends Thread {
         running = false;
         notifyThread();
         interrupt();
+        cancelAlarm();
     }
 
     public void createNotification(String notificationText, boolean headsUp) {
