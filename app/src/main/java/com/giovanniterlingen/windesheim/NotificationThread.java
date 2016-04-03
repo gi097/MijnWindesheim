@@ -28,6 +28,7 @@ public class NotificationThread extends Thread {
 
     private NotificationManager mNotificationManager;
     private int notificationType;
+    private Calendar calendar;
 
     @Override
     public void run() {
@@ -40,9 +41,14 @@ public class NotificationThread extends Thread {
         String notificationText = "";
         while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0 && notificationType != 6) {
             try {
-                Calendar calendar = Calendar.getInstance();
+                setMidnightAlarm();
+                calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
+                if (cursor == null || cursor.getCount() == 0) {
+                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
+                    cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
+                }
                 Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 while (cursor != null && cursor.moveToNext()) {
                     String subjectTimeString = cursor.getString(3);
@@ -123,7 +129,7 @@ public class NotificationThread extends Thread {
                     wait();
                 }
             } catch (InterruptedException e) {
-                interrupt();
+                // Do nothing
             } catch (Exception e) {
                 createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.connection_problem), false);
                 stopRunning();
@@ -172,6 +178,26 @@ public class NotificationThread extends Thread {
     public void notifyThread() {
         synchronized (this) {
             notify();
+        }
+    }
+
+    public void setMidnightAlarm() {
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        calendar.add(Calendar.HOUR, 0);
+        calendar.add(Calendar.MINUTE, 0);
+        calendar.add(Calendar.SECOND, 0);
+        calendar.add(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(ApplicationLoader.applicationContext, TimeReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        if (android.os.Build.VERSION.SDK_INT >= 19) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         }
     }
 

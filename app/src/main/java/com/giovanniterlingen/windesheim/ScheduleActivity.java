@@ -144,6 +144,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 case 0:
                     Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
                     startActivity(intent);
+                    finish();
                     return true;
                 case 2:
                 case 3:
