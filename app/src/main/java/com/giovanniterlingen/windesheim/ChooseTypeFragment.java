@@ -107,7 +107,7 @@ public class ChooseTypeFragment extends Fragment {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("componentId", componentId.get(componentList.indexOf(listView.getItemAtPosition(arg2))).toString());
-                editor.putInt("notifications_type", 6);
+                editor.putInt("notifications_type", 5);
                 editor.putInt("type", type);
                 editor.commit();
 
