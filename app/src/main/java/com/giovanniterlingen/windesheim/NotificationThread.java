@@ -46,14 +46,16 @@ public class NotificationThread extends Thread {
                 calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 if (cursor == null || cursor.getCount() == 0) {
                     ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 }
+                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 if (cursor != null && cursor.getCount() == 0) {
-                    while (checkIfNeedsContinue() && notificationType == 5) {
-                        createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
+                    while (checkIfNeedsContinue()) {
+                        if (notificationType == 5) {
+                            createNotification(ApplicationLoader.applicationContext.getResources().getString(R.string.no_lessons_found), false, false);
+                        }
                         sleep(1000);
                     }
                 } else {
@@ -157,8 +159,10 @@ public class NotificationThread extends Thread {
                         }
                     }
                 }
-                while (checkIfNeedsContinue() && notificationType == 5) {
-                    createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
+                while (checkIfNeedsContinue()) {
+                    if (notificationType == 5) {
+                        createNotification(ApplicationLoader.applicationContext.getString(R.string.no_more_lessons), false, false);
+                    }
                     sleep(1000);
                 }
                 if (cursor != null) {
