@@ -140,11 +140,11 @@ class ScheduleHandler {
                     if (!les.matches(".*\\d.*")) {
                         break;
                     }
-                    id = les;
+                    id = les.replaceAll("\t", "");
                     break;
                 case 11:
                     // end reached, let's reset fields to prevent duplicates
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, (subject.equals("") ? module : subject), room, component, componentId, list.contains(id) ? 0 : 1);
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, module + (subject.equals("") ? subject : " - " + subject), room, component, componentId, list.contains(id) ? 0 : 1);
                     countTd = 0;
                     module = "";
                     subject = "";

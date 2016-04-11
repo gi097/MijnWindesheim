@@ -60,7 +60,7 @@
     <string name="multiple_lessons_one_hour_multiple_minutes">You have multiple lessons about 1 hour and %1$s minutes</string>
     <string name="multiple_lessons_one_hour_one_minute">You have multiple lessons about 1 hour and 1 minute</string>
     <string name="multiple_lessons_one_minute">You have multiple lessons about 1 minute</string>
-    <string name="no_lessons_found">No lessons found for today</string>
+    <string name="no_lessons_found">There are no lessons found for today</string>
     <string name="no_more_lessons">You have no more upcoming lessons today :)</string>
     <string name="notification_interval_changed">Notification-interval has been changed</string>
     <string name="notifications_turned_off">Notifications has been disabled</string>

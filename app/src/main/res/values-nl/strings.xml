@@ -60,7 +60,7 @@
     <string name="multiple_lessons_one_hour_multiple_minutes">Je hebt over 1 uur en %1$s minuten meerdere lessen</string>
     <string name="multiple_lessons_one_hour_one_minute">Je hebt over 1 uur en 1 minuut meerdere lessen</string>
     <string name="multiple_lessons_one_minute">Je hebt over 1 minuut meerdere lessen</string>
-    <string name="no_lessons_found">Geen lessen gevonden voor vandaag</string>
+    <string name="no_lessons_found">Er zijn geen lessen gevonden voor vandaag</string>
     <string name="no_more_lessons">Je hebt geen komende lessen meer vandaag :)</string>
     <string name="notification_interval_changed">Notificatie-interval is gewijzigd</string>
     <string name="notifications_turned_off">Notificaties zijn uitgeschakeld</string>
