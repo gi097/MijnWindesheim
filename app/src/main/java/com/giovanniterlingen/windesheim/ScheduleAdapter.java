@@ -44,7 +44,7 @@ class ScheduleAdapter extends CursorAdapter {
         lessonRoom.setText(cursor.getString(6));
         lessonComponent.setText(cursor.getString(7));
 
-        if (databaseDateStart < currentDate && databaseDateEnd > currentDate) {
+        if (databaseDateStart <= currentDate && databaseDateEnd >= currentDate) {
             String lessonTimes = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_started) + " " + cursor.getString(4);
             lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             lessonTime.setText(lessonTimes);

@@ -24,7 +24,7 @@
     <string name="hidden_schedule_label">Verborgen lessen</string>
     <string name="hidden_schedule_not_found">Geen verborgen lessen gevonden</string>
     <string name="hide">Verberg</string>
-    <string name="hide_lesson">Verberg deze les</string>
+    <string name="hide_lesson">Les verbergen</string>
     <string name="january">januari</string>
     <string name="july">juli</string>
     <string name="june">juni</string>
@@ -70,6 +70,7 @@
     <string name="pager_item_teachers">Docenten</string>
     <string name="persistent_notification">Permanente notificatie is ingeschakeld</string>
     <string name="restore">Herstellen</string>
+    <string name="save_lesson">Les opslaan in agenda</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
     <string name="september">september</string>
     <string name="thursday">Donderdag</string>

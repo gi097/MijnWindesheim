@@ -1,6 +1,7 @@
 package com.giovanniterlingen.windesheim;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -73,6 +74,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, 0, 0, getResources().getString(R.string.hide_lesson));
+        menu.add(0, 1, 1, getResources().getString(R.string.save_lesson));
     }
 
     @Override
@@ -80,6 +82,35 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         if (getUserVisibleHint()) {
             if (item.getItemId() == 0) {
                 showPromptDialog();
+                return true;
+            }
+            if (item.getItemId() == 1) {
+                Cursor cursor = ApplicationLoader.scheduleDatabase.getSingleLesson(onLongClickId);
+                if (cursor.moveToFirst()) {
+                    String[] startTimeStrings = cursor.getString(0).split(":");
+                    String[] endTimeStrings = cursor.getString(1).split(":");
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
+                    calendar.set(Calendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
+
+                    Intent intent = new Intent(Intent.ACTION_EDIT);
+                    intent.setType("vnd.android.cursor.item/event");
+                    intent.putExtra("beginTime", calendar.getTimeInMillis());
+                    intent.putExtra("allDay", false);
+
+                    calendar.setTime(date);
+                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
+                    calendar.set(Calendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
+
+                    intent.putExtra("endTime", calendar.getTimeInMillis());
+                    intent.putExtra("title", cursor.getString(2));
+                    intent.putExtra("eventLocation", cursor.getString(3));
+
+                    startActivity(intent);
+                    cursor.close();
+                }
                 return true;
             }
         }

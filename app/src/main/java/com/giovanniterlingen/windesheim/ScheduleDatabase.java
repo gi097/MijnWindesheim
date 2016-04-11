@@ -63,6 +63,10 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, MAX(`room`), `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? AND `visible` = 1 GROUP BY `component_id` ORDER BY `start`, `name`", new String[]{date, componentId});
     }
 
+    public Cursor getSingleLesson(long id) {
+        return database.rawQuery("SELECT MIN(`start`), MAX(`end`), `name`, MAX(`room`) FROM `subject` WHERE `_id` = " + id, null);
+    }
+
     public Cursor getFilteredLessonsForAdapter() {
         return database.rawQuery("SELECT `_id`, `name`, `component` FROM `subject` WHERE `visible` = 0 GROUP BY `component_id` ORDER BY `name`", null);
     }

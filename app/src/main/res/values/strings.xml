@@ -24,7 +24,7 @@
     <string name="hidden_schedule_label">Hidden lessons</string>
     <string name="hidden_schedule_not_found">No hidden lessons found</string>
     <string name="hide">Hide</string>
-    <string name="hide_lesson">Hide this lesson</string>
+    <string name="hide_lesson">Hide lesson</string>
     <string name="january">January</string>
     <string name="july">July</string>
     <string name="june">June</string>
@@ -70,6 +70,7 @@
     <string name="pager_item_teachers">Teachers</string>
     <string name="persistent_notification">Ongoing notification has been enabled</string>
     <string name="restore">Restore</string>
+    <string name="save_lesson">Save lesson to calendar</string>
     <string name="schedule_not_found">No schedule found for this day</string>
     <string name="september">September</string>
     <string name="thursday">Thursday</string>
