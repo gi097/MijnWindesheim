@@ -61,7 +61,7 @@ public class NotificationThread extends Thread {
                 } else {
                     while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
                         String subjectTimeString = cursor.getString(3);
-                        String[] subjectTimes = subjectTimeString.split(":");
+                        String[] subjectTimes = cursor.getString(3).split(":");
                         Calendar subjectCalendar = Calendar.getInstance();
                         subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));

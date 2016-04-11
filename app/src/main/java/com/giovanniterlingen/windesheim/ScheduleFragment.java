@@ -92,6 +92,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
 
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
+
                     calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
                     calendar.set(Calendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
 
@@ -100,7 +101,6 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     intent.putExtra("beginTime", calendar.getTimeInMillis());
                     intent.putExtra("allDay", false);
 
-                    calendar.setTime(date);
                     calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
                     calendar.set(Calendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
 
@@ -109,8 +109,8 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     intent.putExtra("eventLocation", cursor.getString(3));
 
                     startActivity(intent);
-                    cursor.close();
                 }
+                cursor.close();
                 return true;
             }
         }

@@ -144,7 +144,17 @@ class ScheduleHandler {
                     break;
                 case 11:
                     // end reached, let's reset fields to prevent duplicates
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, module + (subject.equals("") ? subject : " - " + subject), room, component, componentId, list.contains(id) ? 0 : 1);
+                    String lesson = "";
+                    if (module.equals("")) {
+                        lesson = subject;
+                    } else {
+                        if (subject.equals("")) {
+                            lesson = module;
+                        } else {
+                            lesson = module + " - " + subject;
+                        }
+                    }
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, lesson, room, component, componentId, list.contains(id) ? 0 : 1);
                     countTd = 0;
                     module = "";
                     subject = "";
