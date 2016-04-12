@@ -51,7 +51,7 @@ class ScheduleAdapter extends CursorAdapter {
             return;
         }
         if (databaseDateEnd < currentDate) {
-            String lessonTimes = ApplicationLoader.applicationContext.getResources().getString(R.string.finished);
+            String lessonTimes = ApplicationLoader.applicationContext.getResources().getString(R.string.finished) + " (" + cursor.getString(3) + " - " + cursor.getString(4) + ")";
             lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             lessonTime.setText(lessonTimes);
             return;

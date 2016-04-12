@@ -1,6 +1,5 @@
 package com.giovanniterlingen.windesheim;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -17,7 +16,7 @@ import android.widget.TextView;
  */
 class HiddenLessonsAdapter extends CursorAdapter {
 
-    public HiddenLessonsAdapter(Activity context, Cursor cursor) {
+    public HiddenLessonsAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }
 

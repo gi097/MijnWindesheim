@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private static int type;
     private SharedPreferences sharedPreferences;
     private Calendar onPauseCalendar;
+    private static View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +66,11 @@ public class ScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_schedule);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        view = findViewById(R.id.schedule_coordinator_layout);
 
         setViewPager();
     }
@@ -193,9 +198,16 @@ public class ScheduleActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showSnackbar(String text) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.schedule_coordinator_layout), text, Snackbar.LENGTH_SHORT);
-        snackbar.show();
+    public static void showSnackbar(final String text) {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
+            }
+        });
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

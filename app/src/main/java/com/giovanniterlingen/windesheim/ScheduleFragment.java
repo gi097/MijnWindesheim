@@ -1,5 +1,6 @@
 package com.giovanniterlingen.windesheim;
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -108,7 +110,11 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                     intent.putExtra("title", cursor.getString(2));
                     intent.putExtra("eventLocation", cursor.getString(3));
 
-                    startActivity(intent);
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        ScheduleActivity.showSnackbar(getResources().getString(R.string.no_calendar_found));
+                    }
                 }
                 cursor.close();
                 return true;
@@ -175,7 +181,10 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                 case 11:
                     monthString = getResources().getString(R.string.december);
             }
-            ((ScheduleActivity) getActivity()).getSupportActionBar().setTitle(simpleDateFormat.format(date) + " " + monthString);
+            ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
+            if (toolbar != null) {
+                toolbar.setTitle(simpleDateFormat.format(date) + " " + monthString);
+            }
             if (getListAdapter() == null) {
                 new ScheduleFetcher(true, true).execute();
             } else {
