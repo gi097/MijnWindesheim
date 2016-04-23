@@ -13,8 +13,8 @@ import android.os.Handler;
 public class LaunchActivity extends Activity {
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -22,6 +22,6 @@ public class LaunchActivity extends Activity {
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 1000);
     }
 }
