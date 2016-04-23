@@ -8,11 +8,11 @@
     <string name="august">augustus</string>
     <string name="cancel">Annuleren</string>
     <string name="choose_class">Kies je klas</string>
-    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je standaard rooster in te stellen.</string>
+    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
     <string name="choose_class_hint">Typ hier je klas</string>
-    <string name="choose_teacher">Kies je naam of docent-code</string>
-    <string name="choose_teacher_description">Je kunt hier je naam of docent-code zoeken en daar vervolgens op klikken om deze als je standaard rooster in te stellen.</string>
-    <string name="choose_teacher_hint">Typ hier je naam of docent-code</string>
+    <string name="choose_teacher">Kies je naam of docentcode</string>
+    <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
+    <string name="choose_teacher_hint">Typ hier je naam of docentcode</string>
     <string name="confirmation">Weet je het zeker?</string>
     <string name="connect">Verbinden</string>
     <string name="connection_problem">Probleem met het ophalen van de gegevens</string>
@@ -20,7 +20,7 @@
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
     <string name="february">februari</string>
     <string name="finished">AFGELOPEN</string>
-    <string name="friday">Vrijdag</string>
+    <string name="friday">vrijdag</string>
     <string name="hidden_schedule_label">Verborgen lessen</string>
     <string name="hidden_schedule_not_found">Geen verborgen lessen gevonden</string>
     <string name="hide">Verberg</string>
@@ -51,7 +51,7 @@
     <string name="menuitem_one_hour">1 uur</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
     <string name="menuitem_thirty_minutes">30 minuten</string>
-    <string name="monday">Maandag</string>
+    <string name="monday">maandag</string>
     <string name="multiple_lessons_multiple_hours">Je hebt over %1$s uur meerdere lessen</string>
     <string name="multiple_lessons_multiple_hours_multiple_minutes">Je hebt over %1$s uur en %2$s minuten meerdere lessen</string>
     <string name="multiple_lessons_multiple_hours_one_minute">Je hebt over %1$s uur en 1 minuut meerdere lessen</string>
@@ -74,8 +74,8 @@
     <string name="save_lesson">Les opslaan in agenda</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
     <string name="september">september</string>
-    <string name="thursday">Donderdag</string>
+    <string name="thursday">donderdag</string>
     <string name="today">Vandaag</string>
-    <string name="tuesday">Dinsdag</string>
-    <string name="wednesday">Woensdag</string>
+    <string name="tuesday">dinsdag</string>
+    <string name="wednesday">woensdag</string>
 </resources>
