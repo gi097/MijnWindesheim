@@ -48,12 +48,7 @@ public class ChooseTypeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         context = getActivity();
         int position = getArguments().getInt("position");
-        if (position == 0) {
-            type = 1;
-        }
-        if (position == 1) {
-            type = 2;
-        }
+        type = position + 1;
     }
 
     @Override
@@ -79,6 +74,11 @@ public class ChooseTypeFragment extends Fragment {
             chooseTextview.setText(getResources().getString(R.string.choose_teacher));
             descriptionTextview.setText(getResources().getString(R.string.choose_teacher_description));
             dataSearch.setHint(getResources().getString(R.string.choose_teacher_hint));
+        }
+        if (type == 3) {
+            chooseTextview.setText(getResources().getString(R.string.choose_subject));
+            descriptionTextview.setText(getResources().getString(R.string.choose_subject_description));
+            dataSearch.setHint(getResources().getString(R.string.choose_subject_hint));
         }
         listView = (ListView) view.findViewById(R.id.listview);
         spinner = (ProgressBar) view.findViewById(R.id.progress_bar);

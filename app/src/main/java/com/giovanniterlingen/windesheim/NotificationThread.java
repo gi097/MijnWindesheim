@@ -38,7 +38,7 @@ public class NotificationThread extends Thread {
         notificationType = preferences.getInt("notifications_type", 0);
         String componentId = preferences.getString("componentId", "");
         int type = preferences.getInt("type", 0);
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         String notificationText = "";
         long currentTimeMillis;
         while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0 && notificationType != 6) {
@@ -46,8 +46,8 @@ public class NotificationThread extends Thread {
                 calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
-                if (cursor == null || cursor.getCount() == 0) {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
+                if (cursor == null || !ApplicationLoader.scheduleDatabase.containsWeek(date)) {
+                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId);
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
                 }
                 Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);

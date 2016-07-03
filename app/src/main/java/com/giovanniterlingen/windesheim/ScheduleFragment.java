@@ -49,7 +49,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         componentId = getArguments().getString("componentId");
         type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
 
         Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
         if (scheduleDay != null && scheduleDay.getCount() > 0) {
@@ -184,8 +184,11 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
             if (toolbar != null) {
                 toolbar.setTitle(simpleDateFormat.format(date) + " " + monthString);
+                // ugly workaround to fix toolbar title truncation
+                toolbar.setDisplayHomeAsUpEnabled(true);
+                toolbar.setDisplayHomeAsUpEnabled(false);
             }
-            if (getListAdapter() == null) {
+            if (!ApplicationLoader.scheduleDatabase.containsWeek(date)) {
                 new ScheduleFetcher(true, true).execute();
             } else {
                 new ScheduleFetcher(false, true).execute();
@@ -306,7 +309,7 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
         protected Void doInBackground(Void... param) {
             if (fetchData) {
                 try {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, type);
+                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId);
                 } catch (Exception e) {
                     alertConnectionProblem();
                 }

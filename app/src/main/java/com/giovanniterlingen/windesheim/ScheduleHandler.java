@@ -2,6 +2,9 @@ package com.giovanniterlingen.windesheim;
 
 import android.database.Cursor;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,11 +13,13 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 /**
  * A schedule app for Windesheim students
+ * Damn this JSON structure was hard to analyze...
  *
  * @author Giovanni Terlingen
  */
@@ -42,31 +47,27 @@ class ScheduleHandler {
 
     }
 
-    public static BufferedReader getScheduleFromServer(String id, Date date, int type) throws Exception {
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/lessoninfodlg.do?date=" + new SimpleDateFormat("yyyyMMdd").format(date) + "&starttime=0800&endtime=2300&elemid=" + id + "&elemtype=" + type);
+    public static JSONObject getScheduleFromServer(String id, Date date, int type) throws Exception {
+        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id + "&date=" + new SimpleDateFormat("yyyyMMdd").format(date));
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
         connection.setDoInput(true);
         connection.connect();
+
+        StringBuilder stringBuffer = new StringBuilder("");
         InputStream inputStream = connection.getInputStream();
-        return new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuffer.append(line);
+        }
+        return new JSONObject(stringBuffer.toString());
     }
 
-    public static void saveSchedule(BufferedReader reader, Date date, String componentId, int type) throws Exception {
-
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        int countTd = 0;
-        String module = "";
-        String subject = "";
-        String id = "";
-        String start = "";
-        String end = "";
-        String component = "";
-        String room = "";
-        String line;
-
+    public static void saveSchedule(JSONObject jsonObject, Date date, String componentId) throws Exception {
+        // get the user filtered lessons to exclude them during fetch
         List<String> list = new ArrayList<>();
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         while (cursor.moveToNext()) {
@@ -74,99 +75,65 @@ class ScheduleHandler {
         }
         cursor.close();
 
-        ApplicationLoader.scheduleDatabase.clearScheduleData(simpleDateFormat.format(date));
+        // delete old schedule data
+        ApplicationLoader.scheduleDatabase.clearScheduleData(date);
 
-        while ((line = reader.readLine()) != null) {
-            if (line.contains("<td>")) {
-                countTd++;
+        // init required global values
+        String component = "";
+        String classRoom = "";
+        String module = "";
+
+        // start parsing json
+        JSONObject resultData = jsonObject.getJSONObject("result").getJSONObject("data");
+        JSONArray data = resultData.getJSONObject("elementPeriods").getJSONArray(componentId);
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject lessonObject = data.getJSONObject(i);
+            JSONArray lessonElements = lessonObject.getJSONArray("elements");
+            for (int j = 0; j < lessonElements.length(); j++) {
+                JSONObject elementObject = lessonElements.getJSONObject(j);
+                String elementId = elementObject.getString("id");
+                String elementType = elementObject.getString("type");
+                JSONArray elements = resultData.getJSONArray("elements");
+                for (int k = 0; k < elements.length(); k++) {
+                    JSONObject elementsObject = elements.getJSONObject(k);
+                    if (elementsObject.getString("id").equals(elementId) &&
+                            elementsObject.getString("type").equals(elementType)) {
+                        if (elementType.equals("1")) {
+                            component = elementsObject.getString("name");
+                        }
+                        if (elementType.equals("2")) {
+                            component = elementsObject.getString("longName");
+                        }
+                        if (elementType.equals("3")) {
+                            module = elementsObject.getString("name");
+                        }
+                        if (elementType.equals("4")) {
+                            classRoom = elementsObject.getString("name");
+                        }
+                    }
+                }
             }
-            String les = line.replace("<td>", "").replace("</td>", "");
-            switch (countTd) {
-                case 1:
-                    if (line.contains("<tooltip>")) {
-                        module = line.replaceAll("\\s+", "").replace("<tooltip>", "").replace("</tooltip>", "");
-                    }
-                    break;
-                case 2:
-                    if (line.contains("</span>")) {
-                        if (les.split("</span>")[0].split("\">").length != 2 && type == 2) {
-                            component = "";
-                            break;
-                        } else {
-                            if (type == 2) {
-                                component = les.split("</span>")[0].split("\">")[1];
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                case 4:
-                    if (line.contains("</span>")) {
-                        if (les.split("</span>")[0].split("\">").length != 2 && type == 1) {
-                            component = "";
-                            break;
-                        } else {
-                            if (type == 1) {
-                                component = les.split("</span>")[0].split("\">")[1];
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                case 5:
-                    if (!les.contains(".")) {
-                        break;
-                    }
-                    room = les.replaceAll("\t", "");
-                    break;
-                case 6:
-                    subject = les;
-                    break;
-                case 7:
-                    String[] startSplit = les.split(":");
-                    if (startSplit[0].length() == 1) {
-                        les = 0 + les;
-                    }
-                    start = les;
-                    break;
-                case 8:
-                    String[] endSplit = les.split(":");
-                    if (endSplit[0].length() == 1) {
-                        les = 0 + les;
-                    }
-                    end = les;
-                    break;
-                case 9:
-                    if (!les.matches(".*\\d.*")) {
-                        break;
-                    }
-                    id = les.replaceAll("\t", "");
-                    break;
-                case 11:
-                    // end reached, let's reset fields to prevent duplicates
-                    String lesson = "";
-                    if (module.equals("")) {
-                        lesson = subject;
-                    } else {
-                        if (subject.equals("")) {
-                            lesson = module;
-                        } else {
-                            lesson = module + " - " + subject;
-                        }
-                    }
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(id, simpleDateFormat.format(date), start, end, lesson, room, component, componentId, list.contains(id) ? 0 : 1);
-                    countTd = 0;
-                    module = "";
-                    subject = "";
-                    id = "";
-                    start = "";
-                    end = "";
-                    component = "";
-                    room = "";
-                    break;
-                default:
-                    break;
+            String subject = lessonObject.getString("lessonText");
+            if (module.equals("")) {
+                module = subject;
+            } else if (!subject.equals("")) {
+                module += " - " + subject;
             }
+            // save it and reset fields
+            ApplicationLoader.scheduleDatabase.saveScheduleData(lessonObject.getString("lessonId"), lessonObject.getString("date"), parseTime(lessonObject.getString("startTime")), parseTime(lessonObject.getString("endTime")), module, classRoom, component, componentId, list.contains(lessonObject.getString("lessonId")) ? 0 : 1);
+            component = "";
+            classRoom = "";
+            module = "";
         }
+    }
+
+    private static String parseTime(String time) {
+        // pretend the time is 830; it must be 08:30 in order to sort it in SQLite
+        if (time.length() == 3) {
+            time = "0" + time;
+        }
+        String hours = time.substring(0, 2);
+        String minutes = time.substring(2);
+        return hours + ":" + minutes;
     }
 }

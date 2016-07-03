@@ -10,6 +10,9 @@
     <string name="choose_class">Choose your class</string>
     <string name="choose_class_description">Here you can search your class, after that click on it to set it as your default schedule.</string>
     <string name="choose_class_hint">Enter your class</string>
+    <string name="choose_subject">Choose your subject</string>
+    <string name="choose_subject_description">Here you can search your desired subject, after that click on it to set it as your default schedule.</string>
+    <string name="choose_subject_hint">Enter your subject</string>
     <string name="choose_teacher">Choose your name or teacher-code</string>
     <string name="choose_teacher_description">Here you can search your name or teacher-code, after that click on it to set it as your default schedule.</string>
     <string name="choose_teacher_hint">Enter your name or teacher-code</string>
@@ -29,8 +32,8 @@
     <string name="july">July</string>
     <string name="june">June</string>
     <string name="lesson_hidden">Lesson has been hidden</string>
-    <string name="lesson_multiple_hours">You have %1$s about %2$s hours in %3$s</string>
-    <string name="lesson_multiple_hours_multiple_minutes">You have %1$s about %2$s hours and %3$s minutes in %4$s</string>
+    <string name="lesson_multiple_hours">You have %1$s in about %2$s hours in %3$s</string>
+    <string name="lesson_multiple_hours_multiple_minutes">You have %1$s in about %2$s hours and %3$s minutes in %4$s</string>
     <string name="lesson_multiple_hours_one_minute">You have %1$s in about %2$s hours and 1 minute in %3$s</string>
     <string name="lesson_multiple_minutes">You have %1$s in about %2$s minutes in %3$s</string>
     <string name="lesson_one_hour">You have %1$s in about 1 hour in %2$s</string>
@@ -38,7 +41,7 @@
     <string name="lesson_one_hour_one_minute">You have %1$s in about 1 hour and 1 minute in %2$s</string>
     <string name="lesson_one_minute">You have %1$s in about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
-    <string name="lesson_started">STARTED, ENDS AT</string>
+    <string name="lesson_started">STARTED</string>
     <string name="logo_description">Windesheim logo</string>
     <string name="march">March</string>
     <string name="may">May</string>
@@ -68,8 +71,11 @@
     <string name="november">November</string>
     <string name="october">October</string>
     <string name="pager_item_classes">Classes</string>
+    <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>
     <string name="persistent_notification">Ongoing notification has been enabled</string>
+    <string name="rate">RATE</string>
+    <string name="rate_dialog">Give me a 5-star rating :)</string>
     <string name="restore">Restore</string>
     <string name="save_lesson">Save lesson to calendar</string>
     <string name="schedule_not_found">No schedule found for this day</string>

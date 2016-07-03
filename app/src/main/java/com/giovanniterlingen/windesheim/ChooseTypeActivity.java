@@ -51,7 +51,7 @@ public class ChooseTypeActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -61,6 +61,8 @@ public class ChooseTypeActivity extends AppCompatActivity {
                     return getResources().getString(R.string.pager_item_classes);
                 case 1:
                     return getResources().getString(R.string.pager_item_teachers);
+                case 2:
+                    return getResources().getString(R.string.pager_item_subjects);
                 default:
                     return "";
             }

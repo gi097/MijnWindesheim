@@ -10,6 +10,9 @@
     <string name="choose_class">Kies je klas</string>
     <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
     <string name="choose_class_hint">Typ hier je klas</string>
+    <string name="choose_subject">Kies je vak</string>
+    <string name="choose_subject_description">Je kunt hier je gewenste vak zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
+    <string name="choose_subject_hint">Typ hier je vak</string>
     <string name="choose_teacher">Kies je naam of docentcode</string>
     <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
     <string name="choose_teacher_hint">Typ hier je naam of docentcode</string>
@@ -38,7 +41,7 @@
     <string name="lesson_one_hour_one_minute">Je hebt over 1 uur en 1 minuut %1$s in %2$s</string>
     <string name="lesson_one_minute">Je hebt over 1 minuut %1$s in %2$s</string>
     <string name="lesson_restored">Les is hersteld</string>
-    <string name="lesson_started">BEGONNEN, AFGELOPEN OM</string>
+    <string name="lesson_started">BEGONNEN</string>
     <string name="logo_description">Windesheim logo</string>
     <string name="march">maart</string>
     <string name="may">mei</string>
@@ -68,8 +71,11 @@
     <string name="november">november</string>
     <string name="october">oktober</string>
     <string name="pager_item_classes">Klassen</string>
+    <string name="pager_item_subjects">Vakken</string>
     <string name="pager_item_teachers">Docenten</string>
     <string name="persistent_notification">Permanente notificatie is ingeschakeld</string>
+    <string name="rate">BEOORDELEN</string>
+    <string name="rate_dialog">Geef me een 5-sterren review :)</string>
     <string name="restore">Herstellen</string>
     <string name="save_lesson">Les opslaan in agenda</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>

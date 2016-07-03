@@ -1,7 +1,9 @@
 package com.giovanniterlingen.windesheim;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -12,6 +14,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -30,7 +33,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private static String componentId;
     private static int type;
     private SharedPreferences sharedPreferences;
-    private Calendar onPauseCalendar;
+    private long onPauseMillis;
     private static View view;
 
     @Override
@@ -73,6 +76,8 @@ public class ScheduleActivity extends AppCompatActivity {
         view = findViewById(R.id.schedule_coordinator_layout);
 
         setViewPager();
+
+        showRateSnackbar();
     }
 
     private void setViewPager() {
@@ -100,7 +105,7 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        onPauseCalendar = Calendar.getInstance();
+        onPauseMillis = System.currentTimeMillis();
     }
 
     @Override
@@ -110,10 +115,7 @@ public class ScheduleActivity extends AppCompatActivity {
         if (ApplicationLoader.notificationThread != null && !ApplicationLoader.notificationThread.isRunning()) {
             ApplicationLoader.restartNotificationThread();
         }
-        Calendar calendar = Calendar.getInstance();
-        if (onPauseCalendar != null && calendar.getTimeInMillis() < onPauseCalendar.getTimeInMillis()
-                || onPauseCalendar != null && onPauseCalendar.get(Calendar.YEAR) != calendar.get(Calendar.YEAR)
-                || onPauseCalendar != null && onPauseCalendar.get(Calendar.DAY_OF_YEAR) != calendar.get(Calendar.DAY_OF_YEAR)) {
+        if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
         }
     }
@@ -210,6 +212,26 @@ public class ScheduleActivity extends AppCompatActivity {
         });
     }
 
+    public void showRateSnackbar() {
+        if (view != null) {
+            Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.rate_dialog), Snackbar.LENGTH_LONG);
+            snackbar.setAction(getResources().getString(R.string.rate), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String appName = ApplicationLoader.applicationContext.getPackageName();
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=" + appName)));
+                    } catch (ActivityNotFoundException e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?id=" + appName)));
+                    }
+                }
+            });
+            snackbar.show();
+        }
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
         public ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -228,7 +250,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
             }
             // Clear old cached schedule data
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
             ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(calendar.getTime()));
 
             if (position <= 4) {
