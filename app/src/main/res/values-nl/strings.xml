@@ -75,7 +75,7 @@
     <string name="pager_item_teachers">Docenten</string>
     <string name="persistent_notification">Permanente notificatie is ingeschakeld</string>
     <string name="rate">BEOORDELEN</string>
-    <string name="rate_dialog">Geef me een 5-sterren review :)</string>
+    <string name="rate_dialog">Geef me een review :)</string>
     <string name="restore">Herstellen</string>
     <string name="save_lesson">Les opslaan in agenda</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
