@@ -10,10 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -63,6 +61,7 @@ class ScheduleHandler {
         while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
         }
+        ApplicationLoader.scheduleDatabase.addFetched(date);
         return new JSONObject(stringBuffer.toString());
     }
 

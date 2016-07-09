@@ -20,7 +20,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private static SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
-        super(context, "schedulestore.db", null, 4);
+        super(context, "schedulestore.db", null, 5);
     }
 
     public void open() {
@@ -30,10 +30,11 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
     }
 
     public void saveScheduleData(String id, String date, String start, String end, String name, String room, String component, String componentId, int visible) {
-        database.execSQL("INSERT INTO `subject` (`component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id`, `visible`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, " + visible + ")", new String[]{id, date, start, end, name, room, component, componentId});
+        database.execSQL("INSERT INTO `subject` (`component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id`, `visible`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", new String[]{id, date, start, end, name, room, component, componentId, Integer.toString(visible)});
     }
 
     public void clearScheduleData(Date date) {
@@ -46,7 +47,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public void clearLessons(long id) {
-        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = " + id, null);
+        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = ?", new String[]{Long.toString(id)});
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 database.execSQL("UPDATE `subject` SET `visible` = 0 WHERE `component_id` = ? AND `visible` = 1", new String[]{cursor.getString(0)});
@@ -56,7 +57,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public void restoreLessons(long id) {
-        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = " + id, null);
+        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = ?", new String[]{(Long.toString(id))});
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 database.execSQL("UPDATE `subject` SET `visible` = 1 WHERE `component_id` = ? AND `visible` = 0", new String[]{cursor.getString(0)});
@@ -70,7 +71,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     public Cursor getSingleLesson(long id) {
-        return database.rawQuery("SELECT MIN(`start`), MAX(`end`), `name`, MAX(`room`) FROM `subject` WHERE `_id` = " + id, null);
+        return database.rawQuery("SELECT MIN(`start`), MAX(`end`), `name`, MAX(`room`) FROM `subject` WHERE `_id` = ?", new String[]{Long.toString(id)});
     }
 
     public Cursor getFilteredLessonsForAdapter() {
@@ -89,21 +90,43 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         return bool;
     }
 
+    public boolean isFetched(Date date) {
+        String[] weekDates = getWeekDates(date);
+        Cursor cursor = database.rawQuery("SELECT `date` FROM `fetched_dates` WHERE `date` >= ? AND `date` <= ?", new String[]{weekDates[0], weekDates[1]});
+        boolean bool = cursor.getCount() > 0;
+        cursor.close();
+        return bool;
+    }
+
+    public void addFetched(Date date) {
+        database.execSQL("INSERT OR IGNORE INTO `fetched_dates` VALUES (?)", new String[]{parseDate(date)});
+    }
+
+    public void deleteOldFetched(String date) {
+        database.execSQL("DELETE FROM `fetched_dates` WHERE `date` < ?", new String[]{date});
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         database.execSQL("DROP TABLE `subject`");
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER DEFAULT 1)");
+        // database.execSQL("DROP TABLE `fetched_dates`");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
+    }
+
+    private String parseDate(Date date) {
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        return simpleDateFormat.format(date);
     }
 
     private String[] getWeekDates(Date date) {
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - calendar.getFirstDayOfWeek();
         calendar.add(Calendar.DAY_OF_MONTH, -dayOfWeek);
-        String lowestDate = simpleDateFormat.format(calendar.getTime());
+        String lowestDate = parseDate(calendar.getTime());
         calendar.add(Calendar.DAY_OF_MONTH, 6);
-        String highestDate = simpleDateFormat.format(calendar.getTime());
+        String highestDate = parseDate(calendar.getTime());
         return new String[]{lowestDate, highestDate};
     }
 

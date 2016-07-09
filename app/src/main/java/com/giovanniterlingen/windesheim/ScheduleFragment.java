@@ -39,7 +39,6 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     private DateFormat simpleDateFormat;
     private SwipeRefreshLayout swipeRefreshLayout;
     private long onLongClickId;
-    private boolean isShowing = false;
     private TextView emptyTextView;
     private ProgressBar spinner;
 
@@ -188,7 +187,8 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                 toolbar.setDisplayHomeAsUpEnabled(true);
                 toolbar.setDisplayHomeAsUpEnabled(false);
             }
-            if (!ApplicationLoader.scheduleDatabase.containsWeek(date)) {
+            if (!ApplicationLoader.scheduleDatabase.containsWeek(date) &&
+                    !ApplicationLoader.scheduleDatabase.isFetched(date)) {
                 new ScheduleFetcher(true, true).execute();
             } else {
                 new ScheduleFetcher(false, true).execute();
@@ -212,10 +212,9 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     }
 
     private void alertConnectionProblem() {
-        if (isShowing) {
+        if (!getUserVisibleHint()) {
             return;
         }
-        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -228,14 +227,12 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                     public void onClick(DialogInterface dialog, int id) {
                                         new ScheduleFetcher(true, false).execute();
                                         dialog.cancel();
-                                        isShowing = false;
                                     }
                                 })
                         .setNegativeButton(getResources().getString(R.string.cancel),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
-                                        isShowing = false;
                                     }
                                 }).show();
             }
@@ -243,10 +240,9 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
     }
 
     private void showPromptDialog() {
-        if (isShowing) {
+        if (!getUserVisibleHint()) {
             return;
         }
-        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -263,13 +259,11 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
                                         snackbar.show();
                                         ApplicationLoader.restartNotificationThread();
                                         dialog.cancel();
-                                        isShowing = false;
                                     }
                                 })
                         .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
-                                isShowing = false;
                             }
                         }).show();
             }

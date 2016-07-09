@@ -41,7 +41,6 @@ public class ChooseTypeFragment extends Fragment {
     private int type;
     private Context context;
     private ProgressBar spinner;
-    private boolean isShowing = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,10 +137,9 @@ public class ChooseTypeFragment extends Fragment {
     }
 
     private void alertConnectionProblem() {
-        if (isShowing || !getUserVisibleHint()) {
+        if (!getUserVisibleHint()) {
             return;
         }
-        isShowing = true;
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -154,13 +152,11 @@ public class ChooseTypeFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int id) {
                                         new ComponentFetcher().execute();
                                         dialog.cancel();
-                                        isShowing = false;
                                     }
                                 })
                         .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
-                                isShowing = false;
                             }
                         }).show();
             }

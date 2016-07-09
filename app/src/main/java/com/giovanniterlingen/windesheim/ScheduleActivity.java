@@ -22,6 +22,7 @@ import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A schedule app for Windesheim students
@@ -240,6 +241,13 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
+
+            // Clear old cached schedule data
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+            ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(new Date()));
+            ApplicationLoader.scheduleDatabase.deleteOldFetched(simpleDateFormat.format(new Date()));
+
+            // Set correct schedule day
             Calendar calendar = Calendar.getInstance();
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
                 calendar.add(Calendar.DATE, 2);
@@ -249,10 +257,6 @@ public class ScheduleActivity extends AppCompatActivity {
             } else {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
             }
-            // Clear old cached schedule data
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-            ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(calendar.getTime()));
-
             if (position <= 4) {
                 calendar.add(Calendar.DATE, position);
             } else {
