@@ -24,9 +24,8 @@ import java.util.Date;
  */
 public class NotificationThread extends Thread {
 
-    private volatile boolean running = true;
-
     private static String lastNotification = "";
+    private volatile boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
     private Calendar calendar = Calendar.getInstance();

@@ -22,7 +22,6 @@ import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A schedule app for Windesheim students
@@ -33,9 +32,21 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private static String componentId;
     private static int type;
+    private static View view;
     private SharedPreferences sharedPreferences;
     private long onPauseMillis;
-    private static View view;
+
+    public static void showSnackbar(final String text) {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,18 +212,6 @@ public class ScheduleActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void showSnackbar(final String text) {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
-            }
-        });
-    }
-
     public void showRateSnackbar() {
         if (view != null) {
             Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.rate_dialog), Snackbar.LENGTH_LONG);
@@ -241,21 +240,20 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-
-            // Clear old cached schedule data
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-            ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(new Date()));
-            ApplicationLoader.scheduleDatabase.deleteOldFetched(simpleDateFormat.format(new Date()));
-
-            // Set correct schedule day
             Calendar calendar = Calendar.getInstance();
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.deleteOldFetched(simpleDateFormat.format(calendar.getTime()));
                 calendar.add(Calendar.DATE, 2);
-            }
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.deleteOldFetched(simpleDateFormat.format(calendar.getTime()));
                 calendar.add(Calendar.DATE, 1);
             } else {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.deleteOldFetched(simpleDateFormat.format(calendar.getTime()));
             }
             if (position <= 4) {
                 calendar.add(Calendar.DATE, position);
