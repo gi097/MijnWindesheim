@@ -6,12 +6,16 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -35,6 +39,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private static View view;
     private SharedPreferences sharedPreferences;
     private long onPauseMillis;
+    private DrawerLayout mDrawerLayout;
 
     public static void showSnackbar(final String text) {
         ApplicationLoader.runOnUIThread(new Runnable() {
@@ -85,11 +90,53 @@ public class ScheduleActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+
         view = findViewById(R.id.schedule_coordinator_layout);
 
         setViewPager();
 
         showRateSnackbar();
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView
+                .setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        switch (menuItem.getItemId()) {
+                            case R.id.webmail:
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse("https://outlook.com/windesheim.nl"));
+                                startActivity(intent);
+                                return true;
+                            case R.id.about:
+                                Intent intent1 = new Intent(ApplicationLoader.applicationContext,
+                                        About.class);
+                                startActivity(intent1);
+                                return true;
+                            case R.id.support_development:
+                                Intent intent2 = new Intent(Intent.ACTION_VIEW);
+                                intent2.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=gogio%40live%2enl&lc=US&item_name=Donate%20to%20Giovanni&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"));
+                                startActivity(intent2);
+                                return true;
+                        }
+                        return true;
+                    }
+                });
     }
 
     private void setViewPager() {
@@ -146,7 +193,6 @@ public class ScheduleActivity extends AppCompatActivity {
 
         subMenu.setGroupCheckable(2, true, true);
         menu.add(0, 7, 2, getResources().getString(R.string.menuitem_restore_lessons));
-        menu.add(0, 8, 3, getResources().getString(R.string.menuitem_about));
 
         int notification_type = sharedPreferences.getInt("notifications_type", 0);
         if (notification_type >= 2 && notification_type <= 6) {
@@ -161,6 +207,9 @@ public class ScheduleActivity extends AppCompatActivity {
         if (sharedPreferences != null && type != 0) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             switch (id) {
+                case android.R.id.home:
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    return true;
                 case 0:
                     Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
                     startActivity(intent);
@@ -202,17 +251,12 @@ public class ScheduleActivity extends AppCompatActivity {
                     Intent intent2 = new Intent(ScheduleActivity.this, HiddenLessonsActivity.class);
                     startActivity(intent2);
                     return true;
-                case 8:
-                    Intent intent3 = new Intent(ScheduleActivity.this, About.class);
-                    startActivity(intent3);
-                    return true;
-
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void showRateSnackbar() {
+    private void showRateSnackbar() {
         if (view != null) {
             Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.rate_dialog), Snackbar.LENGTH_LONG);
             snackbar.setAction(getResources().getString(R.string.rate), new View.OnClickListener() {

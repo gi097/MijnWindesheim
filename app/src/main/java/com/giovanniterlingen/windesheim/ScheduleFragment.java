@@ -184,8 +184,8 @@ public class ScheduleFragment extends ListFragment implements SwipeRefreshLayout
             if (toolbar != null) {
                 toolbar.setTitle(simpleDateFormat.format(date) + " " + monthString);
                 // ugly workaround to fix toolbar title truncation
-                toolbar.setDisplayHomeAsUpEnabled(true);
                 toolbar.setDisplayHomeAsUpEnabled(false);
+                toolbar.setDisplayHomeAsUpEnabled(true);
             }
             if (!ApplicationLoader.scheduleDatabase.containsWeek(date) &&
                     !ApplicationLoader.scheduleDatabase.isFetched(date)) {
