@@ -4,4 +4,7 @@
     <dimen name="activity_vertical_margin">16.0dip</dimen>
     <dimen name="text_size">14.0sp</dimen>
     <dimen name="text_size_title">18.0sp</dimen>
+    <dimen name="material_card_corner_radius">2.0dip</dimen>
+    <dimen name="material_card_margin">8.0dip</dimen>
+    <dimen name="material_card_margin_half">4.0dip</dimen>
 </resources>

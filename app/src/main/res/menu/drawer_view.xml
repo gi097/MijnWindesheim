@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="none">
+    <group
+        android:id="@+id/main_items"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/change_schedule"
+            android:icon="@drawable/ic_insert_invitation"
+            android:title="@string/menuitem_change_schedule" />
+        <item
+            android:id="@+id/notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="@string/menuitem_notifications" />
+        <item
+            android:id="@+id/restore_lessons"
+            android:icon="@drawable/ic_check"
+            android:title="@string/menuitem_restore_lessons" />
         <item
             android:id="@+id/webmail"
             android:icon="@drawable/ic_email"
             android:title="@string/menuitem_webmail" />
-        <item
-            android:id="@+id/support_development"
-            android:icon="@drawable/ic_favorite"
-            android:title="@string/menuitem_donate" />
+    </group>
+    <group
+        android:id="@+id/secondary_items"
+        android:checkableBehavior="none">
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_help"

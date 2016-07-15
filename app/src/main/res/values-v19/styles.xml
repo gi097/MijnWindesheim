@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.Launch" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/activity_launch</item>
+    </style>
+</resources>

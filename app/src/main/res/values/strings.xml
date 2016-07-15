@@ -1,6 +1,7 @@
 <resources>
-    <string name="about_description">A schedule-app for students and teachers of Windesheim</string>
-    <string name="about_footer">Developed by Giovanni Terlingen</string>
+    <string name="about">About</string>
+    <string name="about_author">Giovanni Terlingen</string>
+    <string name="about_developer">Developer and maintainer</string>
     <string name="alert_connection_description">The data could not be retrieved. Check your internet connection and try again.</string>
     <string name="alert_connection_title">Problem while connecting!</string>
     <string name="app_name">MyWindesheim</string>
@@ -42,19 +43,17 @@
     <string name="lesson_one_minute">You have %1$s in about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
     <string name="lesson_started">STARTED</string>
-    <string name="logo_description">Windesheim logo</string>
     <string name="march">March</string>
     <string name="may">May</string>
     <string name="menuitem_about">About this app</string>
     <string name="menuitem_always_on">Always on</string>
     <string name="menuitem_change_schedule">Change schedule</string>
-    <string name="menuitem_donate">Donate</string>
-    <string name="menuitem_fifteen_minutes">15 minutes</string>
+    <string name="menuitem_fifteen_minutes">15 minutes ahead of time</string>
     <string name="menuitem_notifications">Notifications</string>
     <string name="menuitem_off">Off</string>
-    <string name="menuitem_one_hour">1 hour</string>
+    <string name="menuitem_one_hour">1 hour ahead of time</string>
     <string name="menuitem_restore_lessons">Restore lessons</string>
-    <string name="menuitem_thirty_minutes">30 minutes</string>
+    <string name="menuitem_thirty_minutes">30 minutes ahead of time</string>
     <string name="menuitem_webmail">Webmail</string>
     <string name="monday">Monday</string>
     <string name="multiple_lessons_multiple_hours">You have multiple lessons in about %1$s hours</string>
@@ -85,5 +84,6 @@
     <string name="thursday">Thursday</string>
     <string name="today">Today</string>
     <string name="tuesday">Tuesday</string>
+    <string name="undo">UNDO</string>
     <string name="wednesday">Wednesday</string>
 </resources>

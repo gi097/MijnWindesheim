@@ -22,29 +22,29 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim;
+package com.giovanniterlingen.windesheim.ui;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class BootReceiver extends BroadcastReceiver {
+public class LaunchActivity extends Activity {
 
-    /**
-     * This method is called when the phone is booted. We will start the pushService to start the
-     * NotificationHandler.
-     */
     @Override
-    public void onReceive(Context context, Intent intent) {
-        ApplicationLoader.runOnUIThread(new Runnable() {
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
-                ApplicationLoader.startPushService();
+                Intent intent = new Intent(LaunchActivity.this, ScheduleActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

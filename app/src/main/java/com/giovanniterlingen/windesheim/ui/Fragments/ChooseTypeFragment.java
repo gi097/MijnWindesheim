@@ -1,4 +1,28 @@
-package com.giovanniterlingen.windesheim;
+/**
+ * Copyright (c) 2016 Giovanni Terlingen
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ **/
+package com.giovanniterlingen.windesheim.ui.Fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,6 +45,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
+import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +57,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * A schedule app for Windesheim students
+ * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
@@ -108,7 +137,7 @@ public class ChooseTypeFragment extends Fragment {
                 editor.putString("componentId", componentId.get(componentList.indexOf(listView.getItemAtPosition(arg2))).toString());
                 editor.putInt("notifications_type", 5);
                 editor.putInt("type", type);
-                editor.commit();
+                editor.apply();
 
                 ApplicationLoader.restartNotificationThread();
 
@@ -146,7 +175,6 @@ public class ChooseTypeFragment extends Fragment {
                 new AlertDialog.Builder(context)
                         .setTitle(getResources().getString(R.string.alert_connection_title))
                         .setMessage(getResources().getString(R.string.alert_connection_description))
-                        .setIcon(R.drawable.ic_launcher)
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {

@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
-            android:name=".LaunchActivity"
+            android:name=".ui.LaunchActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -27,24 +27,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ScheduleActivity"
+            android:name=".ui.ScheduleActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ChooseTypeActivity"
+            android:name=".ui.ChooseTypeActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".About"
+            android:name=".ui.AboutActivity"
+            android:label="@string/about"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.About" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".HiddenLessonsActivity"
+            android:name=".ui.HiddenLessonsActivity"
             android:label="@string/hidden_schedule_label"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service

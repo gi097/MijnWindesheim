@@ -2,11 +2,12 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.ChooseTypeActivity">
+    android:paddingTop="24.0dip"
+    tools:context=".ui.HiddenLessonsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,28 +22,30 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabGravity="fill"
-            app:tabMode="fixed"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark" />
-
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorBackgroundTint"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.giovanniterlingen.windesheim.ChooseTypeActivity"
-        tools:showIn="@layout/activity_choose_type">
+        tools:context=".HiddenLessonsActivity">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/hidden_schedule_not_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/hidden_schedule_not_found"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone" />
 
     </RelativeLayout>
-
 </android.support.design.widget.CoordinatorLayout>

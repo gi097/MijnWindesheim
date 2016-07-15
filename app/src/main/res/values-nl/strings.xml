@@ -1,6 +1,7 @@
 <resources>
-    <string name="about_description">Een rooster-app voor studenten en docenten van Windesheim</string>
-    <string name="about_footer">Ontwikkeld door Giovanni Terlingen</string>
+    <string name="about">Over</string>
+    <string name="about_author">Giovanni Terlingen</string>
+    <string name="about_developer">Ontwikkelaar en onderhouder</string>
     <string name="alert_connection_description">De gegevens konden niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.</string>
     <string name="alert_connection_title">Probleem met verbinden!</string>
     <string name="app_name">MijnWindesheim</string>
@@ -42,19 +43,17 @@
     <string name="lesson_one_minute">Je hebt over 1 minuut %1$s in %2$s</string>
     <string name="lesson_restored">Les is hersteld</string>
     <string name="lesson_started">BEGONNEN</string>
-    <string name="logo_description">Windesheim logo</string>
     <string name="march">maart</string>
     <string name="may">mei</string>
     <string name="menuitem_about">Over deze app</string>
     <string name="menuitem_always_on">Altijd aan</string>
     <string name="menuitem_change_schedule">Wijzig rooster</string>
-    <string name="menuitem_donate">Doneer</string>
-    <string name="menuitem_fifteen_minutes">15 minuten</string>
+    <string name="menuitem_fifteen_minutes">15 minuten van tevoren</string>
     <string name="menuitem_notifications">Notificaties</string>
     <string name="menuitem_off">Uit</string>
-    <string name="menuitem_one_hour">1 uur</string>
+    <string name="menuitem_one_hour">1 uur van tevoren</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
-    <string name="menuitem_thirty_minutes">30 minuten</string>
+    <string name="menuitem_thirty_minutes">30 minuten van tevoren</string>
     <string name="menuitem_webmail">Webmail</string>
     <string name="monday">maandag</string>
     <string name="multiple_lessons_multiple_hours">Je hebt over %1$s uur meerdere lessen</string>
@@ -85,5 +84,6 @@
     <string name="thursday">donderdag</string>
     <string name="today">Vandaag</string>
     <string name="tuesday">dinsdag</string>
+    <string name="undo">ONGEDAAN MAKEN</string>
     <string name="wednesday">woensdag</string>
 </resources>
