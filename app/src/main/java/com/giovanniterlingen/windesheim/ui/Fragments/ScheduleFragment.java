@@ -25,23 +25,17 @@
 package com.giovanniterlingen.windesheim.ui.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -71,7 +65,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     private ScheduleAdapter adapter;
     private DateFormat simpleDateFormat;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private long onLongClickId;
     private TextView emptyTextView;
     private ProgressBar spinner;
     private RecyclerView recyclerView;
@@ -84,72 +77,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
         simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        recyclerView = (RecyclerView) view.findViewById(R.id.schedule_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(
-                simpleDateFormat.format(date), componentId);
-        if (scheduleDay != null && scheduleDay.getCount() > 0) {
-            adapter = new ScheduleAdapter(getActivity(), scheduleDay);
-            recyclerView.setAdapter(adapter);
-        }
-        registerForContextMenu(recyclerView);
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 0, 0, getResources().getString(R.string.hide_lesson));
-        menu.add(0, 1, 1, getResources().getString(R.string.save_lesson));
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (getUserVisibleHint() && adapter != null) {
-            onLongClickId = adapter.getLessonId();
-            if (item.getItemId() == 0) {
-                showPromptDialog();
-                return true;
-            }
-            if (item.getItemId() == 1) {
-                Cursor cursor = ApplicationLoader.scheduleDatabase.getSingleLesson(onLongClickId);
-                if (cursor.moveToFirst()) {
-                    String[] startTimeStrings = cursor.getString(0).split(":");
-                    String[] endTimeStrings = cursor.getString(1).split(":");
-
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(date);
-
-                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
-                    calendar.set(Calendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
-
-                    Intent intent = new Intent(Intent.ACTION_EDIT);
-                    intent.setType("vnd.android.cursor.item/event");
-                    intent.putExtra("beginTime", calendar.getTimeInMillis());
-                    intent.putExtra("allDay", false);
-
-                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
-                    calendar.set(Calendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
-
-                    intent.putExtra("endTime", calendar.getTimeInMillis());
-                    intent.putExtra("title", cursor.getString(2));
-                    intent.putExtra("eventLocation", cursor.getString(3));
-
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        ScheduleActivity.showSnackbar(getResources().getString(R.string.no_calendar_found));
-                    }
-                }
-                cursor.close();
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -236,6 +163,15 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryText, R.color.colorPrimary);
         emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
         spinner = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
+        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.schedule_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(
+                simpleDateFormat.format(date), componentId);
+        if (scheduleDay != null && scheduleDay.getCount() > 0) {
+            adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date),
+                    componentId, date);
+            recyclerView.setAdapter(adapter);
+        }
         if (recyclerView != null && recyclerView.getAdapter() != null) {
             emptyTextView.setVisibility(View.GONE);
         }
@@ -269,49 +205,22 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
-    private void showPromptDialog() {
-        if (!getUserVisibleHint()) {
-            return;
-        }
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(getResources().getString(R.string.confirmation))
-                        .setMessage(getResources().getString(R.string.deletion_description))
-                        .setPositiveButton(getResources().getString(R.string.hide),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        ApplicationLoader.scheduleDatabase.hideLesson(onLongClickId);
-                                        new ScheduleFetcher(false, false, false).execute();
-                                        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), getResources().getString(R.string.lesson_hidden), Snackbar.LENGTH_SHORT);
-                                        snackbar.setAction(getResources().getString(R.string.undo), new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                ApplicationLoader.scheduleDatabase.restoreLessons(onLongClickId);
-                                                new ScheduleFetcher(false, false, false).execute();
-                                                Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(R.id.coordinator_layout), getResources().getString(R.string.lesson_restored), Snackbar.LENGTH_SHORT);
-                                                snackbar1.show();
-                                                ApplicationLoader.restartNotificationThread();
-                                            }
-                                        });
-                                        snackbar.show();
-                                        ApplicationLoader.restartNotificationThread();
-                                        dialog.cancel();
-                                    }
-                                })
-                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        }).show();
-            }
-        });
-    }
-
     @Override
     public void onRefresh() {
         new ScheduleFetcher(true, false, true).execute();
+    }
+
+    /**
+     * Workaround, this method is called from another class
+     */
+    public void updateLayout() {
+        if (emptyTextView != null) {
+            if (adapter == null || adapter.getItemCount() == 0) {
+                emptyTextView.setVisibility(View.VISIBLE);
+            } else {
+                emptyTextView.setVisibility(View.GONE);
+            }
+        }
     }
 
     public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
@@ -359,7 +268,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
             if (adapter == null) {
-                adapter = new ScheduleAdapter(getActivity(), scheduleDay);
+                adapter = new ScheduleAdapter(getActivity(), scheduleDay,
+                        simpleDateFormat.format(date), componentId, date);
                 if (recyclerView != null) {
                     recyclerView.setAdapter(adapter);
                 }

@@ -33,8 +33,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.ui.Fragments.ChooseTypeFragment;
@@ -45,6 +47,9 @@ import com.giovanniterlingen.windesheim.ui.Fragments.ChooseTypeFragment;
  * @author Giovanni Terlingen
  */
 public class ChooseTypeActivity extends AppCompatActivity {
+
+    private String componentId;
+    private int type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +70,31 @@ public class ChooseTypeActivity extends AppCompatActivity {
                 tabLayout.setupWithViewPager(mPager);
             }
         }
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ChooseTypeActivity.this);
+        componentId = sharedPreferences.getString("componentId", "");
+        type = sharedPreferences.getInt("type", 0);
+        if (componentId.length() != 0 && type != 0) {
+            final ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
+        }
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     public void onBackPressed() {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ChooseTypeActivity.this);
-        String componentId = sharedPreferences.getString("componentId", "");
-        int type = sharedPreferences.getInt("type", 0);
         if (componentId.length() != 0 && type != 0) {
             Intent intent = new Intent(ChooseTypeActivity.this, ScheduleActivity.class);
             startActivity(intent);

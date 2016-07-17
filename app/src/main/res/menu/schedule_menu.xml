@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.ScheduleActivity">
+
+    <item
+        android:id="@+id/hide_lesson"
+        android:title="@string/hide_lesson" />
+
+    <item
+        android:id="@+id/save_lesson"
+        android:title="@string/save_lesson" />
+
+</menu>

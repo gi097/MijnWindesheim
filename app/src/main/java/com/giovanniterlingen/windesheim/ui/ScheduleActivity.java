@@ -55,6 +55,7 @@ import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -69,6 +70,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
+    private static FragmentManager fragmentManager;
 
     public static void showSnackbar(final String text) {
         ApplicationLoader.runOnUIThread(new Runnable() {
@@ -77,6 +79,23 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (view != null) {
                     Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
                     snackbar.show();
+                }
+            }
+        });
+    }
+
+    public static void updateFragmentView() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (fragmentManager != null) {
+                    List<Fragment> fragments = fragmentManager.getFragments();
+                    if (fragments != null) {
+                        for (Fragment fragment : fragments) {
+                            if (fragment != null && fragment.isVisible())
+                                ((ScheduleFragment) fragment).updateLayout();
+                        }
+                    }
                 }
             }
         });
@@ -244,6 +263,7 @@ public class ScheduleActivity extends AppCompatActivity {
      */
     private void setViewPager() {
         Calendar calendar = Calendar.getInstance();
+        fragmentManager = getSupportFragmentManager();
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         if (mPager != null) {
             ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
