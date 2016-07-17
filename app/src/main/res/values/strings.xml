@@ -71,6 +71,7 @@
     <string name="notifications_turned_off">Notifications has been disabled</string>
     <string name="november">November</string>
     <string name="october">October</string>
+    <string name="overflow_description">Options</string>
     <string name="pager_item_classes">Classes</string>
     <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>

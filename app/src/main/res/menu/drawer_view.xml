@@ -5,7 +5,7 @@
         android:checkableBehavior="none">
         <item
             android:id="@+id/change_schedule"
-            android:icon="@drawable/ic_insert_invitation"
+            android:icon="@drawable/ic_calendar"
             android:title="@string/menuitem_change_schedule" />
         <item
             android:id="@+id/notifications"

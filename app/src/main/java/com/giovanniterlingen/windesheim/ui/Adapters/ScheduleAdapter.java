@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -43,6 +44,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
@@ -61,9 +63,9 @@ import java.util.Date;
 public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.ViewHolder> {
 
     private static Activity context;
-    private String dateString;
-    private Date date;
-    private String componentId;
+    private final String dateString;
+    private final Date date;
+    private final String componentId;
 
     public ScheduleAdapter(Activity context, Cursor cursor, String dateString, String componentId,
                            Date date) {
@@ -82,6 +84,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         final TextView lessonRoom = viewHolder.lessonRoom;
         final TextView lessonComponent = viewHolder.lessonComponent;
         final FrameLayout menuButton = viewHolder.menuButton;
+        final ImageView menuButtonImage = viewHolder.menuButtonImage;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
         long databaseDateStart = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(3).replaceAll(":", ""));
@@ -159,6 +162,8 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                menuButtonImage.setImageDrawable(ResourcesCompat.getDrawable(
+                        context.getResources(), R.drawable.overflow_open, null));
                 PopupMenu popupMenu = new PopupMenu(context, menuButton);
                 popupMenu.inflate(R.menu.schedule_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -172,6 +177,13 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                             showCalendarDialog(cursor.getLong(0));
                         }
                         return true;
+                    }
+                });
+                popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+                    @Override
+                    public void onDismiss(PopupMenu menu) {
+                        menuButtonImage.setImageDrawable(ResourcesCompat.getDrawable(
+                                context.getResources(), R.drawable.overflow_normal, null));
                     }
                 });
                 popupMenu.show();
@@ -274,6 +286,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         final TextView lessonRoom;
         final TextView lessonComponent;
         final FrameLayout menuButton;
+        final ImageView menuButtonImage;
         final CardView cardView;
 
         public ViewHolder(View view) {
@@ -283,6 +296,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
             lessonRoom = (TextView) view.findViewById(R.id.schedule_list_row_room);
             lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
             menuButton = (FrameLayout) view.findViewById(R.id.menu_button);
+            menuButtonImage = (ImageView) view.findViewById(R.id.menu_button_image);
             cardView = (CardView) view.findViewById(R.id.card);
         }
     }

@@ -67,10 +67,10 @@ public class ScheduleActivity extends AppCompatActivity {
     private static String componentId;
     private static int type;
     private static View view;
+    private static FragmentManager fragmentManager;
     private SharedPreferences sharedPreferences;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
-    private static FragmentManager fragmentManager;
 
     public static void showSnackbar(final String text) {
         ApplicationLoader.runOnUIThread(new Runnable() {
