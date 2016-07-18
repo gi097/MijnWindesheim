@@ -92,8 +92,10 @@ public class ScheduleActivity extends AppCompatActivity {
                     List<Fragment> fragments = fragmentManager.getFragments();
                     if (fragments != null) {
                         for (Fragment fragment : fragments) {
-                            if (fragment != null && fragment.isVisible())
+                            if (fragment != null && fragment.isVisible()) {
                                 ((ScheduleFragment) fragment).updateLayout();
+                                break;
+                            }
                         }
                     }
                 }
@@ -111,7 +113,11 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.putString("componentId", classId);
             editor.putInt("type", 1);
             editor.remove("classId");
-            editor.apply();
+            if (android.os.Build.VERSION.SDK_INT >= 9) {
+                editor.apply();
+            } else {
+                editor.commit();
+            }
         }
         editor.remove("notifications");
         componentId = sharedPreferences.getString("componentId", "");
@@ -125,7 +131,11 @@ public class ScheduleActivity extends AppCompatActivity {
         }
         if (sharedPreferences.getInt("notifications_type", 0) == 0) {
             editor.putInt("notifications_type", 5);
-            editor.apply();
+            if (android.os.Build.VERSION.SDK_INT >= 9) {
+                editor.apply();
+            } else {
+                editor.commit();
+            }
         }
         if (ApplicationLoader.notificationHandler != null &&
                 !ApplicationLoader.notificationHandler.isRunning()) {
@@ -223,7 +233,11 @@ public class ScheduleActivity extends AppCompatActivity {
                                         case 1:
                                         case 2:
                                             editor.putInt("notifications_type", id);
-                                            editor.apply();
+                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
+                                                editor.apply();
+                                            } else {
+                                                editor.commit();
+                                            }
                                             if (ApplicationLoader.notificationHandler != null) {
                                                 ApplicationLoader.notificationHandler.clearNotification();
                                             }
@@ -232,7 +246,11 @@ public class ScheduleActivity extends AppCompatActivity {
                                             break;
                                         case 3:
                                             editor.putInt("notifications_type", id);
-                                            editor.apply();
+                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
+                                                editor.apply();
+                                            } else {
+                                                editor.commit();
+                                            }
                                             if (ApplicationLoader.notificationHandler != null) {
                                                 ApplicationLoader.notificationHandler.clearNotification();
                                             }
@@ -241,7 +259,11 @@ public class ScheduleActivity extends AppCompatActivity {
                                             break;
                                         case 4:
                                             editor.putInt("notifications_type", id);
-                                            editor.apply();
+                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
+                                                editor.apply();
+                                            } else {
+                                                editor.commit();
+                                            }
                                             if (ApplicationLoader.notificationHandler != null) {
                                                 ApplicationLoader.notificationHandler.clearNotification();
                                             }

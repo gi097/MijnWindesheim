@@ -129,7 +129,6 @@ public class ChooseTypeFragment extends Fragment {
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -137,7 +136,11 @@ public class ChooseTypeFragment extends Fragment {
                 editor.putString("componentId", componentId.get(componentList.indexOf(listView.getItemAtPosition(arg2))).toString());
                 editor.putInt("notifications_type", 5);
                 editor.putInt("type", type);
-                editor.apply();
+                if (android.os.Build.VERSION.SDK_INT >= 9) {
+                    editor.apply();
+                } else {
+                    editor.commit();
+                }
 
                 ApplicationLoader.restartNotificationThread();
 
