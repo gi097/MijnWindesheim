@@ -72,9 +72,9 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        TextView courseName = holder.courseName;
+        TextView contentName = holder.contentName;
         ImageView icon = holder.icon;
-        courseName.setText(content.get(position).name);
+        contentName.setText(content.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,13 +132,13 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView courseName;
+        final TextView contentName;
         final ImageView icon;
 
         public ViewHolder(View view) {
             super(view);
-            courseName = (TextView) view.findViewById(R.id.textView);
-            icon = (ImageView) view.findViewById(R.id.icon);
+            contentName = (TextView) view.findViewById(R.id.content_name);
+            icon = (ImageView) view.findViewById(R.id.content_icon);
         }
     }
 }

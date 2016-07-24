@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -13,7 +12,7 @@
         android:layout_marginLeft="@dimen/material_card_margin"
         android:layout_marginRight="@dimen/material_card_margin"
         android:layout_marginTop="@dimen/material_card_margin_half"
-        android:foreground="?attr/selectableItemBackground"
+        android:foreground="?selectableItemBackground"
         card_view:cardCornerRadius="@dimen/material_card_corner_radius"
         card_view:cardUseCompatPadding="true">
 
@@ -76,7 +75,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1.0dip"
-                android:background="?android:attr/listDivider" />
+                android:background="?android:listDivider" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
