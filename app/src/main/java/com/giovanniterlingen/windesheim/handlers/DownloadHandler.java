@@ -76,7 +76,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         int lastSlash = strings[0].lastIndexOf('/');
         String fileName = strings[0].substring(lastSlash + 1);
         File newFile = new File(Environment.getExternalStorageDirectory().toString(),
-                "MijnWindesheim/" + fileName);
+                "MijnWindesheim" + File.separator + fileName);
         try {
             if (newFile.exists()) {
                 newFile.delete();

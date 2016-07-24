@@ -149,7 +149,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
                         .setPositiveButton(context.getResources().getString(R.string.delete),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        File file = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim/" + content.get(position).name);
+                                        File file = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim" + File.separator + content.get(position).name);
                                         if (file.exists()) {
                                             file.delete();
                                         }

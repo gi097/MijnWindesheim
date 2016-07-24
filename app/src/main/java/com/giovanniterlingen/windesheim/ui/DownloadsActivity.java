@@ -56,6 +56,7 @@ import java.util.List;
 public class DownloadsActivity extends AppCompatActivity {
 
     public static volatile View view;
+    private RecyclerView recyclerView;
 
     public static void showEmptyTextview() {
         ApplicationLoader.runOnUIThread(new Runnable() {
@@ -63,9 +64,23 @@ public class DownloadsActivity extends AppCompatActivity {
             public void run() {
                 if (view != null) {
                     TextView empty = (TextView) view.findViewById(R.id.empty_textview);
-                    if (empty != null) {
-                        empty.setVisibility(View.VISIBLE);
-                    }
+                    empty.setVisibility(View.VISIBLE);
+                    RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+                    recyclerView.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    public static void hideEmptyTextview() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+                    empty.setVisibility(View.GONE);
+                    RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+                    recyclerView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -83,23 +98,34 @@ public class DownloadsActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
+        updateFilesList();
+    }
 
+    private void updateFilesList() {
         PermissionHandler.verifyStoragePermissions(this);
 
-        final File path = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim/");
+        final File path = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim" + File.separator);
         File files[] = path.listFiles();
         if (files != null && files.length > 0) {
             List<Content> contents = new ArrayList<>();
             for (File f : files) {
-                contents.add(new Content(f.getName()));
+                if (!f.isDirectory()) {
+                    contents.add(new Content(f.getName()));
+                }
             }
-            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.downloads_recyclerview);
-            if (recyclerView != null) {
+            if (contents.size() == 0) {
+                showEmptyTextview();
+            } else {
+                hideEmptyTextview();
+            }
+            if (recyclerView == null) {
+                recyclerView = (RecyclerView) findViewById(R.id.downloads_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            } else {
                 recyclerView.setAdapter(new ContentAdapter(this, contents) {
                     @Override
                     protected void onContentClick(Content content) {
-                        File file = new File(path.getAbsolutePath() + content.name);
+                        File file = new File(path.getAbsolutePath() + File.separator + content.name);
                         String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
                                 Uri.fromFile(file).toString());
                         String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
@@ -129,7 +155,7 @@ public class DownloadsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        PermissionHandler.verifyStoragePermissions(this);
+        updateFilesList();
     }
 
     @Override
