@@ -8,6 +8,10 @@
             android:icon="@drawable/ic_calendar"
             android:title="@string/menuitem_change_schedule" />
         <item
+            android:id="@+id/natschool"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/natschool" />
+        <item
             android:id="@+id/notifications"
             android:icon="@drawable/ic_notifications"
             android:title="@string/menuitem_notifications" />

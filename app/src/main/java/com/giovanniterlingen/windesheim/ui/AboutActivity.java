@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -47,8 +46,6 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -62,6 +59,16 @@ public class AboutActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://giovanniterlingen.com")));
+                }
+            });
+        }
+        CardView cardView1 = (CardView) findViewById(R.id.thomas);
+        if (cardView1 != null) {
+            cardView1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://www.thomasvisch.nl")));
                 }
             });
         }

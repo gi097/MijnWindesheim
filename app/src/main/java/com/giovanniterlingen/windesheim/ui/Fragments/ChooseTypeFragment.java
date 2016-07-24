@@ -33,21 +33,22 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
+import com.giovanniterlingen.windesheim.objects.Component;
+import com.giovanniterlingen.windesheim.ui.Adapters.ComponentAdapter;
 import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
 import org.json.JSONArray;
@@ -63,10 +64,9 @@ import java.util.ArrayList;
  */
 public class ChooseTypeFragment extends Fragment {
 
-    private ArrayList<Integer> componentId;
-    private ArrayList<String> componentList;
-    private ArrayAdapter<String> adapter;
-    private ListView listView;
+    private ArrayList<Component> componentList;
+    private ComponentAdapter adapter;
+    private RecyclerView recyclerView;
     private int type;
     private Context context;
     private ProgressBar spinner;
@@ -108,12 +108,13 @@ public class ChooseTypeFragment extends Fragment {
             descriptionTextview.setText(getResources().getString(R.string.choose_subject_description));
             dataSearch.setHint(getResources().getString(R.string.choose_subject_hint));
         }
-        listView = (ListView) view.findViewById(R.id.listview);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         spinner = (ProgressBar) view.findViewById(R.id.progress_bar);
         dataSearch.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
                 if (adapter != null) {
-                    adapter.getFilter().filter(arg0);
+                    adapter.filter(arg0.toString());
                 }
             }
 
@@ -127,30 +128,6 @@ public class ChooseTypeFragment extends Fragment {
             }
         });
 
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("componentId", componentId.get(componentList.indexOf(listView.getItemAtPosition(arg2))).toString());
-                editor.putInt("notifications_type", 5);
-                editor.putInt("type", type);
-                if (android.os.Build.VERSION.SDK_INT >= 9) {
-                    editor.apply();
-                } else {
-                    editor.commit();
-                }
-
-                ApplicationLoader.restartNotificationThread();
-
-                Intent intent = new Intent(context, ScheduleActivity.class);
-                startActivity(intent);
-                getActivity().finish();
-            }
-
-        });
-
         return view;
     }
 
@@ -159,8 +136,8 @@ public class ChooseTypeFragment extends Fragment {
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                this.componentList.add(jsonObject.getString("name") + " - " + jsonObject.getString("longName"));
-                this.componentId.add(jsonObject.getInt("id"));
+                this.componentList.add(new Component(jsonObject.getInt("id"),
+                        jsonObject.getString("name") + " - " + jsonObject.getString("longName")));
             } catch (JSONException e) {
                 alertConnectionProblem();
                 break;
@@ -200,7 +177,6 @@ public class ChooseTypeFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             spinner.setVisibility(View.VISIBLE);
-            componentId = new ArrayList<>();
             componentList = new ArrayList<>();
         }
 
@@ -208,7 +184,27 @@ public class ChooseTypeFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             try {
                 buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type)).getJSONArray("elements"));
-                adapter = new ArrayAdapter<>(context, R.layout.component_adapter_item, R.id.component_item, componentList);
+                adapter = new ComponentAdapter(context, componentList) {
+                    @Override
+                    protected void onContentClick(int id) {
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("componentId", Integer.toString(id));
+                        editor.putInt("notifications_type", 5);
+                        editor.putInt("type", type);
+                        if (android.os.Build.VERSION.SDK_INT >= 9) {
+                            editor.apply();
+                        } else {
+                            editor.commit();
+                        }
+
+                        ApplicationLoader.restartNotificationThread();
+
+                        Intent intent = new Intent(context, ScheduleActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                };
             } catch (Exception e) {
                 alertConnectionProblem();
             }
@@ -219,7 +215,7 @@ public class ChooseTypeFragment extends Fragment {
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
             spinner.setVisibility(View.GONE);
-            listView.setAdapter(adapter);
+            recyclerView.setAdapter(adapter);
         }
     }
 }

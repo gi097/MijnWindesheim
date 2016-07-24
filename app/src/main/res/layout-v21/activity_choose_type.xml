@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:paddingTop="24.0dip"
+    android:paddingTop="@dimen/statusbar_padding"
     tools:context=".ui.ChooseTypeActivity">
 
     <android.support.design.widget.AppBarLayout

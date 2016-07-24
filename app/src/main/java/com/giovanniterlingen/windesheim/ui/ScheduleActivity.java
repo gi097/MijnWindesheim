@@ -51,6 +51,7 @@ import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.CookieHandler;
 import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
 
 import java.text.SimpleDateFormat;
@@ -184,14 +185,26 @@ public class ScheduleActivity extends AppCompatActivity {
                                 finish();
                                 menuItem.setChecked(false);
                                 return true;
+                            case R.id.natschool:
+                                Intent intent1;
+                                if (CookieHandler.hasCookie()) {
+                                    intent1 = new Intent(ScheduleActivity.this,
+                                            ContentsActivity.class);
+                                } else {
+                                    intent1 = new Intent(ScheduleActivity.this,
+                                            AuthenticationActivity.class);
+                                }
+                                startActivity(intent1);
+                                menuItem.setChecked(false);
+                                return true;
                             case R.id.notifications:
                                 createNotificationPrompt();
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.restore_lessons:
-                                Intent intent1 = new Intent(ScheduleActivity.this,
+                                Intent intent2 = new Intent(ScheduleActivity.this,
                                         HiddenLessonsActivity.class);
-                                startActivity(intent1);
+                                startActivity(intent2);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.webmail:

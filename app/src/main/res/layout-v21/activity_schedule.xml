@@ -11,7 +11,7 @@
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="24.0dip"
+        android:paddingTop="@dimen/statusbar_padding"
         tools:context=".ScheduleActivity">
 
         <android.support.design.widget.AppBarLayout

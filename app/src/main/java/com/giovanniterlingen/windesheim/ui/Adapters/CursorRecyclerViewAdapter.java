@@ -118,6 +118,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     }
 
     private class NotifyingDataSetObserver extends DataSetObserver {
+
         @Override
         public void onChanged() {
             super.onChanged();
@@ -130,7 +131,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             super.onInvalidated();
             mDataValid = false;
             notifyDataSetChanged();
-            //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
+            // There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
         }
     }
 }
