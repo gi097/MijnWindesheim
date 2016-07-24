@@ -38,6 +38,11 @@ public class Content {
     public int type;
     public String imageUrl;
 
+    public Content(String name) {
+        this.name = name;
+        this.type = -1;
+    }
+
     public Content(int studyRouteItemId, String name, String imageUrl) {
         this.studyRouteItemId = studyRouteItemId;
         this.name = name;

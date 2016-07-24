@@ -100,6 +100,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             while ((count = input.read(data)) != -1) {
                 if (isCancelled()) {
                     input.close();
+                    newFile.delete();
                     return null;
                 }
                 total += count;

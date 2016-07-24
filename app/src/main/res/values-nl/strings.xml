@@ -25,9 +25,14 @@
     <string name="connection_problem">Probleem met het ophalen van de gegevens</string>
     <string name="courses">Studieroutes</string>
     <string name="december">december</string>
+    <string name="delete">Verwijderen</string>
+    <string name="delete_file">Verwijder bestand</string>
+    <string name="delete_file_description">Het bestand zal permanent verwijdert worden</string>
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
     <string name="downloading">Downloaden…</string>
+    <string name="downloads">Downloads</string>
     <string name="february">februari</string>
+    <string name="file_deleted">Bestand is verwijderd</string>
     <string name="fix">OPLOSSEN</string>
     <string name="finished">AFGELOPEN</string>
     <string name="friday">vrijdag</string>
@@ -50,6 +55,7 @@
     <string name="lesson_one_minute">Je hebt over 1 minuut %1$s in %2$s</string>
     <string name="lesson_restored">Les is hersteld</string>
     <string name="lesson_started">BEGONNEN</string>
+    <string name="loading">Laden…</string>
     <string name="login">Inloggen</string>
     <string name="march">maart</string>
     <string name="may">mei</string>
@@ -78,7 +84,7 @@
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
     <string name="no_lessons_found">Er zijn geen lessen gevonden voor vandaag</string>
     <string name="no_more_lessons">Je hebt geen komende lessen meer vandaag :)</string>
-    <string name="not_supported">Dit bestand is niet ondersteund</string>
+    <string name="not_supported">Dit bestand wordt niet ondersteund</string>
     <string name="notification_interval_changed">Notificatie-interval is gewijzigd</string>
     <string name="notifications_turned_off">Notificaties zijn uitgeschakeld</string>
     <string name="november">november</string>

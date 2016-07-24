@@ -1,0 +1,145 @@
+/**
+ * Copyright (c) 2016 Giovanni Terlingen
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ **/
+package com.giovanniterlingen.windesheim.ui;
+
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.PermissionHandler;
+import com.giovanniterlingen.windesheim.objects.Content;
+import com.giovanniterlingen.windesheim.ui.Adapters.ContentAdapter;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A schedule app for students and teachers of Windesheim
+ *
+ * @author Giovanni Terlingen
+ */
+public class DownloadsActivity extends AppCompatActivity {
+
+    public static volatile View view;
+
+    public static void showEmptyTextview() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (view != null) {
+                    TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+                    if (empty != null) {
+                        empty.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_downloads);
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        view = findViewById(R.id.coordinator_layout);
+
+        PermissionHandler.verifyStoragePermissions(this);
+
+        final File path = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim/");
+        File files[] = path.listFiles();
+        if (files != null && files.length > 0) {
+            List<Content> contents = new ArrayList<>();
+            for (File f : files) {
+                contents.add(new Content(f.getName()));
+            }
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.downloads_recyclerview);
+            if (recyclerView != null) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView.setAdapter(new ContentAdapter(this, contents) {
+                    @Override
+                    protected void onContentClick(Content content) {
+                        File file = new File(path.getAbsolutePath() + content.name);
+                        String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
+                                Uri.fromFile(file).toString());
+                        String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+
+                        Intent target = new Intent(Intent.ACTION_VIEW);
+                        target.setDataAndType(Uri.fromFile(file), mimetype);
+                        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+                        try {
+                            startActivity(target);
+                        } catch (ActivityNotFoundException e) {
+                            if (view != null) {
+                                e.printStackTrace();
+                                Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_app_found),
+                                        Snackbar.LENGTH_SHORT);
+                                snackbar.show();
+                            }
+                        }
+                    }
+                });
+            }
+        } else {
+            showEmptyTextview();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PermissionHandler.verifyStoragePermissions(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}

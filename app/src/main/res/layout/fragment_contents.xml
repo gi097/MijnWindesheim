@@ -4,7 +4,7 @@
     android:background="@color/colorBackground">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/courses_recyclerview"
+        android:id="@+id/contents_recyclerview"
         android:layout_width="fill_parent"
         android:layout_height="match_parent" />
 

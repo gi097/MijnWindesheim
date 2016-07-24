@@ -58,6 +58,11 @@
             android:label="@string/courses"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.DownloadsActivity"
+            android:label="@string/downloads"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" />
 
         <service
             android:name=".NotificationService"

@@ -62,7 +62,7 @@ public class ContentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents, container, false);
-        final RecyclerView recyclerView = (RecyclerView) viewGroup.findViewById(R.id.courses_recyclerview);
+        final RecyclerView recyclerView = (RecyclerView) viewGroup.findViewById(R.id.contents_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         final ProgressBar progressBar = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
@@ -89,7 +89,7 @@ public class ContentsFragment extends Fragment {
                     emptyTextView.setVisibility(View.VISIBLE);
                     return;
                 }
-                recyclerView.setAdapter(new ContentAdapter(getContext(), courses) {
+                recyclerView.setAdapter(new ContentAdapter(getActivity(), courses) {
                     @Override
                     protected void onContentClick(Content content) {
                         if (content.url == null || content.url.length() == 0) {

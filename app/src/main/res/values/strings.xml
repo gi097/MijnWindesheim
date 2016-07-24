@@ -25,9 +25,14 @@
     <string name="connection_problem">A problem occurred while fetching data</string>
     <string name="courses">Courses</string>
     <string name="december">December</string>
+    <string name="delete">Delete</string>
+    <string name="delete_file">Delete file</string>
+    <string name="delete_file_description">This will delete the file permanently</string>
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
     <string name="downloading">Downloading…</string>
+    <string name="downloads">Downloads</string>
     <string name="february">February</string>
+    <string name="file_deleted">File has been deleted</string>
     <string name="finished">FINISHED</string>
     <string name="fix">FIX IT</string>
     <string name="friday">Friday</string>
@@ -50,6 +55,7 @@
     <string name="lesson_one_minute">You have %1$s in about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
     <string name="lesson_started">STARTED</string>
+    <string name="loading">Loading…</string>
     <string name="login">Login</string>
     <string name="march">March</string>
     <string name="may">May</string>

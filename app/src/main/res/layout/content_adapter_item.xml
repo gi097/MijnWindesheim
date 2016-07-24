@@ -22,10 +22,31 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/content_icon"
+        android:layout_toLeftOf="@+id/menu_button"
         android:layout_toRightOf="@+id/content_icon"
+        android:layout_toStartOf="@+id/menu_button"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:textColor="#212121"
         android:textSize="16.0dip" />
+
+    <FrameLayout
+        android:id="@+id/menu_button"
+        android:layout_width="32.0dip"
+        android:layout_height="32.0dip"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/menu_button_image"
+            android:layout_width="24.0dip"
+            android:layout_height="24.0dip"
+            android:layout_gravity="center"
+            android:contentDescription="@string/overflow_description"
+            android:scaleType="centerInside"
+            android:src="@drawable/overflow_normal" />
+    </FrameLayout>
 
 </RelativeLayout>

@@ -30,7 +30,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +67,6 @@ public class WebviewFragment extends Fragment {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Log.d("URL", url);
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             Uri.parse(url)));
@@ -78,7 +76,7 @@ public class WebviewFragment extends Fragment {
             }
         });
         webView.setWebChromeClient(new ChromeClient());
-        progressDialog = ProgressDialog.show(getActivity(), null, "Loading...");
+        progressDialog = ProgressDialog.show(getActivity(), null, getContext().getString(R.string.loading));
 
         Bundle bundle = getArguments();
         webView.loadUrl(bundle.getString(KEY_URL));
@@ -107,7 +105,7 @@ public class WebviewFragment extends Fragment {
     private class ChromeClient extends WebChromeClient {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
-            if (progressDialog != null && newProgress >= 99) {
+            if (progressDialog != null && newProgress == 100) {
                 progressDialog.dismiss();
             }
             super.onProgressChanged(view, newProgress);

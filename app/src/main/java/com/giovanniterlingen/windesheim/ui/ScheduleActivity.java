@@ -67,7 +67,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private static String componentId;
     private static int type;
-    private static View view;
+    private static volatile View view;
     private static FragmentManager fragmentManager;
     private SharedPreferences sharedPreferences;
     private long onPauseMillis;
@@ -197,26 +197,32 @@ public class ScheduleActivity extends AppCompatActivity {
                                 startActivity(intent1);
                                 menuItem.setChecked(false);
                                 return true;
+                            case R.id.downloads:
+                                Intent intent2 = new Intent(ScheduleActivity.this,
+                                        DownloadsActivity.class);
+                                startActivity(intent2);
+                                menuItem.setChecked(false);
+                                return true;
                             case R.id.notifications:
                                 createNotificationPrompt();
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.restore_lessons:
-                                Intent intent2 = new Intent(ScheduleActivity.this,
+                                Intent intent3 = new Intent(ScheduleActivity.this,
                                         HiddenLessonsActivity.class);
-                                startActivity(intent2);
-                                menuItem.setChecked(false);
-                                return true;
-                            case R.id.webmail:
-                                Intent intent3 = new Intent(Intent.ACTION_VIEW);
-                                intent3.setData(Uri.parse("https://outlook.com/windesheim.nl"));
                                 startActivity(intent3);
                                 menuItem.setChecked(false);
                                 return true;
-                            case R.id.about:
-                                Intent intent4 = new Intent(ApplicationLoader.applicationContext,
-                                        AboutActivity.class);
+                            case R.id.webmail:
+                                Intent intent4 = new Intent(Intent.ACTION_VIEW);
+                                intent4.setData(Uri.parse("https://outlook.com/windesheim.nl"));
                                 startActivity(intent4);
+                                menuItem.setChecked(false);
+                                return true;
+                            case R.id.about:
+                                Intent intent5 = new Intent(ApplicationLoader.applicationContext,
+                                        AboutActivity.class);
+                                startActivity(intent5);
                                 menuItem.setChecked(false);
                                 return true;
                         }
