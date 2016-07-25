@@ -24,10 +24,18 @@
  **/
 package com.giovanniterlingen.windesheim.handlers;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.ui.AuthenticationActivity;
+import com.giovanniterlingen.windesheim.ui.ContentsActivity;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -36,24 +44,47 @@ import com.giovanniterlingen.windesheim.ApplicationLoader;
  */
 public class CookieHandler {
 
-    public static boolean hasCookie() {
-        if (getCookie() == null || getCookie().length() == 0) {
-            resetCookie();
-            return false;
+    public static void checkCookieAndIntent(final Context context) {
+        if (ApplicationLoader.isConnected()) {
+            Intent intent1;
+            if (getCookie() != null && getCookie().length() == 0) {
+                intent1 = new Intent(context,
+                        ContentsActivity.class);
+            } else {
+                intent1 = new Intent(context,
+                        AuthenticationActivity.class);
+            }
+            context.startActivity(intent1);
+        } else {
+            ApplicationLoader.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(context)
+                            .setTitle(context.getResources().getString(R.string.alert_connection_title))
+                            .setMessage(context.getResources().getString(R.string.alert_connection_description))
+                            .setPositiveButton(context.getResources().getString(R.string.connect),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            checkCookieAndIntent(context);
+                                            dialog.cancel();
+                                        }
+                                    })
+                            .setNegativeButton(context.getResources().getString(R.string.cancel),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    }).show();
+                }
+            });
         }
-        return true;
-    }
-
-    private static void resetCookie() {
-        CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
-        CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.setCookie("https://elo.windesheim.nl/Pages/mobile/", "N%40TCookie=");
-        cookieManager.removeSessionCookie();
     }
 
     public static String getCookie() {
-        CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
         CookieManager cookieManager = CookieManager.getInstance();
+        if (Build.VERSION.SDK_INT < 21) {
+            CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
+        }
         return cookieManager.getCookie("https://elo.windesheim.nl/Pages/mobile/");
     }
 }

@@ -44,9 +44,9 @@ import java.util.List;
  */
 public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAdapter.ViewHolder> {
 
-    private List<Component> component;
-    private List<Component> componentFilterable = new ArrayList<>();
-    private Context context;
+    private final List<Component> component;
+    private final List<Component> componentFilterable = new ArrayList<>();
+    private final Context context;
 
 
     public ComponentAdapter(Context context, List<Component> component) {

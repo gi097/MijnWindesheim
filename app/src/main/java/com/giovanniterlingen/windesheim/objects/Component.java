@@ -31,8 +31,8 @@ package com.giovanniterlingen.windesheim.objects;
  */
 public class Component {
 
-    public int id;
-    public String name;
+    public final int id;
+    public final String name;
 
     public Component(int id, String name) {
         this.id = id;

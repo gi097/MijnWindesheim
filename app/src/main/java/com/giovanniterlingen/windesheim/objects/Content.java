@@ -32,7 +32,7 @@ package com.giovanniterlingen.windesheim.objects;
 public class Content {
 
     public int id = -1;
-    public String name;
+    public final String name;
     public int studyRouteItemId = -1;
     public String url;
     public int type;

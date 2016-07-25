@@ -55,7 +55,7 @@ import java.util.List;
  */
 public class DownloadsActivity extends AppCompatActivity {
 
-    public static volatile View view;
+    private static volatile View view;
     private RecyclerView recyclerView;
 
     public static void showEmptyTextview() {
@@ -72,7 +72,7 @@ public class DownloadsActivity extends AppCompatActivity {
         });
     }
 
-    public static void hideEmptyTextview() {
+    private static void hideEmptyTextview() {
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
@@ -138,7 +138,6 @@ public class DownloadsActivity extends AppCompatActivity {
                             startActivity(target);
                         } catch (ActivityNotFoundException e) {
                             if (view != null) {
-                                e.printStackTrace();
                                 Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_app_found),
                                         Snackbar.LENGTH_SHORT);
                                 snackbar.show();

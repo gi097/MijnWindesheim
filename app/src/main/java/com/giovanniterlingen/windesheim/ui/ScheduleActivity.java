@@ -186,15 +186,7 @@ public class ScheduleActivity extends AppCompatActivity {
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.natschool:
-                                Intent intent1;
-                                if (CookieHandler.hasCookie()) {
-                                    intent1 = new Intent(ScheduleActivity.this,
-                                            ContentsActivity.class);
-                                } else {
-                                    intent1 = new Intent(ScheduleActivity.this,
-                                            AuthenticationActivity.class);
-                                }
-                                startActivity(intent1);
+                                CookieHandler.checkCookieAndIntent(ScheduleActivity.this);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.downloads:

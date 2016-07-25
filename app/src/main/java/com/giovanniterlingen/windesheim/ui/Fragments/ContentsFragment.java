@@ -53,9 +53,9 @@ import java.util.List;
  */
 public class ContentsFragment extends Fragment {
 
-    public static final String STUDYROUTE_ID = "STUDYROUTE_ID";
-    public static final String PARENT_ID = "PARENT_ID";
-    public static final String STUDYROUTE_NAME = "STUDYROUTE_NAME";
+    private static final String STUDYROUTE_ID = "STUDYROUTE_ID";
+    private static final String PARENT_ID = "PARENT_ID";
+    private static final String STUDYROUTE_NAME = "STUDYROUTE_NAME";
     private int studyRouteId;
 
     @Override
@@ -68,9 +68,10 @@ public class ContentsFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         Bundle bundle = this.getArguments();
         ActionBar toolbar = ((ContentsActivity) getActivity()).getSupportActionBar();
+        String studyRouteName;
         if (toolbar != null) {
-            if (bundle != null && bundle.getString(STUDYROUTE_NAME) != null &&
-                    bundle.getString(STUDYROUTE_NAME).length() != 0) {
+            if (bundle != null && (studyRouteName = bundle.getString(STUDYROUTE_NAME)) != null &&
+                    studyRouteName.length() != 0) {
                 toolbar.setTitle(bundle.getString(STUDYROUTE_NAME));
             } else {
                 toolbar.setTitle(getResources().getString(R.string.courses));
@@ -84,10 +85,11 @@ public class ContentsFragment extends Fragment {
             @Override
             public void onFinished(final List<Content> courses) {
                 progressBar.setVisibility(View.GONE);
+                TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.empty_textview);
                 if (courses.isEmpty()) {
-                    TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.empty_textview);
                     emptyTextView.setVisibility(View.VISIBLE);
-                    return;
+                } else {
+                    emptyTextView.setVisibility(View.GONE);
                 }
                 recyclerView.setAdapter(new ContentAdapter(getActivity(), courses) {
                     @Override
@@ -125,7 +127,7 @@ public class ContentsFragment extends Fragment {
                                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                                 mProgressDialog.setCancelable(true);
                                 new DownloadHandler(getActivity(), mProgressDialog)
-                                        .execute("https://elo.windesheim.nl" + content.url);
+                                        .execute(content.url);
                                 return;
                             }
                             View view = ((ContentsActivity) getActivity()).view;

@@ -55,10 +55,10 @@ import java.util.List;
  */
 public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
-    private List<Content> content;
-    private Activity context;
+    private final List<Content> content;
+    private final Activity context;
 
-    private int icons[] = {
+    private final int[] icons = {
             R.drawable.ic_file_blue,
             R.drawable.ic_file_green,
             R.drawable.ic_file_red,

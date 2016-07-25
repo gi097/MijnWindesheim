@@ -30,6 +30,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
@@ -104,6 +106,17 @@ public class ApplicationLoader extends Application {
         }
         notificationHandler = new NotificationHandler();
         notificationHandler.start();
+    }
+
+    /**
+     * Simply checks for an active connection
+     *
+     * @return true or false depending on the NetworkInfo
+     */
+    public static boolean isConnected() {
+        NetworkInfo networkInfo = ((ConnectivityManager) applicationContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     /**

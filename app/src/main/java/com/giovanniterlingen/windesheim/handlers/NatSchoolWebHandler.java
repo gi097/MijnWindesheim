@@ -56,11 +56,11 @@ import java.util.List;
  */
 public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
 
-    private List<Content> content = new ArrayList<>();
-    private Activity context;
-    private String type;
-    private int courseId;
-    private int id;
+    private final List<Content> content = new ArrayList<>();
+    private final Activity context;
+    private final String type;
+    private final int courseId;
+    private final int id;
 
     public NatSchoolWebHandler(int courseId, int id, Activity context) {
         if (courseId == -1 && id == -1) {

@@ -71,7 +71,9 @@ public class AuthenticationActivity extends AppCompatActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        relativeLayout.addView(webView, layoutParams);
+        if (relativeLayout != null) {
+            relativeLayout.addView(webView, layoutParams);
+        }
     }
 
     @Override
