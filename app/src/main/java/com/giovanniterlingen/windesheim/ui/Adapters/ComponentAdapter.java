@@ -81,7 +81,7 @@ public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAda
         return componentFilterable.size();
     }
 
-    public void filter(String text) {
+    public synchronized void filter(String text) {
         if (text.length() == 0) {
             componentFilterable.clear();
             componentFilterable.addAll(component);

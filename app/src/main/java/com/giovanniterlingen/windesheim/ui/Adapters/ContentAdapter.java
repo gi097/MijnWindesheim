@@ -90,7 +90,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onContentClick(content.get(position));
+                onContentClick(content.get(holder.getAdapterPosition()));
             }
         });
         if (content.get(position).type == -1) {

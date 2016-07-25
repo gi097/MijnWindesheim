@@ -47,7 +47,7 @@ public class CookieHandler {
     public static void checkCookieAndIntent(final Context context) {
         if (ApplicationLoader.isConnected()) {
             Intent intent1;
-            if (getCookie() != null && getCookie().length() == 0) {
+            if (getCookie() != null && getCookie().length() > 0) {
                 intent1 = new Intent(context,
                         ContentsActivity.class);
             } else {

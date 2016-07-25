@@ -99,6 +99,7 @@
     <string name="rate_dialog">Geef me een review :)</string>
     <string name="restore">Herstellen</string>
     <string name="save_lesson">Les opslaan in agenda</string>
+    <string name="schedule_changed">Het rooster is gewijzigd!</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
     <string name="september">september</string>
     <string name="thursday">donderdag</string>

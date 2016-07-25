@@ -1,6 +1,6 @@
 <resources>
     <color name="colorPrimary">#D8A500</color>
-    <color name="colorPrimaryDark">#C48400</color>
+    <color name="colorPrimaryDark">@color/colorPrimary</color>
     <color name="colorAccent">#E61569</color>
     <color name="colorPrimaryText">#00418C</color>
     <color name="colorSecondaryText">#616161</color>

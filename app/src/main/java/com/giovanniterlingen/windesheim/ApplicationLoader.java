@@ -37,6 +37,7 @@ import android.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.SQLite.ScheduleDatabase;
 import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
+import com.giovanniterlingen.windesheim.handlers.ScheduleChangeChecker;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -84,6 +85,7 @@ public class ApplicationLoader extends Application {
         if (classId.length() != 0) {
             notificationHandler = new NotificationHandler();
             notificationHandler.start();
+            new ScheduleChangeChecker().start();
         }
     }
 

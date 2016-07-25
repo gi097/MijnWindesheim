@@ -254,7 +254,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected Void doInBackground(Void... param) {
             if (fetchData) {
                 try {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId);
+                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId, false);
                 } catch (Exception e) {
                     alertConnectionProblem();
                 }

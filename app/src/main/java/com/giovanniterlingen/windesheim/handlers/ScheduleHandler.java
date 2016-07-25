@@ -116,9 +116,11 @@ public class ScheduleHandler {
      * @param jsonObject  Contains the fetched lessons
      * @param date        Specifies the date of the fetched lessons
      * @param componentId Specifies the schedule's id
+     * @param compare     Defines if we need to check for schedule changes
      * @throws Exception
      */
-    public static void saveSchedule(JSONObject jsonObject, Date date, String componentId)
+    @SuppressLint("SimpleDateFormat")
+    public static void saveSchedule(JSONObject jsonObject, Date date, String componentId, boolean compare)
             throws Exception {
         // get the user filtered lessons to exclude them during fetch
         List<String> list = new ArrayList<>();
@@ -127,6 +129,13 @@ public class ScheduleHandler {
             list.add(cursor.getString(0));
         }
         cursor.close();
+
+        // only select the old data if we need to compare
+        Cursor oldData = null;
+        if (compare) {
+            oldData = ApplicationLoader.scheduleDatabase.getLessonsForCompare(
+                    new SimpleDateFormat("yyyyMMdd").format(date), componentId);
+        }
 
         // delete old schedule data
         ApplicationLoader.scheduleDatabase.clearScheduleData(date);
@@ -180,6 +189,33 @@ public class ScheduleHandler {
             component = "";
             classRoom = "";
             module = "";
+        }
+
+        if (compare && oldData != null) {
+            // start comparing old data with new one
+            Cursor newData = ApplicationLoader.scheduleDatabase.getLessonsForCompare(
+                    new SimpleDateFormat("yyyyMMdd").format(date), componentId);
+
+            if (oldData.getCount() == newData.getCount()) {
+                while (oldData.moveToNext()) {
+                    newData.moveToPosition(oldData.getPosition());
+                    if (!oldData.getString(0).equals(newData.getString(0)) ||
+                            !oldData.getString(1).equals(newData.getString(1)) ||
+                            !oldData.getString(2).equals(newData.getString(2)) ||
+                            !oldData.getString(3).equals(newData.getString(3)) ||
+                            !oldData.getString(4).equals(newData.getString(4)) ||
+                            !oldData.getString(5).equals(newData.getString(5)) ||
+                            !oldData.getString(6).equals(newData.getString(6)) ||
+                            !oldData.getString(7).equals(newData.getString(7))) {
+                        NotificationHandler.createScheduleChangedNotification();
+                        break;
+                    }
+                }
+            } else {
+                NotificationHandler.createScheduleChangedNotification();
+            }
+            oldData.close();
+            newData.close();
         }
     }
 

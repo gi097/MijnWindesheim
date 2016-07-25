@@ -99,6 +99,7 @@
     <string name="rate_dialog">Give me a review :)</string>
     <string name="restore">Restore</string>
     <string name="save_lesson">Save lesson to calendar</string>
+    <string name="schedule_changed">The schedule has been changed!</string>
     <string name="schedule_not_found">No schedule found for this day</string>
     <string name="september">September</string>
     <string name="thursday">Thursday</string>
