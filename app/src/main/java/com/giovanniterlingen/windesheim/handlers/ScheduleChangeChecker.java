@@ -26,6 +26,7 @@ package com.giovanniterlingen.windesheim.handlers;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 
@@ -40,18 +41,19 @@ public class ScheduleChangeChecker extends Thread {
 
     @Override
     public void run() {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String componentId = sharedPreferences.getString("componentId", "");
+        int type = sharedPreferences.getInt("type", 0);
         while (true) {
-            SharedPreferences sharedPreferences = PreferenceManager
-                    .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
-            if (sharedPreferences.getLong("checkTime", 0) < System.currentTimeMillis()) {
-                String componentId = sharedPreferences.getString("componentId", "");
-                int type = sharedPreferences.getInt("type", 0);
-                Date date = new Date();
+            if (sharedPreferences.getLong("checkTime", 0) == 0 ||
+                    !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
                 try {
+                    Date date = new Date();
                     ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
                             componentId, date, type), date, componentId, true);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putLong("checkTime", System.currentTimeMillis() + (24 * 60 * 60 * 1000));
+                    editor.putLong("checkTime", System.currentTimeMillis());
                     if (android.os.Build.VERSION.SDK_INT >= 9) {
                         editor.apply();
                     } else {
@@ -62,7 +64,7 @@ public class ScheduleChangeChecker extends Thread {
                 }
             }
             try {
-                sleep(60000);
+                sleep(1000);
             } catch (InterruptedException e) {
                 //
             }

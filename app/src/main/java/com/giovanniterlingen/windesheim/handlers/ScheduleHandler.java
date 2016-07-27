@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.objects.Schedule;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,10 +132,17 @@ public class ScheduleHandler {
         cursor.close();
 
         // only select the old data if we need to compare
-        Cursor oldData = null;
+        Schedule[] oldData = null;
         if (compare) {
-            oldData = ApplicationLoader.scheduleDatabase.getLessonsForCompare(
-                    new SimpleDateFormat("yyyyMMdd").format(date), componentId);
+            Cursor oldCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
+            oldData = new Schedule[oldCursor.getCount()];
+            while (oldCursor.moveToNext()) {
+                oldData[oldCursor.getPosition()] = new Schedule(oldCursor.getString(0),
+                        oldCursor.getString(1), oldCursor.getString(2), oldCursor.getString(3),
+                        oldCursor.getString(4), oldCursor.getString(5), oldCursor.getString(6),
+                        oldCursor.getString(7));
+            }
+            oldCursor.close();
         }
 
         // delete old schedule data
@@ -193,20 +201,19 @@ public class ScheduleHandler {
 
         if (compare && oldData != null) {
             // start comparing old data with new one
-            Cursor newData = ApplicationLoader.scheduleDatabase.getLessonsForCompare(
-                    new SimpleDateFormat("yyyyMMdd").format(date), componentId);
+            Cursor newCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
+            Schedule[] newData = new Schedule[newCursor.getCount()];
+            while (newCursor.moveToNext()) {
+                newData[newCursor.getPosition()] = new Schedule(newCursor.getString(0),
+                        newCursor.getString(1), newCursor.getString(2), newCursor.getString(3),
+                        newCursor.getString(4), newCursor.getString(5), newCursor.getString(6),
+                        newCursor.getString(7));
+            }
+            newCursor.close();
 
-            if (oldData.getCount() == newData.getCount()) {
-                while (oldData.moveToNext()) {
-                    newData.moveToPosition(oldData.getPosition());
-                    if (!oldData.getString(0).equals(newData.getString(0)) ||
-                            !oldData.getString(1).equals(newData.getString(1)) ||
-                            !oldData.getString(2).equals(newData.getString(2)) ||
-                            !oldData.getString(3).equals(newData.getString(3)) ||
-                            !oldData.getString(4).equals(newData.getString(4)) ||
-                            !oldData.getString(5).equals(newData.getString(5)) ||
-                            !oldData.getString(6).equals(newData.getString(6)) ||
-                            !oldData.getString(7).equals(newData.getString(7))) {
+            if (oldData.length == newData.length) {
+                for (int i = 0; i < oldData.length; i++) {
+                    if (!oldData[i].equals(newData[i])) {
                         NotificationHandler.createScheduleChangedNotification();
                         break;
                     }
@@ -214,8 +221,6 @@ public class ScheduleHandler {
             } else {
                 NotificationHandler.createScheduleChangedNotification();
             }
-            oldData.close();
-            newData.close();
         }
     }
 

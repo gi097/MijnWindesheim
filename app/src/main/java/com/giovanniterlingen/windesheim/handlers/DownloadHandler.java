@@ -142,33 +142,43 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             if (android.os.Build.VERSION.SDK_INT >= 23 &&
                     !PermissionHandler.verifyStoragePermissions(context)) {
                 return "permission";
-            } else {
+            }
+            if (e instanceof IOException) {
                 newFile.delete();
                 if (wakeLock.isHeld()) {
                     wakeLock.release();
                 }
-                ApplicationLoader.runOnUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(context)
-                                .setTitle(context.getResources().getString(R.string.alert_connection_title))
-                                .setMessage(context.getResources().getString(R.string.alert_connection_description))
-                                .setPositiveButton(context.getResources().getString(R.string.connect),
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                DownloadHandler.this.cancel(true);
-                                                new DownloadHandler(context, progressDialog).execute(strings);
-                                                dialog.cancel();
-                                            }
-                                        })
-                                .setNegativeButton(context.getResources().getString(R.string.cancel),
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        }).show();
+                if (e.getMessage().contains("ENOSPC")) {
+                    View view = ((ContentsActivity) context).view;
+                    if (view != null) {
+                        Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
+                                R.string.storage_full), Snackbar.LENGTH_SHORT);
+                        snackbar.show();
                     }
-                });
+                } else {
+                    ApplicationLoader.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(context.getResources().getString(R.string.alert_connection_title))
+                                    .setMessage(context.getResources().getString(R.string.alert_connection_description))
+                                    .setPositiveButton(context.getResources().getString(R.string.connect),
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    DownloadHandler.this.cancel(true);
+                                                    new DownloadHandler(context, progressDialog).execute(strings);
+                                                    dialog.cancel();
+                                                }
+                                            })
+                                    .setNegativeButton(context.getResources().getString(R.string.cancel),
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            }).show();
+                        }
+                    });
+                }
                 return null;
             }
         } finally {

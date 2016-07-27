@@ -145,14 +145,15 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Get all saved lessons from the database, except visibility
+     * Get all saved lessons from the database within a week, except visibility
      *
-     * @param date        The date of the lessons we want to see
+     * @param date        The date of the lessons we want to see, will be parsed to week dates
      * @param componentId The id of the schedule
      * @return The Cursor containing all lessons.
      */
-    public Cursor getLessonsForCompare(String date, String componentId) {
-        return database.rawQuery("SELECT `component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ?", new String[]{date, componentId});
+    public Cursor getLessonsForCompare(Date date, String componentId) {
+        String[] weekDates = getWeekDates(date);
+        return database.rawQuery("SELECT `component_id`, `date`, `start`, `end`, `name`, `room`, `component`, `class_id` FROM `subject` WHERE `date` >= ? AND `date` <= ? AND `class_id` = ?", new String[]{weekDates[0], weekDates[1], componentId});
     }
 
     /**

@@ -121,31 +121,30 @@ public class DownloadsActivity extends AppCompatActivity {
             if (recyclerView == null) {
                 recyclerView = (RecyclerView) findViewById(R.id.downloads_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            } else {
-                recyclerView.setAdapter(new ContentAdapter(this, contents) {
-                    @Override
-                    protected void onContentClick(Content content) {
-                        File file = new File(path.getAbsolutePath() + File.separator + content.name);
-                        String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
-                                Uri.fromFile(file).toString());
-                        String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+            recyclerView.setAdapter(new ContentAdapter(this, contents) {
+                @Override
+                protected void onContentClick(Content content) {
+                    File file = new File(path.getAbsolutePath() + File.separator + content.name);
+                    String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
+                            Uri.fromFile(file).toString());
+                    String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
-                        Intent target = new Intent(Intent.ACTION_VIEW);
-                        target.setDataAndType(Uri.fromFile(file), mimetype);
-                        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    Intent target = new Intent(Intent.ACTION_VIEW);
+                    target.setDataAndType(Uri.fromFile(file), mimetype);
+                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-                        try {
-                            startActivity(target);
-                        } catch (ActivityNotFoundException e) {
-                            if (view != null) {
-                                Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_app_found),
-                                        Snackbar.LENGTH_SHORT);
-                                snackbar.show();
-                            }
+                    try {
+                        startActivity(target);
+                    } catch (ActivityNotFoundException e) {
+                        if (view != null) {
+                            Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_app_found),
+                                    Snackbar.LENGTH_SHORT);
+                            snackbar.show();
                         }
                     }
-                });
-            }
+                }
+            });
         } else {
             showEmptyTextview();
         }

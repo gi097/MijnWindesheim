@@ -192,6 +192,9 @@ public class ChooseTypeFragment extends Fragment {
                         editor.putString("componentId", Integer.toString(id));
                         editor.putInt("notifications_type", 5);
                         editor.putInt("type", type);
+                        if (preferences.getLong("checkTime", 0) > 0) {
+                            editor.remove("checkTime");
+                        }
                         if (android.os.Build.VERSION.SDK_INT >= 9) {
                             editor.apply();
                         } else {

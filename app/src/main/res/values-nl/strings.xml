@@ -102,6 +102,7 @@
     <string name="schedule_changed">Het rooster is gewijzigd!</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
     <string name="september">september</string>
+    <string name="storage_full">Onvoldoende ruimte op de sdkaart!</string>
     <string name="thursday">donderdag</string>
     <string name="today">Vandaag</string>
     <string name="tuesday">dinsdag</string>
