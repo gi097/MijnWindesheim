@@ -106,7 +106,6 @@ public class ScheduleHandler {
         while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
         }
-        ApplicationLoader.scheduleDatabase.addFetched(date);
         return new JSONObject(stringBuffer.toString());
     }
 
@@ -133,7 +132,7 @@ public class ScheduleHandler {
 
         // only select the old data if we need to compare
         Schedule[] oldData = null;
-        if (compare) {
+        if (compare && ApplicationLoader.scheduleDatabase.isFetched(date)) {
             Cursor oldCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
             oldData = new Schedule[oldCursor.getCount()];
             while (oldCursor.moveToNext()) {
@@ -198,6 +197,8 @@ public class ScheduleHandler {
             classRoom = "";
             module = "";
         }
+
+        ApplicationLoader.scheduleDatabase.addFetched(date);
 
         if (compare && oldData != null) {
             // start comparing old data with new one

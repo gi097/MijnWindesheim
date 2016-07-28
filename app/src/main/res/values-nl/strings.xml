@@ -26,8 +26,7 @@
     <string name="courses">Studieroutes</string>
     <string name="december">december</string>
     <string name="delete">Verwijderen</string>
-    <string name="delete_file">Verwijder bestand</string>
-    <string name="delete_file_description">Het bestand zal permanent verwijdert worden</string>
+    <string name="delete_file_description">Het bestand zal permanent verwijdert worden.</string>
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
     <string name="downloading">Downloaden…</string>
     <string name="downloads">Downloads</string>

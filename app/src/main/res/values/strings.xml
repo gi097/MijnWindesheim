@@ -26,8 +26,7 @@
     <string name="courses">Courses</string>
     <string name="december">December</string>
     <string name="delete">Delete</string>
-    <string name="delete_file">Delete file</string>
-    <string name="delete_file_description">This will delete the file permanently</string>
+    <string name="delete_file_description">This will delete the file permanently.</string>
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
     <string name="downloading">Downloading…</string>
     <string name="downloads">Downloads</string>
