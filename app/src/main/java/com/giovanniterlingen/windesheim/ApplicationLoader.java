@@ -30,14 +30,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.SQLite.ScheduleDatabase;
 import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
-import com.giovanniterlingen.windesheim.handlers.ScheduleChangeChecker;
+import com.giovanniterlingen.windesheim.handlers.ScheduleChangeHandler;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -48,6 +46,7 @@ public class ApplicationLoader extends Application {
 
     public static ScheduleDatabase scheduleDatabase;
     public static NotificationHandler notificationHandler;
+    public static ScheduleChangeHandler scheduleChangeHandler;
     public static volatile Context applicationContext;
     private static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;
@@ -85,7 +84,8 @@ public class ApplicationLoader extends Application {
         if (classId.length() != 0) {
             notificationHandler = new NotificationHandler();
             notificationHandler.start();
-            new ScheduleChangeChecker().start();
+            scheduleChangeHandler = new ScheduleChangeHandler();
+            scheduleChangeHandler.start();
         }
     }
 
@@ -111,14 +111,15 @@ public class ApplicationLoader extends Application {
     }
 
     /**
-     * Simply checks for an active connection
-     *
-     * @return true or false depending on the NetworkInfo
+     * Closes an already running ScheduleChangeHandlerThread and starts a new one.
      */
-    public static boolean isConnected() {
-        NetworkInfo networkInfo = ((ConnectivityManager) applicationContext
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+    public static void restartScheduleChangeHandlerThread() {
+        if (scheduleChangeHandler != null) {
+            scheduleChangeHandler.stopRunning();
+            scheduleChangeHandler = null;
+        }
+        scheduleChangeHandler = new ScheduleChangeHandler();
+        scheduleChangeHandler.start();
     }
 
     /**
@@ -132,6 +133,8 @@ public class ApplicationLoader extends Application {
         applicationHandler = new Handler(applicationContext.getMainLooper());
         scheduleDatabase = new ScheduleDatabase(applicationContext);
         scheduleDatabase.open();
+
+        NetworkReceiver.update(false);
 
         startPushService();
     }

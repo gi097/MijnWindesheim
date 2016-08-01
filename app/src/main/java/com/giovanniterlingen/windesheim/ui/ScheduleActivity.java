@@ -138,10 +138,6 @@ public class ScheduleActivity extends AppCompatActivity {
                 editor.commit();
             }
         }
-        if (ApplicationLoader.notificationHandler != null &&
-                !ApplicationLoader.notificationHandler.isRunning()) {
-            ApplicationLoader.restartNotificationThread();
-        }
         ApplicationLoader.postInitApplication();
         super.onCreate(savedInstanceState);
 
@@ -331,10 +327,6 @@ public class ScheduleActivity extends AppCompatActivity {
     public void onResume() {
         // Lets check if day has changed while app was in background
         super.onResume();
-        if (ApplicationLoader.notificationHandler != null &&
-                !ApplicationLoader.notificationHandler.isRunning()) {
-            ApplicationLoader.restartNotificationThread();
-        }
         if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
         }

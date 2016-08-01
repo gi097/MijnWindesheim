@@ -37,7 +37,9 @@ import java.util.Date;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleChangeChecker extends Thread {
+public class ScheduleChangeHandler extends Thread {
+
+    private volatile boolean running = true;
 
     @Override
     public void run() {
@@ -46,7 +48,7 @@ public class ScheduleChangeChecker extends Thread {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String componentId = sharedPreferences.getString("componentId", "");
         int type = sharedPreferences.getInt("type", 0);
-        while (true) {
+        while (isRunning()) {
             if (sharedPreferences.getLong("checkTime", 0) == 0 ||
                     !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
                 try {
@@ -59,15 +61,31 @@ public class ScheduleChangeChecker extends Thread {
                     } else {
                         editor.commit();
                     }
-                } catch (Exception ignore) {
-                    // We don't need to fix this, because we need to recheck anyway
+                } catch (Exception e) {
+                    stopRunning();
                 }
             }
             try {
-                sleep(1000);
+                sleep(60000);
             } catch (InterruptedException e) {
                 //
             }
         }
+    }
+
+    /**
+     * Check if the thread is running.
+     *
+     * @return The value of the running variable.
+     */
+    public boolean isRunning() {
+        return running;
+    }
+
+    /**
+     * Stop the thread.
+     */
+    public void stopRunning() {
+        running = false;
     }
 }

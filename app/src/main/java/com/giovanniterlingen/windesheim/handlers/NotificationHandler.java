@@ -221,7 +221,7 @@ public class NotificationHandler extends Thread {
                     cursor1.close();
                 }
             } catch (InterruptedException e) {
-                stopRunning();
+                //
             } catch (Exception e) {
                 createNotification(ApplicationLoader.applicationContext
                         .getResources().getString(R.string.connection_problem), false, false);

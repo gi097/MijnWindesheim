@@ -33,6 +33,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.NetworkReceiver;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.ui.AuthenticationActivity;
 import com.giovanniterlingen.windesheim.ui.ContentsActivity;
@@ -45,7 +46,7 @@ import com.giovanniterlingen.windesheim.ui.ContentsActivity;
 public class CookieHandler {
 
     public static void checkCookieAndIntent(final Context context) {
-        if (ApplicationLoader.isConnected()) {
+        if (NetworkReceiver.isConnected()) {
             Intent intent1;
             if (getCookie() != null && getCookie().length() > 0) {
                 intent1 = new Intent(context,
