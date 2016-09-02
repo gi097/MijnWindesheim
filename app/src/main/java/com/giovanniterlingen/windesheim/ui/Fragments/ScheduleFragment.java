@@ -120,7 +120,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
-            if (!ApplicationLoader.scheduleDatabase.containsWeek(date) &&
+            if (!ApplicationLoader.scheduleDatabase.containsWeek(date, componentId) &&
                     !ApplicationLoader.scheduleDatabase.isFetched(date)) {
                 new ScheduleFetcher(true, true, false).execute();
             } else {

@@ -194,12 +194,13 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     /**
      * Checks if the database contains lessons for a specific week.
      *
-     * @param date The date in the week we want to check.
+     * @param date        The date in the week we want to check.
+     * @param componentId The id of the schedule.
      * @return true or false, depending on cursor size.
      */
-    public boolean containsWeek(Date date) {
+    public boolean containsWeek(Date date, String componentId) {
         String[] weekDates = getWeekDates(date);
-        Cursor cursor = database.rawQuery("SELECT _id FROM `subject` WHERE `date` >= ? AND `date` <= ? AND `visible` = 1", new String[]{weekDates[0], weekDates[1]});
+        Cursor cursor = database.rawQuery("SELECT _id FROM `subject` WHERE `date` >= ? AND `date` <= ? AND `class_id` = ? AND `visible` = 1", new String[]{weekDates[0], weekDates[1], componentId});
         boolean bool = cursor.getCount() > 0;
         cursor.close();
         return bool;

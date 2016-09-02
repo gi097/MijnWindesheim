@@ -118,8 +118,8 @@ public class NotificationHandler extends Thread {
                 Date date = calendar.getTime();
                 Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(
                         simpleDateFormat.format(date), componentId);
-                if (cursor.getCount() == 0 && !ApplicationLoader.scheduleDatabase.containsWeek(date)
-                        && !ApplicationLoader.scheduleDatabase.isFetched(date)) {
+                if (cursor.getCount() == 0 && !ApplicationLoader.scheduleDatabase.containsWeek(date,
+                        componentId) && !ApplicationLoader.scheduleDatabase.isFetched(date)) {
                     ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
                             componentId, date, type), date, componentId, false);
                     cursor = ApplicationLoader.scheduleDatabase.getLessons(
