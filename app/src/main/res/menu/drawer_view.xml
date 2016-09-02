@@ -8,24 +8,16 @@
             android:title="@string/menuitem_change_schedule" />
         <item
             android:id="@+id/natschool"
-            android:icon="@drawable/ic_dashboard"
+            android:icon="@drawable/ic_school"
             android:title="@string/natschool" />
         <item
             android:id="@+id/downloads"
             android:icon="@drawable/ic_download"
             android:title="@string/downloads" />
         <item
-            android:id="@+id/notifications"
-            android:icon="@drawable/ic_notifications"
-            android:title="@string/menuitem_notifications" />
-        <item
             android:id="@+id/restore_lessons"
             android:icon="@drawable/ic_check"
             android:title="@string/menuitem_restore_lessons" />
-        <item
-            android:id="@+id/webmail"
-            android:icon="@drawable/ic_email"
-            android:title="@string/menuitem_webmail" />
     </group>
     <group
         android:id="@+id/secondary_items"
@@ -34,5 +26,9 @@
             android:id="@+id/about"
             android:icon="@drawable/ic_help"
             android:title="@string/menuitem_about" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings" />
     </group>
 </menu>

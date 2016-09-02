@@ -26,12 +26,12 @@ package com.giovanniterlingen.windesheim.ui;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -42,7 +42,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -69,7 +68,6 @@ public class ScheduleActivity extends AppCompatActivity {
     private static int type;
     private static volatile View view;
     private static FragmentManager fragmentManager;
-    private SharedPreferences sharedPreferences;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
 
@@ -106,7 +104,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         // Fix previous versions
         String classId = sharedPreferences.getString("classId", "");
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -114,11 +112,7 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.putString("componentId", classId);
             editor.putInt("type", 1);
             editor.remove("classId");
-            if (android.os.Build.VERSION.SDK_INT >= 9) {
-                editor.apply();
-            } else {
-                editor.commit();
-            }
+            editor.apply();
         }
         editor.remove("notifications");
         componentId = sharedPreferences.getString("componentId", "");
@@ -132,11 +126,7 @@ public class ScheduleActivity extends AppCompatActivity {
         }
         if (sharedPreferences.getInt("notifications_type", 0) == 0) {
             editor.putInt("notifications_type", 5);
-            if (android.os.Build.VERSION.SDK_INT >= 9) {
-                editor.apply();
-            } else {
-                editor.commit();
-            }
+            editor.apply();
         }
         ApplicationLoader.postInitApplication();
         super.onCreate(savedInstanceState);
@@ -170,7 +160,7 @@ public class ScheduleActivity extends AppCompatActivity {
         navigationView
                 .setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         switch (menuItem.getItemId()) {
@@ -186,105 +176,32 @@ public class ScheduleActivity extends AppCompatActivity {
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.downloads:
-                                Intent intent2 = new Intent(ScheduleActivity.this,
+                                Intent intent1 = new Intent(ScheduleActivity.this,
                                         DownloadsActivity.class);
-                                startActivity(intent2);
-                                menuItem.setChecked(false);
-                                return true;
-                            case R.id.notifications:
-                                createNotificationPrompt();
+                                startActivity(intent1);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.restore_lessons:
-                                Intent intent3 = new Intent(ScheduleActivity.this,
+                                Intent intent2 = new Intent(ScheduleActivity.this,
                                         HiddenLessonsActivity.class);
-                                startActivity(intent3);
-                                menuItem.setChecked(false);
-                                return true;
-                            case R.id.webmail:
-                                Intent intent4 = new Intent(Intent.ACTION_VIEW);
-                                intent4.setData(Uri.parse("https://outlook.com/windesheim.nl"));
-                                startActivity(intent4);
+                                startActivity(intent2);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.about:
-                                Intent intent5 = new Intent(ApplicationLoader.applicationContext,
+                                Intent intent3 = new Intent(ApplicationLoader.applicationContext,
                                         AboutActivity.class);
-                                startActivity(intent5);
+                                startActivity(intent3);
                                 menuItem.setChecked(false);
                                 return true;
+                            case R.id.settings:
+                                Intent intent4 = new Intent(ApplicationLoader.applicationContext,
+                                        SettingsActivity.class);
+                                startActivity(intent4);
+                                menuItem.setChecked(false);
                         }
                         return true;
                     }
                 });
-    }
-
-    private void createNotificationPrompt() {
-        if (sharedPreferences != null) {
-            final CharSequence[] items = {getResources().getString(R.string.menuitem_one_hour),
-                    getResources().getString(R.string.menuitem_thirty_minutes),
-                    getResources().getString(R.string.menuitem_fifteen_minutes),
-                    getResources().getString(R.string.menuitem_always_on),
-                    getResources().getString(R.string.menuitem_off)};
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getResources().getString(R.string.menuitem_notifications))
-                    .setSingleChoiceItems(items, sharedPreferences.getInt("notifications_type", 0) - 2,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int item) {
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    // Since we use an array, the index is 0 based.
-                                    // Add 2 to support my older versions
-                                    int id = item + 2;
-                                    switch (item) {
-                                        case 0:
-                                        case 1:
-                                        case 2:
-                                            editor.putInt("notifications_type", id);
-                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
-                                                editor.apply();
-                                            } else {
-                                                editor.commit();
-                                            }
-                                            if (ApplicationLoader.notificationHandler != null) {
-                                                ApplicationLoader.notificationHandler.clearNotification();
-                                            }
-                                            ApplicationLoader.restartNotificationThread();
-                                            showSnackbar(getResources().getString(R.string.notification_interval_changed));
-                                            break;
-                                        case 3:
-                                            editor.putInt("notifications_type", id);
-                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
-                                                editor.apply();
-                                            } else {
-                                                editor.commit();
-                                            }
-                                            if (ApplicationLoader.notificationHandler != null) {
-                                                ApplicationLoader.notificationHandler.clearNotification();
-                                            }
-                                            ApplicationLoader.restartNotificationThread();
-                                            showSnackbar(getResources().getString(R.string.persistent_notification));
-                                            break;
-                                        case 4:
-                                            editor.putInt("notifications_type", id);
-                                            if (android.os.Build.VERSION.SDK_INT >= 9) {
-                                                editor.apply();
-                                            } else {
-                                                editor.commit();
-                                            }
-                                            if (ApplicationLoader.notificationHandler != null) {
-                                                ApplicationLoader.notificationHandler.clearNotification();
-                                            }
-                                            ApplicationLoader.restartNotificationThread();
-                                            showSnackbar(getResources().getString(R.string.notifications_turned_off));
-                                            break;
-
-                                    }
-                                    dialog.dismiss();
-                                }
-                            });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-        }
     }
 
     /**

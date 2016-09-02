@@ -59,8 +59,14 @@ public class ScheduleHandler {
      */
     public static String getListFromServer(int type) throws Exception {
         StringBuilder stringBuffer = new StringBuilder("");
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                "ajaxCommand=getPageConfig&type=" + type);
+        URL urlLink;
+        if (type == 1) {
+            // temporary link to fix old cached ids
+            urlLink = new URL("http://henrivandemunt.nl/class_parsed.txt");
+        } else {
+            urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+                    "ajaxCommand=getPageConfig&type=" + type);
+        }
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
@@ -94,7 +100,7 @@ public class ScheduleHandler {
                 "&date=" + new SimpleDateFormat("yyyyMMdd").format(date));
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
-        connection.setRequestMethod("GET");
+        connection.setRequestMethod("POST");
         connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
         connection.setDoInput(true);
         connection.connect();

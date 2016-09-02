@@ -1,16 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="about">About</string>
     <string name="about_author">Giovanni Terlingen</string>
     <string name="about_developer">Developer and maintainer</string>
-    <string name="about_thomas">Thomas Visch</string>
     <string name="about_natschool">N@Tschool! implementation</string>
+    <string name="about_thomas">Thomas Visch</string>
+
     <string name="alert_connection_description">The data could not be retrieved. Check your internet connection and try again.</string>
     <string name="alert_connection_title">Problem while connecting!</string>
+
     <string name="app_name">MyWindesheim</string>
+
     <string name="april">April</string>
+
     <string name="august">August</string>
+
     <string name="cancel">Cancel</string>
+
     <string name="canceled_downloading">Download has been cancelled</string>
+
     <string name="choose_class">Choose your class</string>
     <string name="choose_class_description">Here you can search your class, after that click on it to set it as your default schedule.</string>
     <string name="choose_class_hint">Enter your class</string>
@@ -20,29 +28,56 @@
     <string name="choose_teacher">Choose your name or teacher-code</string>
     <string name="choose_teacher_description">Here you can search your name or teacher-code, after that click on it to set it as your default schedule.</string>
     <string name="choose_teacher_hint">Enter your name or teacher-code</string>
+
     <string name="confirmation">Are you sure?</string>
+
     <string name="connect">Connect</string>
+
     <string name="connection_problem">A problem occurred while fetching data</string>
+
     <string name="courses">Courses</string>
+
     <string name="december">December</string>
+
     <string name="delete">Delete</string>
     <string name="delete_file_description">This will delete the file permanently.</string>
+
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
+
     <string name="downloading">Downloading…</string>
+
     <string name="downloads">Downloads</string>
+
     <string name="february">February</string>
+
     <string name="file_deleted">File has been deleted</string>
+
     <string name="finished">FINISHED</string>
+
     <string name="fix">FIX IT</string>
+
     <string name="friday">Friday</string>
+
     <string name="hidden_schedule_label">Hidden lessons</string>
     <string name="hidden_schedule_not_found">No hidden lessons found</string>
+
     <string name="hide">Hide</string>
     <string name="hide_lesson">Hide lesson</string>
+
     <string name="icon">icon</string>
+
+    <string name="interval_always_on">Always on</string>
+    <string name="interval_fifteen_minutes">15 minutes</string>
+    <string name="interval_off">Off</string>
+    <string name="interval_one_hour">1 hour</string>
+    <string name="interval_thirty_minutes">30 minutes</string>
+
     <string name="january">January</string>
+
     <string name="july">July</string>
+
     <string name="june">June</string>
+
     <string name="lesson_hidden">Lesson has been hidden</string>
     <string name="lesson_multiple_hours">You have %1$s in about %2$s hours in %3$s</string>
     <string name="lesson_multiple_hours_multiple_minutes">You have %1$s in about %2$s hours and %3$s minutes in %4$s</string>
@@ -54,21 +89,21 @@
     <string name="lesson_one_minute">You have %1$s in about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
     <string name="lesson_started">STARTED</string>
+
     <string name="loading">Loading…</string>
+
     <string name="login">Login</string>
+
     <string name="march">March</string>
+
     <string name="may">May</string>
+
     <string name="menuitem_about">About this app</string>
-    <string name="menuitem_always_on">Always on</string>
     <string name="menuitem_change_schedule">Change schedule</string>
-    <string name="menuitem_fifteen_minutes">15 minutes ahead of time</string>
-    <string name="menuitem_notifications">Notifications</string>
-    <string name="menuitem_off">Off</string>
-    <string name="menuitem_one_hour">1 hour ahead of time</string>
     <string name="menuitem_restore_lessons">Restore lessons</string>
-    <string name="menuitem_thirty_minutes">30 minutes ahead of time</string>
-    <string name="menuitem_webmail">Webmail</string>
+
     <string name="monday">Monday</string>
+
     <string name="multiple_lessons_multiple_hours">You have multiple lessons in about %1$s hours</string>
     <string name="multiple_lessons_multiple_hours_multiple_minutes">You have multiple lessons in about %1$s hours and %2$s minutes</string>
     <string name="multiple_lessons_multiple_hours_one_minute">You have multiple lessons in about %1$s hours and 1 minute</string>
@@ -77,34 +112,59 @@
     <string name="multiple_lessons_one_hour_multiple_minutes">You have multiple lessons in about 1 hour and %1$s minutes</string>
     <string name="multiple_lessons_one_hour_one_minute">You have multiple lessons in about 1 hour and 1 minute</string>
     <string name="multiple_lessons_one_minute">You have multiple lessons in about 1 minute</string>
+
     <string name="natschool">N@Tschool!</string>
+
     <string name="no_app_found">There is no app found to open this file</string>
     <string name="no_calendar_found">No calendar found</string>
     <string name="no_content_found">No files found</string>
     <string name="no_lessons_found">There are no lessons found for today</string>
     <string name="no_more_lessons">You have no more upcoming lessons today :)</string>
+    <string name="no_permission">No access to the sdcard</string>
+
     <string name="not_supported">This file is not supported</string>
-    <string name="notification_interval_changed">Notification-interval has been changed</string>
-    <string name="notifications_turned_off">Notifications has been disabled</string>
+
     <string name="november">November</string>
+
     <string name="october">October</string>
+
+    <string name="ok">OK</string>
+
     <string name="overflow_description">Options</string>
+
     <string name="pager_item_classes">Classes</string>
     <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>
-    <string name="permissions">No access to the sdcard</string>
-    <string name="persistent_notification">Ongoing notification has been enabled</string>
+
     <string name="rate">RATE</string>
     <string name="rate_dialog">Give me a review :)</string>
+
     <string name="restore">Restore</string>
+
     <string name="save_lesson">Save lesson to calendar</string>
+
     <string name="schedule_changed">The schedule has been changed!</string>
     <string name="schedule_not_found">No schedule found for this day</string>
+
     <string name="september">September</string>
+
+    <string name="settings">Settings</string>
+    <string name="settings_interval">Interval</string>
+    <string name="settings_lessons">Lessons</string>
+    <string name="settings_lessons_description">Notify when a new lesson is starting</string>
+    <string name="settings_notification_description">Receive notifications for</string>
+    <string name="settings_schedule_change">Schedule changes</string>
+    <string name="settings_schedule_change_description">Notify when the schedule changes</string>
+
     <string name="storage_full">No space left on sdcard!</string>
+
     <string name="thursday">Thursday</string>
+
     <string name="today">Today</string>
+
     <string name="tuesday">Tuesday</string>
+
     <string name="undo">UNDO</string>
+
     <string name="wednesday">Wednesday</string>
 </resources>

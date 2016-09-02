@@ -68,6 +68,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     private TextView emptyTextView;
     private ProgressBar spinner;
     private RecyclerView recyclerView;
+    private SimpleDateFormat dayFormat;
+    private Calendar calendar;
+    private int[] dateStrings;
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -77,12 +80,17 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
         simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        dayFormat = new SimpleDateFormat("dd");
+        calendar = Calendar.getInstance();
+        dateStrings = new int[]{R.string.january, R.string.february, R.string.march, R.string.april,
+                R.string.may, R.string.june, R.string.july, R.string.august, R.string.september,
+                R.string.october, R.string.november, R.string.december};
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (getUserVisibleHint()) {
+        if (isMenuVisible()) {
             if (recyclerView != null && recyclerView.getAdapter() == null) {
                 new ScheduleFetcher(false, true, false).execute();
             } else {
@@ -91,60 +99,27 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
-            Calendar calendar = Calendar.getInstance();
+    private void updateToolbar() {
+        if (isMenuVisible() && dayFormat != null && calendar != null) {
             calendar.setTime(date);
             int month = calendar.get(Calendar.MONTH);
-            String monthString = null;
-            switch (month) {
-                case 0:
-                    monthString = getResources().getString(R.string.january);
-                    break;
-                case 1:
-                    monthString = getResources().getString(R.string.february);
-                    break;
-                case 2:
-                    monthString = getResources().getString(R.string.march);
-                    break;
-                case 3:
-                    monthString = getResources().getString(R.string.april);
-                    break;
-                case 4:
-                    monthString = getResources().getString(R.string.may);
-                    break;
-                case 5:
-                    monthString = getResources().getString(R.string.june);
-                    break;
-                case 6:
-                    monthString = getResources().getString(R.string.july);
-                    break;
-                case 7:
-                    monthString = getResources().getString(R.string.august);
-                    break;
-                case 8:
-                    monthString = getResources().getString(R.string.september);
-                    break;
-                case 9:
-                    monthString = getResources().getString(R.string.october);
-                    break;
-                case 10:
-                    monthString = getResources().getString(R.string.november);
-                    break;
-                case 11:
-                    monthString = getResources().getString(R.string.december);
-            }
+            String monthString = getResources().getString(dateStrings[month]);
             ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
             if (toolbar != null) {
-                toolbar.setTitle(simpleDateFormat.format(date) + " " + monthString);
-                // ugly workaround to fix toolbar title truncation
-                toolbar.setDisplayHomeAsUpEnabled(false);
-                toolbar.setDisplayHomeAsUpEnabled(true);
+                String title = dayFormat.format(date) + " " + monthString;
+                if (!title.equals(toolbar.getTitle())) {
+                    toolbar.setTitle(title);
+                    // ugly workaround to fix toolbar title truncation
+                    toolbar.setDisplayHomeAsUpEnabled(false);
+                    toolbar.setDisplayHomeAsUpEnabled(true);
+                }
             }
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (isVisible()) {
             if (!ApplicationLoader.scheduleDatabase.containsWeek(date) &&
                     !ApplicationLoader.scheduleDatabase.isFetched(date)) {
                 new ScheduleFetcher(true, true, false).execute();
@@ -179,7 +154,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void alertConnectionProblem() {
-        if (!getUserVisibleHint()) {
+        if (!isMenuVisible()) {
             return;
         }
         ApplicationLoader.runOnUIThread(new Runnable() {
@@ -239,6 +214,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            updateToolbar();
             if (adapter == null || adapter.getItemCount() == 0) {
                 if (showSpinner && spinner != null && emptyTextView != null) {
                     emptyTextView.setVisibility(View.GONE);

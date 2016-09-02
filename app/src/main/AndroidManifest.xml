@@ -64,6 +64,11 @@
             android:label="@string/downloads"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" />
 
         <service
             android:name=".NotificationService"

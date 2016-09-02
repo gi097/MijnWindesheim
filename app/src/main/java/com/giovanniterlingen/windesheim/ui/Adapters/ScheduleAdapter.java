@@ -192,7 +192,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
     }
 
     private void showCalendarDialog(final long lessonId) {
-        Cursor cursor = ApplicationLoader.scheduleDatabase.getSingleLesson(lessonId);
+        Cursor cursor = ApplicationLoader.scheduleDatabase.getSingleLesson(dateString, lessonId);
         if (cursor.moveToFirst()) {
             String[] startTimeStrings = cursor.getString(0).split(":");
             String[] endTimeStrings = cursor.getString(1).split(":");

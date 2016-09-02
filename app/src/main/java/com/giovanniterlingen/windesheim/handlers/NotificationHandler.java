@@ -60,6 +60,41 @@ public class NotificationHandler extends Thread {
     private Calendar calendar = Calendar.getInstance();
 
     /**
+     * Show a notification in the Android system when the schedule is changed
+     */
+    public static void createScheduleChangedNotification() {
+        Intent intent = new Intent(ApplicationLoader.applicationContext,
+                ScheduleActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                ApplicationLoader.applicationContext, (int) System.currentTimeMillis(),
+                intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                ApplicationLoader.applicationContext)
+                .setContentTitle(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.app_name))
+                .setContentText(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.schedule_changed))
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.notifybar)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext,
+                        R.color.colorPrimary));
+        if (android.os.Build.VERSION.SDK_INT >= 16) {
+            mBuilder.setPriority(Notification.PRIORITY_HIGH);
+        }
+        mBuilder.setDefaults(Notification.DEFAULT_ALL);
+
+        NotificationManager notificationManager = (NotificationManager)
+                ApplicationLoader.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, mBuilder.build());
+
+        // Show the latest changes also in the notifications
+        ApplicationLoader.restartNotificationThread();
+    }
+
+    /**
      * This method will start a loop, which will show notifications when needed, they also gets
      * updated. Since it's one big block of code, I won't explain it. It works and it's stable.
      */
@@ -289,41 +324,6 @@ public class NotificationHandler extends Thread {
         } else {
             clearNotification();
         }
-    }
-
-    /**
-     * Show a notification in the Android system when the schedule is changed
-     */
-    public static void createScheduleChangedNotification() {
-        Intent intent = new Intent(ApplicationLoader.applicationContext,
-                ScheduleActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                ApplicationLoader.applicationContext, (int) System.currentTimeMillis(),
-                intent, 0);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                ApplicationLoader.applicationContext)
-                .setContentTitle(ApplicationLoader.applicationContext.getResources()
-                        .getString(R.string.app_name))
-                .setContentText(ApplicationLoader.applicationContext.getResources()
-                        .getString(R.string.schedule_changed))
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.notifybar)
-                .setOngoing(false)
-                .setAutoCancel(true)
-                .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext,
-                        R.color.colorPrimary));
-        if (android.os.Build.VERSION.SDK_INT >= 16) {
-            mBuilder.setPriority(Notification.PRIORITY_HIGH);
-        }
-        mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationManager notificationManager = (NotificationManager)
-                ApplicationLoader.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, mBuilder.build());
-
-        // Show the latest changes also in the notifications
-        ApplicationLoader.restartNotificationThread();
     }
 
     /**

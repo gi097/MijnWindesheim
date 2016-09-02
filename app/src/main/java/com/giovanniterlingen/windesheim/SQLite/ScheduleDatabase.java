@@ -159,11 +159,18 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     /**
      * Get a lesson by the database id
      *
-     * @param id The database id
+     * @param date The date of the lessons we want to see, will be parsed to week dates
+     * @param id   The database id
      * @return The cursor containing a lesson
      */
-    public Cursor getSingleLesson(long id) {
-        return database.rawQuery("SELECT MIN(`start`), MAX(`end`), `name`, MAX(`room`) FROM `subject` WHERE `_id` = ?", new String[]{Long.toString(id)});
+    public Cursor getSingleLesson(String date, long id) {
+        Cursor cursor = database.rawQuery("SELECT `component_id` FROM `subject` WHERE `_id` = ?", new String[]{Long.toString(id)});
+        String componentId = null;
+        while (cursor.moveToNext()) {
+            componentId = cursor.getString(0);
+        }
+        cursor.close();
+        return database.rawQuery("SELECT MIN(`start`), MAX(`end`), `name`, MAX(`room`) FROM `subject` WHERE `date` = ? AND `component_id` = ? AND `visible` = 1 GROUP BY `component_id`", new String[]{date, componentId});
     }
 
     /**
@@ -229,6 +236,13 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      */
     public void deleteOldFetched(String date) {
         database.execSQL("DELETE FROM `fetched_dates` WHERE `date` < ?", new String[]{date});
+    }
+
+    /**
+     * Clears all dates which specifies the fetch times.
+     **/
+    public void clearFetched() {
+        database.execSQL("DELETE FROM `fetched_dates`");
     }
 
     /**

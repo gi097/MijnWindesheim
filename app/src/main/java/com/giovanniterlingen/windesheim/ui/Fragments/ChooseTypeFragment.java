@@ -188,6 +188,10 @@ public class ChooseTypeFragment extends Fragment {
                     @Override
                     protected void onContentClick(int id) {
                         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                        if (preferences.getString("componentId", "").length() != 0 &&
+                                preferences.getInt("type", 0) != 0) {
+                            ApplicationLoader.scheduleDatabase.clearFetched();
+                        }
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("componentId", Integer.toString(id));
                         editor.putInt("notifications_type", 5);
@@ -195,11 +199,7 @@ public class ChooseTypeFragment extends Fragment {
                         if (preferences.getLong("checkTime", 0) > 0) {
                             editor.remove("checkTime");
                         }
-                        if (android.os.Build.VERSION.SDK_INT >= 9) {
-                            editor.apply();
-                        } else {
-                            editor.commit();
-                        }
+                        editor.apply();
 
                         ApplicationLoader.restartNotificationThread();
 

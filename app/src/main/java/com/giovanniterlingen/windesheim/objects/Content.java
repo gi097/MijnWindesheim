@@ -31,8 +31,8 @@ package com.giovanniterlingen.windesheim.objects;
  */
 public class Content {
 
-    public int id = -1;
     public final String name;
+    public int id = -1;
     public int studyRouteItemId = -1;
     public String url;
     public int type;

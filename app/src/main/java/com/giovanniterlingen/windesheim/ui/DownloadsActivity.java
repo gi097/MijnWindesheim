@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -98,12 +99,33 @@ public class DownloadsActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
+        checkPermissions();
+
         updateFilesList();
     }
 
-    private void updateFilesList() {
-        PermissionHandler.verifyStoragePermissions(this);
+    private void checkPermissions() {
+        if (!PermissionHandler.verifyStoragePermissions(this)) {
+            if (view != null) {
+                Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_permission),
+                        Snackbar.LENGTH_LONG);
+                snackbar.setAction(getResources().getString(R.string.fix), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                });
+                snackbar.show();
+            }
+            showEmptyTextview();
+        }
+    }
 
+    private void updateFilesList() {
         final File path = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim" + File.separator);
         File files[] = path.listFiles();
         if (files != null && files.length > 0) {

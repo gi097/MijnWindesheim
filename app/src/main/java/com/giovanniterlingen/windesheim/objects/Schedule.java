@@ -31,17 +31,17 @@ package com.giovanniterlingen.windesheim.objects;
  */
 public class Schedule {
 
-    private String componentId;
-    private String date;
-    private String start;
-    private String end;
-    private String name;
-    private String room;
-    private String component;
-    private String classId;
+    private final String componentId;
+    private final String date;
+    private final String start;
+    private final String end;
+    private final String name;
+    private final String room;
+    private final String component;
+    private final String classId;
 
     public Schedule(String componentId, String date, String start, String end, String name,
-                     String room, String component, String classId) {
+                    String room, String component, String classId) {
         this.componentId = componentId;
         this.date = date;
         this.start = start;

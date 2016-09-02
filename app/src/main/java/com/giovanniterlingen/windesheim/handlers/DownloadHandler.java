@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.handlers;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -33,7 +32,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -63,8 +61,8 @@ import java.net.URL;
 public class DownloadHandler extends AsyncTask<String, Integer, String> {
 
     private final Activity context;
-    private PowerManager.WakeLock wakeLock;
     private final ProgressDialog progressDialog;
+    private PowerManager.WakeLock wakeLock;
 
     public DownloadHandler(Activity context, ProgressDialog progressDialog) {
         this.context = context;
@@ -217,10 +215,9 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         if (result != null && result.equals("permission")) {
             View view = ((ContentsActivity) context).view;
             if (view != null) {
-                Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.permissions),
-                        Snackbar.LENGTH_SHORT);
+                Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_permission),
+                        Snackbar.LENGTH_LONG);
                 snackbar.setAction(context.getResources().getString(R.string.fix), new View.OnClickListener() {
-                    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent();

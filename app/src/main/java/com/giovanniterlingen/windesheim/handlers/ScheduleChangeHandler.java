@@ -45,30 +45,28 @@ public class ScheduleChangeHandler extends Thread {
     public void run() {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String componentId = sharedPreferences.getString("componentId", "");
-        int type = sharedPreferences.getInt("type", 0);
-        while (isRunning()) {
-            if (sharedPreferences.getLong("checkTime", 0) == 0 ||
-                    !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
-                try {
-                    Date date = new Date();
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                            componentId, date, type), date, componentId, true);
-                    editor.putLong("checkTime", System.currentTimeMillis());
-                    if (android.os.Build.VERSION.SDK_INT >= 9) {
+        if (sharedPreferences.getBoolean("schedule_change_service", true)) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            String componentId = sharedPreferences.getString("componentId", "");
+            int type = sharedPreferences.getInt("type", 0);
+            while (isRunning()) {
+                if (sharedPreferences.getLong("checkTime", 0) == 0 ||
+                        !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
+                    try {
+                        Date date = new Date();
+                        ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
+                                componentId, date, type), date, componentId, true);
+                        editor.putLong("checkTime", System.currentTimeMillis());
                         editor.apply();
-                    } else {
-                        editor.commit();
+                    } catch (Exception e) {
+                        stopRunning();
                     }
-                } catch (Exception e) {
-                    stopRunning();
                 }
-            }
-            try {
-                sleep(60000);
-            } catch (InterruptedException e) {
-                //
+                try {
+                    sleep(60000);
+                } catch (InterruptedException e) {
+                    //
+                }
             }
         }
     }

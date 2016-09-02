@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.SettingsActivity">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/colorBackgroundTint"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/activity_margin"
+                android:text="@string/settings_notification_description"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16.0sp" />
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                card_view:cardBackgroundColor="@android:color/white"
+                card_view:cardCornerRadius="0.0dip">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:background="?android:listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/content_title"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:text="@string/settings_lessons"
+                            android:textColor="#dd000000"
+                            android:textSize="@dimen/text_size" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/content_title"
+                            android:gravity="start"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:text="@string/settings_lessons_description"
+                            android:textColor="#8a000000"
+                            android:textSize="12.0sp" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/lesson_notification_switch"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="start"
+                            android:padding="@dimen/activity_margin" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:background="?android:listDivider" />
+
+                    <LinearLayout
+                        android:id="@+id/settings_interval_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:foreground="?selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:text="@string/settings_interval"
+                            android:textColor="#dd000000"
+                            android:textSize="@dimen/text_size" />
+
+                        <TextView
+                            android:id="@+id/settings_interval_textview"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:textColor="#8a000000"
+                            android:textSize="12.0sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:background="?android:listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/schedule_change"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:text="@string/settings_schedule_change"
+                            android:textColor="#dd000000"
+                            android:textSize="@dimen/text_size" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/schedule_change"
+                            android:gravity="start"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:text="@string/settings_schedule_change_description"
+                            android:textColor="#8a000000"
+                            android:textSize="12.0sp" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/change_notification_switch"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="start"
+                            android:padding="@dimen/activity_margin" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0dip"
+                android:background="?android:listDivider" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>
