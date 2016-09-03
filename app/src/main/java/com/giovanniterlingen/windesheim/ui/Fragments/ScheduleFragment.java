@@ -146,9 +146,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date),
                     componentId, date);
             recyclerView.setAdapter(adapter);
-        }
-        if (recyclerView != null && recyclerView.getAdapter() != null) {
-            emptyTextView.setVisibility(View.GONE);
+        } else {
+            emptyTextView.setVisibility(View.VISIBLE);
         }
         return viewGroup;
     }
@@ -215,11 +214,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected void onPreExecute() {
             super.onPreExecute();
             updateToolbar();
-            if (adapter == null || adapter.getItemCount() == 0) {
-                if (showSpinner && spinner != null && emptyTextView != null) {
-                    emptyTextView.setVisibility(View.GONE);
-                    spinner.setVisibility(View.VISIBLE);
-                }
+            if (adapter == null && showSpinner && spinner != null) {
+                emptyTextView.setVisibility(View.GONE);
+                spinner.setVisibility(View.VISIBLE);
+            }
+            if (adapter != null && adapter.getItemCount() == 0) {
+                emptyTextView.setVisibility(View.VISIBLE);
             }
             if (showSwipeRefresh && swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(true);

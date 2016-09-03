@@ -201,6 +201,7 @@ public class ChooseTypeFragment extends Fragment {
                         }
                         editor.apply();
 
+                        ApplicationLoader.restartScheduleChangeHandlerThread();
                         ApplicationLoader.restartNotificationThread();
 
                         Intent intent = new Intent(context, ScheduleActivity.class);

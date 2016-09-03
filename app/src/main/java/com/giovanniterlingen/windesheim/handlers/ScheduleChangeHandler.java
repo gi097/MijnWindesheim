@@ -30,7 +30,7 @@ import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -53,9 +53,15 @@ public class ScheduleChangeHandler extends Thread {
                 if (sharedPreferences.getLong("checkTime", 0) == 0 ||
                         !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
                     try {
-                        Date date = new Date();
+                        Calendar calendar = Calendar.getInstance();
                         ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, date, type), date, componentId, true);
+                                componentId, calendar.getTime(), type), calendar.getTime(),
+                                componentId, true);
+                        // add one week to check the next week too
+                        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                        ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
+                                componentId, calendar.getTime(), type), calendar.getTime(),
+                                componentId, true);
                         editor.putLong("checkTime", System.currentTimeMillis());
                         editor.apply();
                     } catch (Exception e) {

@@ -91,7 +91,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     List<Fragment> fragments = fragmentManager.getFragments();
                     if (fragments != null) {
                         for (Fragment fragment : fragments) {
-                            if (fragment != null && fragment.isVisible()) {
+                            if (fragment != null && fragment.isMenuVisible()) {
                                 ((ScheduleFragment) fragment).updateLayout();
                                 break;
                             }
