@@ -142,12 +142,15 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(
                 simpleDateFormat.format(date), componentId);
-        if (scheduleDay != null && scheduleDay.getCount() > 0) {
+        if (scheduleDay.getCount() > 0) {
             adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date),
                     componentId, date);
             recyclerView.setAdapter(adapter);
         } else {
             emptyTextView.setVisibility(View.VISIBLE);
+            if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
+                new ScheduleFetcher(true, true, false).execute();
+            }
         }
         return viewGroup;
     }
