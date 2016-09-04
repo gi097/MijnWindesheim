@@ -126,7 +126,7 @@ public class ScheduleHandler {
      * @throws Exception
      */
     @SuppressLint("SimpleDateFormat")
-    public static void saveSchedule(JSONObject jsonObject, Date date, String componentId, boolean compare)
+    public static synchronized void saveSchedule(JSONObject jsonObject, Date date, String componentId, boolean compare)
             throws Exception {
         // get the user filtered lessons to exclude them during fetch
         List<String> list = new ArrayList<>();
@@ -152,6 +152,8 @@ public class ScheduleHandler {
 
         // delete old schedule data
         ApplicationLoader.scheduleDatabase.clearScheduleData(date);
+        // delete fetch date
+        ApplicationLoader.scheduleDatabase.clearFetched(date);
 
         // init required global values
         String component = "";

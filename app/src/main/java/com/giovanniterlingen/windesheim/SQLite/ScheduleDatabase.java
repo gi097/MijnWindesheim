@@ -247,6 +247,15 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     /**
+     * Clears all dates which specifies the fetch times.
+     **/
+    public void clearFetched(Date date) {
+        String[] weekDates = getWeekDates(date);
+        database.execSQL("DELETE FROM `fetched_dates` WHERE `date` >= ? AND `date` <= ?",
+                new String[]{weekDates[0], weekDates[1]});
+    }
+
+    /**
      * Parsed the Date object to a string
      *
      * @param date The date we want to parse
@@ -267,10 +276,9 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private String[] getWeekDates(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - calendar.getFirstDayOfWeek();
-        calendar.add(Calendar.DAY_OF_MONTH, -dayOfWeek);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         String lowestDate = parseDate(calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, 6);
+        calendar.add(Calendar.DATE, 6);
         String highestDate = parseDate(calendar.getTime());
         return new String[]{lowestDate, highestDate};
     }

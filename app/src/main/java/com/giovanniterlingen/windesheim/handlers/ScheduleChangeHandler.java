@@ -55,13 +55,10 @@ public class ScheduleChangeHandler extends Thread {
                     try {
                         Calendar calendar = Calendar.getInstance();
                         ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(),
-                                componentId, true);
-                        // add one week to check the next week too
-                        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                                componentId, calendar.getTime(), type), calendar.getTime(), componentId, true);
+                        calendar.add(Calendar.DATE, 7);
                         ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(),
-                                componentId, true);
+                                componentId, calendar.getTime(), type), calendar.getTime(), componentId, true);
                         editor.putLong("checkTime", System.currentTimeMillis());
                         editor.apply();
                     } catch (Exception e) {
