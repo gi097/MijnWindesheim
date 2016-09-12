@@ -18,6 +18,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/about_header"
                 android:layout_width="wrap_content"
                 android:layout_height="72.0dip"
                 android:layout_gravity="center"
@@ -28,6 +29,35 @@
                 android:padding="16.0dip"
                 android:singleLine="true"
                 android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/material_card_margin_half"
+                android:layout_marginLeft="@dimen/material_card_margin"
+                android:layout_marginRight="@dimen/material_card_margin"
+                android:layout_marginTop="@dimen/material_card_margin_half"
+                android:clickable="true"
+                android:foreground="?selectableItemBackground"
+                card_view:cardCornerRadius="@dimen/material_card_corner_radius">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_margin"
+                    android:text="@string/about_description"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="@dimen/card_text_margin" />
+
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="72.0dip"
+                android:padding="16.0dip"
+                android:singleLine="true"
+                android:text="@string/about_devs"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <android.support.v7.widget.CardView
@@ -43,11 +73,11 @@
                 card_view:cardCornerRadius="@dimen/material_card_corner_radius">
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/activity_margin"
-                    android:paddingTop="@dimen/activity_margin">
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_margin"
+                    android:paddingStart="@dimen/activity_margin">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:layout_width="48.0dip"
@@ -55,34 +85,25 @@
                         android:layout_gravity="center"
                         android:src="@drawable/gi097" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingBottom="@dimen/activity_margin"
-                        android:paddingTop="@dimen/activity_margin"
-                        android:text="@string/about_author"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
                     <LinearLayout
-                        android:layout_width="fill_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingBottom="10.0dip"
-                        android:paddingTop="4.0dip">
+                        android:padding="@dimen/activity_margin">
 
-                        <View
+                        <TextView
                             android:layout_width="fill_parent"
-                            android:layout_height="1.0dip"
-                            android:background="?android:listDivider" />
-                    </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_author"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/about_developer"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_developer"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+                    </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -99,11 +120,11 @@
                 card_view:cardCornerRadius="@dimen/material_card_corner_radius">
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/activity_margin"
-                    android:paddingTop="@dimen/activity_margin">
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_margin"
+                    android:paddingStart="@dimen/activity_margin">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:layout_width="48.0dip"
@@ -111,34 +132,25 @@
                         android:layout_gravity="center"
                         android:src="@drawable/thomas" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingBottom="@dimen/activity_margin"
-                        android:paddingTop="@dimen/activity_margin"
-                        android:text="@string/about_thomas"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
                     <LinearLayout
-                        android:layout_width="fill_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingBottom="10.0dip"
-                        android:paddingTop="4.0dip">
+                        android:padding="@dimen/activity_margin">
 
-                        <View
+                        <TextView
                             android:layout_width="fill_parent"
-                            android:layout_height="1.0dip"
-                            android:background="?android:listDivider" />
-                    </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_thomas"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/about_natschool"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/about_natschool"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+                    </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>

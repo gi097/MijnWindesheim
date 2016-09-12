@@ -2,7 +2,9 @@
 <resources>
     <string name="about">About</string>
     <string name="about_author">Giovanni Terlingen</string>
+    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) am not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).</string>
     <string name="about_developer">Developer and maintainer</string>
+    <string name="about_devs">Developers:</string>
     <string name="about_natschool">N@Tschool! implementation</string>
     <string name="about_thomas">Thomas Visch</string>
 

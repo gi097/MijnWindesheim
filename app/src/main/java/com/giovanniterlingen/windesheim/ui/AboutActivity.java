@@ -25,6 +25,7 @@
 package com.giovanniterlingen.windesheim.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -32,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.R;
 
@@ -52,6 +54,18 @@ public class AboutActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        TextView header = (TextView) findViewById(R.id.about_header);
+        if (header != null) {
+            try {
+                String versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                String title = getResources().getString(R.string.app_name) + " " + versionCode;
+                header.setText(title);
+            } catch (PackageManager.NameNotFoundException e) {
+                header.setText(getResources().getString(R.string.app_name));
+            }
+        }
+
         CardView cardView = (CardView) findViewById(R.id.gi097);
         if (cardView != null) {
             cardView.setOnClickListener(new View.OnClickListener() {
