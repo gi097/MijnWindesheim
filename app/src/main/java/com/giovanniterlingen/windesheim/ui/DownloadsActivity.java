@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -147,14 +148,22 @@ public class DownloadsActivity extends AppCompatActivity {
             recyclerView.setAdapter(new ContentAdapter(this, contents) {
                 @Override
                 protected void onContentClick(Content content) {
+                    Uri uri;
                     File file = new File(path.getAbsolutePath() + File.separator + content.name);
-                    String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
-                            Uri.fromFile(file).toString());
-                    String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-
                     Intent target = new Intent(Intent.ACTION_VIEW);
-                    target.setDataAndType(Uri.fromFile(file), mimetype);
-                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    if (android.os.Build.VERSION.SDK_INT >= 24) {
+                        uri = FileProvider.getUriForFile(DownloadsActivity.this,
+                                "com.giovanniterlingen.windesheim.provider", file);
+                        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } else {
+                        uri = Uri.fromFile(file);
+                        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    }
+                    String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+                    String mimetype = android.webkit.MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(extension);
+                    target.setDataAndType(uri, mimetype);
 
                     try {
                         startActivity(target);

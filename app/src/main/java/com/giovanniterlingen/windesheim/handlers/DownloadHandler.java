@@ -36,6 +36,7 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
@@ -232,14 +233,22 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             return;
         }
         if (result != null) {
-            String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(
-                    new File(result)).toString());
+            Uri uri;
+            Intent target = new Intent(Intent.ACTION_VIEW);
+            if (android.os.Build.VERSION.SDK_INT >= 24) {
+                uri = FileProvider.getUriForFile(context,
+                        "com.giovanniterlingen.windesheim.provider",
+                        new File(result));
+                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                uri = Uri.fromFile(new File(result));
+                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            }
+            String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(uri.toString());
             String mimetype = android.webkit.MimeTypeMap.getSingleton()
                     .getMimeTypeFromExtension(extension);
-
-            Intent target = new Intent(Intent.ACTION_VIEW);
-            target.setDataAndType(Uri.fromFile(new File(result)), mimetype);
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            target.setDataAndType(uri, mimetype);
 
             try {
                 context.startActivity(target);
