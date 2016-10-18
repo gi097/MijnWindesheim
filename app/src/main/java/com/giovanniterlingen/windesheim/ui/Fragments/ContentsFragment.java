@@ -126,7 +126,7 @@ public class ContentsFragment extends Fragment {
                                 mProgressDialog.setIndeterminate(true);
                                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                                 mProgressDialog.setCancelable(true);
-                                new DownloadHandler(getActivity(), mProgressDialog)
+                                new DownloadHandler(getActivity(), mProgressDialog, true)
                                         .execute(content.url);
                                 return;
                             }

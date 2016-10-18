@@ -53,7 +53,8 @@
             android:name=".ui.AuthenticationActivity"
             android:label="@string/login"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.ContentsActivity"
             android:label="@string/courses"

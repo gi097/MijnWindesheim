@@ -99,8 +99,10 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      *
      * @param date The date we need to keep, everything before that date will be deleted.
      */
-    public void clearOldScheduleData(String date) {
-        database.execSQL("DELETE FROM `subject` WHERE `date` < ? AND `visible` = 1", new String[]{date});
+    public void clearOldScheduleData(Date date) {
+        database.execSQL("DELETE FROM `subject` WHERE `date` < ? AND `visible` = 1",
+                new String[]{parseDate(date)});
+        deleteOldFetched(parseDate(date));
     }
 
     /**
@@ -276,7 +278,8 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private String[] getWeekDates(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         String lowestDate = parseDate(calendar.getTime());
         calendar.add(Calendar.DATE, 6);
         String highestDate = parseDate(calendar.getTime());

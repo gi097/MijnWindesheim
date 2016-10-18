@@ -2,7 +2,7 @@
 <resources>
     <string name="about">Over</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">Dit is een niet-officiele app voor studenten en docenten van Windesheim. Ik (Giovanni) ben niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).</string>
+    <string name="about_description">Dit is een niet-officiele app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).</string>
     <string name="about_developer">Ontwikkelaar en onderhouder</string>
     <string name="about_devs">Ontwikkelaars:</string>
     <string name="about_natschool">N@Tschool! implementatie</string>
@@ -16,6 +16,16 @@
     <string name="april">april</string>
 
     <string name="august">augustus</string>
+
+    <string name="auth_add_account">Je account toevoegen</string>
+    <string name="auth_description">Voeg je account toe om toegang te krijgen tot de diensten van Windesheim.</string>
+    <string name="auth_invalid_password">Ongeldig wachtwoord</string>
+    <string name="auth_invalid_username">Ongeldige gebruikersnaam</string>
+    <string name="auth_loading">Informatie laden…</string>
+    <string name="auth_login">INLOGGEN</string>
+    <string name="auth_login_failed">Inloggen mislukt. Controleer je gebruikersnaam en wachtwoord.</string>
+    <string name="auth_password">Wachtwoord</string>
+    <string name="auth_username">Gebruikersnaam</string>
 
     <string name="cancel">Annuleren</string>
 
@@ -45,6 +55,8 @@
     <string name="delete_file_description">Het bestand zal permanent verwijdert worden.</string>
 
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
+
+    <string name="download_ical">Download ICS bestand</string>
 
     <string name="downloading">Downloaden…</string>
 
@@ -151,9 +163,12 @@
     <string name="september">september</string>
 
     <string name="settings">Instellingen</string>
+    <string name="settings_account">Account</string>
     <string name="settings_interval">Interval</string>
     <string name="settings_lessons">Lessen</string>
     <string name="settings_lessons_description">Melden wanneer een nieuwe les gaat beginnen</string>
+    <string name="settings_logout">UITLOGGEN</string>
+    <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
     <string name="settings_notification_description">Meldingen ontvangen voor</string>
     <string name="settings_schedule_change">Roosterwijzigingen</string>
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>

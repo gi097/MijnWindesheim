@@ -59,14 +59,8 @@ public class ScheduleHandler {
      */
     public static String getListFromServer(int type) throws Exception {
         StringBuilder stringBuffer = new StringBuilder("");
-        URL urlLink;
-        if (type == 1) {
-            // temporary link to fix old cached ids
-            urlLink = new URL("http://henrivandemunt.nl/class_parsed.txt");
-        } else {
-            urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                    "ajaxCommand=getPageConfig&type=" + type);
-        }
+        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+                "ajaxCommand=getPageConfig&type=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
@@ -206,8 +200,6 @@ public class ScheduleHandler {
             module = "";
         }
 
-        ApplicationLoader.scheduleDatabase.addFetched(date);
-
         if (compare && oldData != null) {
             // start comparing old data with new one
             Cursor newCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
@@ -231,6 +223,18 @@ public class ScheduleHandler {
                 NotificationHandler.createScheduleChangedNotification();
             }
         }
+        ApplicationLoader.scheduleDatabase.addFetched(date);
+    }
+
+    /**
+     * Returns a link to download the ical file we need.
+     *
+     * @return The generated url
+     */
+    public static String getIcalLink(String id, Date date, int type) {
+        return "https://roosters.windesheim.nl/WebUntis/Ical.do?" +
+                "elemType=" + type + "&elemId=" + id +
+                "&rpt_sd=" + new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     /**

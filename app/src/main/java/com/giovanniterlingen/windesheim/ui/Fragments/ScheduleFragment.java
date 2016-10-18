@@ -200,6 +200,10 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
+    public Date getDate() {
+        return date;
+    }
+
     public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         private final boolean fetchData;

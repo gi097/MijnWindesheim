@@ -28,16 +28,20 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.CookieHandler;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -93,6 +97,24 @@ public class SettingsActivity extends AppCompatActivity {
             } else {
                 lessonStart.setChecked(true);
             }
+
+            Button deleteAccountButton = (Button) findViewById(R.id.logout_button);
+            deleteAccountButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CookieHandler.deleteCookie();
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.remove("username");
+                    editor.remove("password");
+                    editor.apply();
+
+                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout)
+                            findViewById(R.id.coordinator_layout);
+                    Snackbar snackbar = Snackbar.make(coordinatorLayout,
+                            getString(R.string.settings_logout_msg), Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
+            });
         }
 
         final SwitchCompat lessonChange = (SwitchCompat) findViewById(R.id.change_notification_switch);

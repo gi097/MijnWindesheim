@@ -25,6 +25,7 @@
 package com.giovanniterlingen.windesheim.ui;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,15 +46,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.CookieHandler;
+import com.giovanniterlingen.windesheim.handlers.DownloadHandler;
+import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
 import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -66,7 +69,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private static String componentId;
     private static int type;
-    private static volatile View view;
+    public static volatile View view;
     private static FragmentManager fragmentManager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
@@ -249,15 +252,6 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mDrawerLayout.openDrawer(GravityCompat.START);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * Show a snackbar which asks to review this app in the PlayStore.
      */
@@ -283,6 +277,43 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.schedule_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        }
+        if (item.getItemId() == R.id.download_ical) {
+            ProgressDialog mProgressDialog = new ProgressDialog(ScheduleActivity.this);
+            mProgressDialog.setMessage(getResources().getString(R.string.downloading));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+
+            if (fragmentManager != null) {
+                List<Fragment> fragments = fragmentManager.getFragments();
+                if (fragments != null) {
+                    for (Fragment fragment : fragments) {
+                        if (fragment != null && fragment.isMenuVisible()) {
+                            new DownloadHandler(ScheduleActivity.this, mProgressDialog, false)
+                                    .execute(ScheduleHandler.getIcalLink(componentId,
+                                            ((ScheduleFragment) fragment).getDate(), type));
+                            break;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
         public ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -292,26 +323,16 @@ public class ScheduleActivity extends AppCompatActivity {
         @SuppressLint("SimpleDateFormat")
         @Override
         public Fragment getItem(int position) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
             Calendar calendar = Calendar.getInstance();
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                ApplicationLoader.scheduleDatabase.clearOldScheduleData(
-                        simpleDateFormat.format(calendar.getTime()));
-                ApplicationLoader.scheduleDatabase.deleteOldFetched(
-                        simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(calendar.getTime());
                 calendar.add(Calendar.DATE, 2);
             } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                ApplicationLoader.scheduleDatabase.clearOldScheduleData(
-                        simpleDateFormat.format(calendar.getTime()));
-                ApplicationLoader.scheduleDatabase.deleteOldFetched(
-                        simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(calendar.getTime());
                 calendar.add(Calendar.DATE, 1);
             } else {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                ApplicationLoader.scheduleDatabase.clearOldScheduleData(
-                        simpleDateFormat.format(calendar.getTime()));
-                ApplicationLoader.scheduleDatabase.deleteOldFetched(
-                        simpleDateFormat.format(calendar.getTime()));
+                ApplicationLoader.scheduleDatabase.clearOldScheduleData(calendar.getTime());
             }
             if (position <= 4) {
                 calendar.add(Calendar.DATE, position);

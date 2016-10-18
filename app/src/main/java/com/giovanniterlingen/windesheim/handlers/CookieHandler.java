@@ -88,4 +88,12 @@ public class CookieHandler {
         }
         return cookieManager.getCookie("https://elo.windesheim.nl/Pages/mobile/");
     }
+
+    public static void deleteCookie() {
+        CookieManager cookieManager = CookieManager.getInstance();
+        if (Build.VERSION.SDK_INT < 21) {
+            CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
+        }
+        cookieManager.removeAllCookie();
+    }
 }

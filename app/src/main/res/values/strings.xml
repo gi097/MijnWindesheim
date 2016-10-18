@@ -2,7 +2,7 @@
 <resources>
     <string name="about">About</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) am not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).</string>
+    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) and Windesheim are not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).</string>
     <string name="about_developer">Developer and maintainer</string>
     <string name="about_devs">Developers:</string>
     <string name="about_natschool">N@Tschool! implementation</string>
@@ -16,6 +16,16 @@
     <string name="april">April</string>
 
     <string name="august">August</string>
+
+    <string name="auth_add_account">Add your account</string>
+    <string name="auth_description">Add your account to get access to the services of Windesheim.</string>
+    <string name="auth_invalid_password">Invalid password</string>
+    <string name="auth_invalid_username">Invalid username</string>
+    <string name="auth_loading">Loading information…</string>
+    <string name="auth_login">LOGIN</string>
+    <string name="auth_login_failed">Failed to login. Check your username and password.</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_username">Username</string>
 
     <string name="cancel">Cancel</string>
 
@@ -45,6 +55,8 @@
     <string name="delete_file_description">This will delete the file permanently.</string>
 
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
+
+    <string name="download_ical">Download ICS file</string>
 
     <string name="downloading">Downloading…</string>
 
@@ -151,9 +163,12 @@
     <string name="september">September</string>
 
     <string name="settings">Settings</string>
+    <string name="settings_account">Account</string>
     <string name="settings_interval">Interval</string>
     <string name="settings_lessons">Lessons</string>
     <string name="settings_lessons_description">Notify when a new lesson is starting</string>
+    <string name="settings_logout">LOGOUT</string>
+    <string name="settings_logout_msg">Account has been logged out from this device</string>
     <string name="settings_notification_description">Receive notifications for</string>
     <string name="settings_schedule_change">Schedule changes</string>
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
