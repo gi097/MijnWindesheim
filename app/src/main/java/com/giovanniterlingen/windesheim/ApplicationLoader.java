@@ -34,8 +34,8 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.SQLite.ScheduleDatabase;
+import com.giovanniterlingen.windesheim.handlers.DailyScheduleHandler;
 import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
-import com.giovanniterlingen.windesheim.handlers.ScheduleChangeHandler;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -46,7 +46,7 @@ public class ApplicationLoader extends Application {
 
     public static ScheduleDatabase scheduleDatabase;
     public static NotificationHandler notificationHandler;
-    public static ScheduleChangeHandler scheduleChangeHandler;
+    public static DailyScheduleHandler dailyScheduleHandler;
     public static volatile Context applicationContext;
     private static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;
@@ -80,12 +80,12 @@ public class ApplicationLoader extends Application {
 
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(applicationContext);
-        String classId = preferences.getString("componentId", "");
+        String classId = preferences.getString("componentId", "" );
         if (classId.length() != 0) {
             notificationHandler = new NotificationHandler();
             notificationHandler.start();
-            scheduleChangeHandler = new ScheduleChangeHandler();
-            scheduleChangeHandler.start();
+            dailyScheduleHandler = new DailyScheduleHandler();
+            dailyScheduleHandler.start();
         }
     }
 
@@ -114,12 +114,12 @@ public class ApplicationLoader extends Application {
      * Closes an already running ScheduleChangeHandlerThread and starts a new one.
      */
     public static void restartScheduleChangeHandlerThread() {
-        if (scheduleChangeHandler != null) {
-            scheduleChangeHandler.stopRunning();
-            scheduleChangeHandler = null;
+        if (dailyScheduleHandler != null) {
+            dailyScheduleHandler.stopRunning();
+            dailyScheduleHandler = null;
         }
-        scheduleChangeHandler = new ScheduleChangeHandler();
-        scheduleChangeHandler.start();
+        dailyScheduleHandler = new DailyScheduleHandler();
+        dailyScheduleHandler.start();
     }
 
     /**

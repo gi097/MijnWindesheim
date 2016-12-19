@@ -50,8 +50,8 @@ public class NetworkReceiver extends BroadcastReceiver {
                     !ApplicationLoader.notificationHandler.isRunning()) {
                 ApplicationLoader.restartNotificationThread();
             }
-            if (ApplicationLoader.scheduleChangeHandler != null &&
-                    !ApplicationLoader.scheduleChangeHandler.isRunning()) {
+            if (ApplicationLoader.dailyScheduleHandler != null &&
+                    !ApplicationLoader.dailyScheduleHandler.isRunning()) {
                 ApplicationLoader.restartScheduleChangeHandlerThread();
             }
         }

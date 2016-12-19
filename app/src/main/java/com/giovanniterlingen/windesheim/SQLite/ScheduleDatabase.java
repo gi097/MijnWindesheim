@@ -34,6 +34,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -63,8 +65,8 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
-        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)" );
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)" );
     }
 
     /**
@@ -143,7 +145,8 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @return The Cursor containing all lessons.
      */
     public Cursor getLessons(String date, String componentId) {
-        return database.rawQuery("SELECT _id, `component_id`, `date`, MIN(`start`), MAX(`end`), `name`, MAX(`room`), `component`, `class_id` FROM `subject` WHERE `date` = ? AND `class_id` = ? AND `visible` = 1 GROUP BY `component_id` ORDER BY `start`, `name`", new String[]{date, componentId});
+        String query = "WITH cte AS (SELECT _id, component_id, date, start, end, name, room, component, class_id, visible FROM subject t WHERE NOT EXISTS (SELECT NULL FROM subject t2 WHERE t2.component_id  = t.component_id AND t2.end = t.start) UNION ALL SELECT t._id, t.component_id, t.date, cte.start, t.end, t.name, t.room, t.component, t.class_id, t.visible FROM cte JOIN subject t ON t.component_id = cte.component_id AND t.start = cte.end) SELECT _id, component_id, date, start, MAX(end) as end, name, MAX(room), component, class_id FROM cte WHERE date = ? AND class_id = ? AND visible = 1 GROUP BY component_id, start ORDER BY start, name";
+        return database.rawQuery(query, new String[]{date, componentId});
     }
 
     /**
@@ -245,7 +248,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * Clears all dates which specifies the fetch times.
      **/
     public void clearFetched() {
-        database.execSQL("DELETE FROM `fetched_dates`");
+        database.execSQL("DELETE FROM `fetched_dates`" );
     }
 
     /**
@@ -263,9 +266,9 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @param date The date we want to parse
      * @return The parsed date
      */
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat" )
     private String parseDate(Date date) {
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd" );
         return simpleDateFormat.format(date);
     }
 
@@ -276,10 +279,10 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @return An array of the lowest and highest date
      */
     private String[] getWeekDates(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.setTime(date);
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         String lowestDate = parseDate(calendar.getTime());
         calendar.add(Calendar.DATE, 6);
         String highestDate = parseDate(calendar.getTime());
@@ -291,10 +294,10 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        database.execSQL("DROP TABLE `subject`");
+        database.execSQL("DROP TABLE `subject`" );
         // database.execSQL("DROP TABLE `fetched_dates`");
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
-        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)" );
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)" );
     }
 
 }

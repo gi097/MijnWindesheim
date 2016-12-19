@@ -37,7 +37,7 @@ import java.util.Calendar;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleChangeHandler extends Thread {
+public class DailyScheduleHandler extends Thread {
 
     private volatile boolean running = true;
 
