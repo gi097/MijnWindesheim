@@ -27,8 +27,6 @@ package com.giovanniterlingen.windesheim.SQLite;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,6 +34,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+
+import io.requery.android.database.sqlite.SQLiteDatabase;
+import io.requery.android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -65,8 +66,8 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)" );
-        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)" );
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
     }
 
     /**
@@ -248,7 +249,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * Clears all dates which specifies the fetch times.
      **/
     public void clearFetched() {
-        database.execSQL("DELETE FROM `fetched_dates`" );
+        database.execSQL("DELETE FROM `fetched_dates`");
     }
 
     /**
@@ -266,9 +267,9 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @param date The date we want to parse
      * @return The parsed date
      */
-    @SuppressLint("SimpleDateFormat" )
+    @SuppressLint("SimpleDateFormat")
     private String parseDate(Date date) {
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd" );
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         return simpleDateFormat.format(date);
     }
 
@@ -294,10 +295,10 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        database.execSQL("DROP TABLE `subject`" );
+        database.execSQL("DROP TABLE `subject`");
         // database.execSQL("DROP TABLE `fetched_dates`");
-        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)" );
-        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)" );
+        database.execSQL("CREATE TABLE `subject` (_id INTEGER PRIMARY KEY AUTOINCREMENT, `component_id` TEXT, `date` TEXT, `start` TEXT, `end` TEXT, `name` TEXT, `room` TEXT, `component` TEXT, `class_id` TEXT, `visible` INTEGER)");
+        database.execSQL("CREATE TABLE `fetched_dates` (`date` TEXT UNIQUE)");
     }
 
 }
