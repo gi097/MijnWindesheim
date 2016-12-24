@@ -146,7 +146,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @return The Cursor containing all lessons.
      */
     public Cursor getLessons(String date, String componentId) {
-        String query = "WITH cte AS (SELECT _id, component_id, date, start, end, name, room, component, class_id, visible FROM subject t WHERE NOT EXISTS (SELECT NULL FROM subject t2 WHERE t2.component_id  = t.component_id AND t2.end = t.start) UNION ALL SELECT t._id, t.component_id, t.date, cte.start, t.end, t.name, t.room, t.component, t.class_id, t.visible FROM cte JOIN subject t ON t.component_id = cte.component_id AND t.start = cte.end) SELECT _id, component_id, date, start, MAX(end) as end, name, MAX(room), component, class_id FROM cte WHERE date = ? AND class_id = ? AND visible = 1 GROUP BY component_id, start ORDER BY start, name";
+        String query = "WITH cte AS (SELECT _id, component_id, date, start, end, name, room, component, class_id, visible FROM subject t WHERE NOT EXISTS (SELECT NULL FROM subject t2 WHERE t2.component_id  = t.component_id AND t2.end = t.start) UNION ALL SELECT t._id, t.component_id, t.date, cte.start, t.end, t.name, t.room, t.component, t.class_id, t.visible FROM cte JOIN subject t ON t.component_id = cte.component_id AND t.start = cte.end) SELECT _id, component_id, date, start, MAX(end) as end, name, MAX(room), component, class_id FROM cte WHERE date = ? AND class_id = ? AND visible = 1 GROUP BY component_id, start ORDER BY start, end, name";
         return database.rawQuery(query, new String[]{date, componentId});
     }
 
