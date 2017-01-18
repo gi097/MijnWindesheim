@@ -81,10 +81,10 @@
     <string name="icon">icon</string>
 
     <string name="interval_always_on">Always on</string>
-    <string name="interval_fifteen_minutes">15 minutes</string>
+    <string name="interval_fifteen_minutes">15 minutes before lesson</string>
     <string name="interval_off">Off</string>
-    <string name="interval_one_hour">1 hour</string>
-    <string name="interval_thirty_minutes">30 minutes</string>
+    <string name="interval_one_hour">1 hour before lesson</string>
+    <string name="interval_thirty_minutes">30 minutes before lesson</string>
 
     <string name="january">January</string>
 
@@ -157,21 +157,18 @@
 
     <string name="save_lesson">Save lesson to calendar</string>
 
-    <string name="schedule_changed">The schedule has been changed!</string>
     <string name="schedule_not_found">No schedule found for this day</string>
 
     <string name="september">September</string>
 
     <string name="settings">Settings</string>
     <string name="settings_account">Account</string>
-    <string name="settings_interval">Interval</string>
-    <string name="settings_lessons">Lessons</string>
+    <string name="settings_interval">Time for notify</string>
+    <string name="settings_lessons">Notify when lesson starts</string>
     <string name="settings_lessons_description">Notify when a new lesson is starting</string>
     <string name="settings_logout">LOGOUT</string>
     <string name="settings_logout_msg">Account has been logged out from this device</string>
     <string name="settings_notification_description">Receive notifications for</string>
-    <string name="settings_schedule_change">Schedule changes</string>
-    <string name="settings_schedule_change_description">Notify when the schedule changes</string>
 
     <string name="storage_full">No space left on sdcard!</string>
 

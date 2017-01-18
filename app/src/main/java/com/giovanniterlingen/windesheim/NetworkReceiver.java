@@ -52,7 +52,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             }
             if (ApplicationLoader.dailyScheduleHandler != null &&
                     !ApplicationLoader.dailyScheduleHandler.isRunning()) {
-                ApplicationLoader.restartScheduleChangeHandlerThread();
+                ApplicationLoader.restartDailyScheduleFetcher();
             }
         }
     }

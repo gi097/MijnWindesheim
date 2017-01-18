@@ -113,7 +113,7 @@ public class ApplicationLoader extends Application {
     /**
      * Closes an already running ScheduleChangeHandlerThread and starts a new one.
      */
-    public static void restartScheduleChangeHandlerThread() {
+    public static void restartDailyScheduleFetcher() {
         if (dailyScheduleHandler != null) {
             dailyScheduleHandler.stopRunning();
             dailyScheduleHandler = null;

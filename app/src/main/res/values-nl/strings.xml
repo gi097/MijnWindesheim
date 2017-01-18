@@ -81,10 +81,10 @@
     <string name="icon">icoon</string>
 
     <string name="interval_always_on">Altijd aan</string>
-    <string name="interval_fifteen_minutes">15 minuten</string>
+    <string name="interval_fifteen_minutes">15 minuten voor de les</string>
     <string name="interval_off">Uit</string>
-    <string name="interval_one_hour">1 uur</string>
-    <string name="interval_thirty_minutes">30 minuten</string>
+    <string name="interval_one_hour">1 uur voor de les</string>
+    <string name="interval_thirty_minutes">30 minuten voor de les</string>
 
     <string name="january">januari</string>
 
@@ -157,21 +157,18 @@
 
     <string name="save_lesson">Les opslaan in agenda</string>
 
-    <string name="schedule_changed">Het rooster is gewijzigd!</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
 
     <string name="september">september</string>
 
     <string name="settings">Instellingen</string>
     <string name="settings_account">Account</string>
-    <string name="settings_interval">Interval</string>
-    <string name="settings_lessons">Lessen</string>
+    <string name="settings_interval">Tijd van melden</string>
+    <string name="settings_lessons">Melden wanneer les begint</string>
     <string name="settings_lessons_description">Melden wanneer een nieuwe les gaat beginnen</string>
     <string name="settings_logout">UITLOGGEN</string>
     <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
     <string name="settings_notification_description">Meldingen ontvangen voor</string>
-    <string name="settings_schedule_change">Roosterwijzigingen</string>
-    <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
 
     <string name="storage_full">Onvoldoende ruimte op de sdkaart!</string>
 

@@ -117,20 +117,6 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
-        final SwitchCompat lessonChange = (SwitchCompat) findViewById(R.id.change_notification_switch);
-        if (lessonChange != null) {
-            lessonChange.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean("schedule_change_service", lessonChange.isChecked());
-                    editor.apply();
-                    ApplicationLoader.restartScheduleChangeHandlerThread();
-                }
-            });
-            lessonChange.setChecked(preferences.getBoolean("schedule_change_service", true));
-        }
-
         intervalTextview = (TextView) findViewById(R.id.settings_interval_textview);
         updateIntervalTextView();
 

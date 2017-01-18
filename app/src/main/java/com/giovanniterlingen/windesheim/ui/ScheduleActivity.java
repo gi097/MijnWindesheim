@@ -115,6 +115,7 @@ public class ScheduleActivity extends AppCompatActivity {
             editor.putString("componentId", classId);
             editor.putInt("type", 1);
             editor.remove("classId");
+            editor.remove("schedule_change_service");
             editor.apply();
         }
         editor.remove("notifications");

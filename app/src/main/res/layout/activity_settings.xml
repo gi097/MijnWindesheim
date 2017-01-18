@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.SettingsActivity"
-    android:id="@+id/coordinator_layout">
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:id="@+id/coordinator_layout"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:background="@color/colorPrimary"
+                                                 android:fitsSystemWindows="true"
+                                                 tools:context=".ui.SettingsActivity">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="fill_parent"
@@ -27,16 +27,16 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/settings_notification_description"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="16.0sp"/>
 
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                card_view:cardBackgroundColor="@android:color/white"
-                card_view:cardCornerRadius="0.0dip">
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:background="?selectableItemBackground"
+                                                android:clickable="true"
+                                                android:focusable="true"
+                                                card_view:cardBackgroundColor="@android:color/white"
+                                                card_view:cardCornerRadius="0.0dip">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="1.0dip"
-                        android:background="?android:listDivider" />
+                        android:background="?android:listDivider"/>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_lessons"
                             android:textColor="#dd000000"
-                            android:textSize="@dimen/text_size" />
+                            android:textSize="@dimen/text_size"/>
 
                         <TextView
                             android:layout_width="fill_parent"
@@ -75,7 +75,7 @@
                             android:paddingRight="@dimen/activity_margin"
                             android:text="@string/settings_lessons_description"
                             android:textColor="#8a000000"
-                            android:textSize="12.0sp" />
+                            android:textSize="12.0sp"/>
 
                         <android.support.v7.widget.SwitchCompat
                             android:id="@+id/lesson_notification_switch"
@@ -83,14 +83,14 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical"
                             android:gravity="start"
-                            android:padding="@dimen/activity_margin" />
+                            android:padding="@dimen/activity_margin"/>
 
                     </RelativeLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="1.0dip"
-                        android:background="?android:listDivider" />
+                        android:background="?android:listDivider"/>
 
                     <LinearLayout
                         android:id="@+id/settings_interval_row"
@@ -108,7 +108,7 @@
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_interval"
                             android:textColor="#dd000000"
-                            android:textSize="@dimen/text_size" />
+                            android:textSize="@dimen/text_size"/>
 
                         <TextView
                             android:id="@+id/settings_interval_textview"
@@ -119,51 +119,8 @@
                             android:paddingLeft="@dimen/activity_margin"
                             android:paddingRight="@dimen/activity_margin"
                             android:textColor="#8a000000"
-                            android:textSize="12.0sp" />
+                            android:textSize="12.0sp"/>
                     </LinearLayout>
-
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="1.0dip"
-                        android:background="?android:listDivider" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/schedule_change"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="start"
-                            android:paddingLeft="@dimen/activity_margin"
-                            android:paddingRight="@dimen/activity_margin"
-                            android:paddingTop="@dimen/activity_margin"
-                            android:text="@string/settings_schedule_change"
-                            android:textColor="#dd000000"
-                            android:textSize="@dimen/text_size" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/schedule_change"
-                            android:gravity="start"
-                            android:paddingBottom="@dimen/activity_margin"
-                            android:paddingLeft="@dimen/activity_margin"
-                            android:paddingRight="@dimen/activity_margin"
-                            android:text="@string/settings_schedule_change_description"
-                            android:textColor="#8a000000"
-                            android:textSize="12.0sp" />
-
-                        <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/change_notification_switch"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_vertical"
-                            android:gravity="start"
-                            android:padding="@dimen/activity_margin" />
-                    </RelativeLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -174,21 +131,21 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/settings_account"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="16.0sp"/>
 
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                card_view:cardBackgroundColor="@android:color/white"
-                card_view:cardCornerRadius="0.0dip">
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:background="?selectableItemBackground"
+                                                android:clickable="true"
+                                                android:focusable="true"
+                                                card_view:cardBackgroundColor="@android:color/white"
+                                                card_view:cardCornerRadius="0.0dip">
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1.0dip"
-                    android:background="?android:listDivider" />
+                    android:background="?android:listDivider"/>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -205,7 +162,7 @@
                         android:paddingLeft="@dimen/activity_margin"
                         android:paddingRight="@dimen/activity_margin"
                         android:text="@string/settings_logout"
-                        android:textColor="@color/colorAccent" />
+                        android:textColor="@color/colorAccent"/>
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -213,7 +170,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1.0dip"
-                android:background="?android:listDivider" />
+                android:background="?android:listDivider"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

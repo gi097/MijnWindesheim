@@ -55,10 +55,10 @@ public class DailyScheduleHandler extends Thread {
                     try {
                         Calendar calendar = Calendar.getInstance();
                         ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(), componentId, true);
+                                componentId, calendar.getTime(), type), calendar.getTime(), componentId);
                         calendar.add(Calendar.DATE, 7);
                         ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(), componentId, true);
+                                componentId, calendar.getTime(), type), calendar.getTime(), componentId);
                         editor.putLong("checkTime", System.currentTimeMillis());
                         editor.apply();
                     } catch (Exception e) {

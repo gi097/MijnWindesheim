@@ -88,24 +88,28 @@ public class ChooseTypeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+            savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_choose_type, container, false);
         TextView chooseTextview = (TextView) view.findViewById(R.id.choose_textview);
         TextView descriptionTextview = (TextView) view.findViewById(R.id.description_textview);
         EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
         if (type == 1) {
             chooseTextview.setText(getResources().getString(R.string.choose_class));
-            descriptionTextview.setText(getResources().getString(R.string.choose_class_description));
+            descriptionTextview.setText(getResources().getString(R.string
+                    .choose_class_description));
             dataSearch.setHint(getResources().getString(R.string.choose_class_hint));
         }
         if (type == 2) {
             chooseTextview.setText(getResources().getString(R.string.choose_teacher));
-            descriptionTextview.setText(getResources().getString(R.string.choose_teacher_description));
+            descriptionTextview.setText(getResources().getString(R.string
+                    .choose_teacher_description));
             dataSearch.setHint(getResources().getString(R.string.choose_teacher_hint));
         }
         if (type == 3) {
             chooseTextview.setText(getResources().getString(R.string.choose_subject));
-            descriptionTextview.setText(getResources().getString(R.string.choose_subject_description));
+            descriptionTextview.setText(getResources().getString(R.string
+                    .choose_subject_description));
             dataSearch.setHint(getResources().getString(R.string.choose_subject_hint));
         }
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
@@ -162,7 +166,8 @@ public class ChooseTypeFragment extends Fragment {
                                         dialog.cancel();
                                     }
                                 })
-                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.cancel), new
+                                DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
@@ -183,11 +188,13 @@ public class ChooseTypeFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type)).getJSONArray("elements"));
+                buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type))
+                        .getJSONArray("elements"));
                 adapter = new ComponentAdapter(context, componentList) {
                     @Override
                     protected void onContentClick(int id) {
-                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences preferences = PreferenceManager
+                                .getDefaultSharedPreferences(context);
                         if (preferences.getString("componentId", "").length() != 0 &&
                                 preferences.getInt("type", 0) != 0) {
                             ApplicationLoader.scheduleDatabase.clearFetched();
@@ -201,7 +208,7 @@ public class ChooseTypeFragment extends Fragment {
                         }
                         editor.apply();
 
-                        ApplicationLoader.restartScheduleChangeHandlerThread();
+                        ApplicationLoader.restartDailyScheduleFetcher();
                         ApplicationLoader.restartNotificationThread();
 
                         Intent intent = new Intent(context, ScheduleActivity.class);

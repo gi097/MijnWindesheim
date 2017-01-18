@@ -28,7 +28,6 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
-import com.giovanniterlingen.windesheim.objects.Schedule;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,12 +115,11 @@ public class ScheduleHandler {
      * @param jsonObject  Contains the fetched lessons
      * @param date        Specifies the date of the fetched lessons
      * @param componentId Specifies the schedule's id
-     * @param compare     Defines if we need to check for schedule changes
      * @throws Exception
      */
     @SuppressLint("SimpleDateFormat")
-    public static synchronized void saveSchedule(JSONObject jsonObject, Date date, String componentId, boolean compare)
-            throws Exception {
+    public static synchronized void saveSchedule(JSONObject jsonObject, Date date, String
+            componentId) throws Exception {
         // get the user filtered lessons to exclude them during fetch
         List<String> list = new ArrayList<>();
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
@@ -129,20 +127,6 @@ public class ScheduleHandler {
             list.add(cursor.getString(0));
         }
         cursor.close();
-
-        // only select the old data if we need to compare
-        Schedule[] oldData = null;
-        if (compare && ApplicationLoader.scheduleDatabase.isFetched(date)) {
-            Cursor oldCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
-            oldData = new Schedule[oldCursor.getCount()];
-            while (oldCursor.moveToNext()) {
-                oldData[oldCursor.getPosition()] = new Schedule(oldCursor.getString(0),
-                        oldCursor.getString(1), oldCursor.getString(2), oldCursor.getString(3),
-                        oldCursor.getString(4), oldCursor.getString(5), oldCursor.getString(6),
-                        oldCursor.getString(7));
-            }
-            oldCursor.close();
-        }
 
         // delete old schedule data
         ApplicationLoader.scheduleDatabase.clearScheduleData(date);
@@ -191,38 +175,16 @@ public class ScheduleHandler {
                 module += " - " + subject;
             }
             // save it and reset fields
-            ApplicationLoader.scheduleDatabase.saveScheduleData(lessonObject.getString("lessonId"),
+            ApplicationLoader.scheduleDatabase.saveScheduleData(lessonObject.getInt("lessonId"),
                     lessonObject.getString("date"), parseTime(lessonObject.getString("startTime")),
                     parseTime(lessonObject.getString("endTime")), module, classRoom, component,
-                    componentId, list.contains(lessonObject.getString("lessonId")) ? 0 : 1);
+                    Integer.parseInt(componentId), list.contains(lessonObject.getString
+                            ("lessonId")) ? 0 : 1);
             component = "";
             classRoom = "";
             module = "";
         }
 
-        if (compare && oldData != null) {
-            // start comparing old data with new one
-            Cursor newCursor = ApplicationLoader.scheduleDatabase.getLessonsForCompare(date, componentId);
-            Schedule[] newData = new Schedule[newCursor.getCount()];
-            while (newCursor.moveToNext()) {
-                newData[newCursor.getPosition()] = new Schedule(newCursor.getString(0),
-                        newCursor.getString(1), newCursor.getString(2), newCursor.getString(3),
-                        newCursor.getString(4), newCursor.getString(5), newCursor.getString(6),
-                        newCursor.getString(7));
-            }
-            newCursor.close();
-
-            if (oldData.length == newData.length) {
-                for (int i = 0; i < oldData.length; i++) {
-                    if (!oldData[i].equals(newData[i])) {
-                        NotificationHandler.createScheduleChangedNotification();
-                        break;
-                    }
-                }
-            } else {
-                NotificationHandler.createScheduleChangedNotification();
-            }
-        }
         ApplicationLoader.scheduleDatabase.addFetched(date);
     }
 
