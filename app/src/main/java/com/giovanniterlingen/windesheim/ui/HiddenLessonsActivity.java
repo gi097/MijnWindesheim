@@ -46,7 +46,7 @@ import com.giovanniterlingen.windesheim.ui.Adapters.HiddenLessonsAdapter;
  */
 public class HiddenLessonsActivity extends AppCompatActivity {
 
-    private static volatile View view;
+    private static View view;
 
     public static void showSnackbar() {
         ApplicationLoader.runOnUIThread(new Runnable() {

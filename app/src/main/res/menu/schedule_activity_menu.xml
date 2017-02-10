@@ -1,9 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.ScheduleActivity">
-
-    <item
-        android:id="@+id/download_ical"
-        android:title="@string/download_ical" />
-
-</menu>

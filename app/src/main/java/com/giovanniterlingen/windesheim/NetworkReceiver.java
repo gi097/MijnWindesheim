@@ -37,15 +37,15 @@ import android.net.NetworkInfo;
  */
 public class NetworkReceiver extends BroadcastReceiver {
 
-    private static volatile boolean connected;
+    @Override
+    public void onReceive(final Context context, final Intent intent) {
+        if (intent.getExtras() != null) {
+            checkThreadsState();
+        }
+    }
 
-    public static void update(boolean check) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) ApplicationLoader
-                .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        connected = networkInfo != null && networkInfo.isConnected();
-
-        if (connected && check) {
+    private static void checkThreadsState() {
+        if (isConnected()) {
             if (ApplicationLoader.notificationHandler != null &&
                     !ApplicationLoader.notificationHandler.isRunning()) {
                 ApplicationLoader.restartNotificationThread();
@@ -58,13 +58,9 @@ public class NetworkReceiver extends BroadcastReceiver {
     }
 
     public static boolean isConnected() {
-        return connected;
-    }
-
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-        if (intent.getExtras() != null) {
-            update(true);
-        }
+        ConnectivityManager connectivityManager = (ConnectivityManager) ApplicationLoader
+                .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

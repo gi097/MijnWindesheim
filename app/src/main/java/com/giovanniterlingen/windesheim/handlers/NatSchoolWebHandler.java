@@ -101,7 +101,7 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
             connection.setRequestProperty("Content-Language", "en-US");
-            connection.setRequestProperty("Cookie", CookieHandler.getCookie());
+            connection.setRequestProperty("Cookie", CookieHandler.getNatSchoolCookie());
 
             connection.setUseCaches(false);
             connection.setDoInput(true);
@@ -147,6 +147,7 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
         } catch (Exception e) {
             if (e instanceof JSONException) {
                 Intent intent = new Intent(context, AuthenticationActivity.class);
+                intent.putExtra("educator", false);
                 context.startActivity(intent);
                 context.finish();
                 return;

@@ -56,11 +56,13 @@
 
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
 
-    <string name="download_ical">Download ICS file</string>
-
     <string name="downloading">Downloading…</string>
 
     <string name="downloads">Downloads</string>
+
+    <string name="ec_description">%1$s of the %2$s EC\'s have been achieved</string>
+
+    <string name="elo">ELO</string>
 
     <string name="february">February</string>
 
@@ -127,8 +129,6 @@
     <string name="multiple_lessons_one_hour_one_minute">You have multiple lessons in about 1 hour and 1 minute</string>
     <string name="multiple_lessons_one_minute">You have multiple lessons in about 1 minute</string>
 
-    <string name="natschool">N@Tschool!</string>
-
     <string name="no_app_found">There is no app found to open this file</string>
     <string name="no_calendar_found">No calendar found</string>
     <string name="no_content_found">No files found</string>
@@ -150,6 +150,9 @@
     <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>
 
+    <string name="progress">Progress</string>
+    <string name="progress_results">Results</string>
+
     <string name="rate">RATE</string>
     <string name="rate_dialog">Give me a review :)</string>
 
@@ -164,11 +167,11 @@
     <string name="settings">Settings</string>
     <string name="settings_account">Account</string>
     <string name="settings_interval">Time for notify</string>
-    <string name="settings_lessons">Notify when lesson starts</string>
-    <string name="settings_lessons_description">Notify when a new lesson is starting</string>
+    <string name="settings_lessons">Lessons</string>
+    <string name="settings_lessons_description">Notify when a new lesson starts</string>
     <string name="settings_logout">LOGOUT</string>
     <string name="settings_logout_msg">Account has been logged out from this device</string>
-    <string name="settings_notification_description">Receive notifications for</string>
+    <string name="settings_notification_description">Notifications</string>
 
     <string name="storage_full">No space left on sdcard!</string>
 

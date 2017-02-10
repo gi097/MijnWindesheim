@@ -26,7 +26,7 @@
         android:layout_toRightOf="@+id/content_icon"
         android:layout_toStartOf="@+id/menu_button"
         android:gravity="center_vertical"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="#212121"
         android:textSize="14.0sp" />
 

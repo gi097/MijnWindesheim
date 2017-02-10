@@ -2,7 +2,7 @@
 <resources>
     <string name="about">Over</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">Dit is een niet-officiele app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).</string>
+    <string name="about_description">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).</string>
     <string name="about_developer">Ontwikkelaar en onderhouder</string>
     <string name="about_devs">Ontwikkelaars:</string>
     <string name="about_natschool">N@Tschool! implementatie</string>
@@ -56,11 +56,13 @@
 
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
 
-    <string name="download_ical">Download ICS bestand</string>
-
     <string name="downloading">Downloaden…</string>
 
     <string name="downloads">Downloads</string>
+
+    <string name="ec_description">%1$s van de %2$s EC\'s zijn behaald</string>
+
+    <string name="elo">ELO</string>
 
     <string name="february">februari</string>
 
@@ -127,8 +129,6 @@
     <string name="multiple_lessons_one_hour_one_minute">Je hebt over 1 uur en 1 minuut meerdere lessen</string>
     <string name="multiple_lessons_one_minute">Je hebt over 1 minuut meerdere lessen</string>
 
-    <string name="natschool">N@Tschool!</string>
-
     <string name="no_app_found">Er is geen app gevonden om dit bestand te openen</string>
     <string name="no_calendar_found">Er is geen agenda gevonden</string>
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
@@ -150,6 +150,9 @@
     <string name="pager_item_subjects">Vakken</string>
     <string name="pager_item_teachers">Docenten</string>
 
+    <string name="progress">Voortgang</string>
+    <string name="progress_results">Resultaten</string>
+
     <string name="rate">BEOORDELEN</string>
     <string name="rate_dialog">Geef me een review :)</string>
 
@@ -164,11 +167,11 @@
     <string name="settings">Instellingen</string>
     <string name="settings_account">Account</string>
     <string name="settings_interval">Tijd van melden</string>
-    <string name="settings_lessons">Melden wanneer les begint</string>
+    <string name="settings_lessons">Lessen</string>
     <string name="settings_lessons_description">Melden wanneer een nieuwe les gaat beginnen</string>
     <string name="settings_logout">UITLOGGEN</string>
     <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
-    <string name="settings_notification_description">Meldingen ontvangen voor</string>
+    <string name="settings_notification_description">Meldingen</string>
 
     <string name="storage_full">Onvoldoende ruimte op de sdkaart!</string>
 

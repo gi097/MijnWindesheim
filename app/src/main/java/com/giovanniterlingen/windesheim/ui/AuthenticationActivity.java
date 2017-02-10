@@ -62,11 +62,15 @@ public class AuthenticationActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private boolean isRedirected = false;
     private WebView webView;
+    private boolean isEducator = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Intent intent = getIntent();
+        isEducator = intent.getBooleanExtra("educator", false);
 
         usernameTextView = (TextView) findViewById(R.id.input_username);
         passwordTextView = (TextView) findViewById(R.id.input_password);
@@ -149,7 +153,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 usernameTextLayout.setErrorEnabled(false);
                 passwordTextLayout.setErrorEnabled(false);
-                if (url.equals("https://elo.windesheim.nl/pages/default.aspx") ||
+                if (!isEducator && url.equals("https://elo.windesheim.nl/pages/default.aspx") ||
                         url.equals("https://elo.windesheim.nl/Pages/Mobile/index.html")) {
                     editor.putString("username", username);
                     editor.putString("password", password);
@@ -158,12 +162,14 @@ public class AuthenticationActivity extends AppCompatActivity {
                     Intent intent = new Intent(AuthenticationActivity.this, ContentsActivity.class);
                     startActivity(intent);
                     finish();
+                } else if (url.startsWith("https://liveadminwindesheim.sharepoint.com/sites/wip")) {
+                    webView.loadUrl("https://windesheimapi.azurewebsites.net");
                 }
             }
 
             @Override
             public void onPageFinished(final WebView view, String url) {
-                if (url.startsWith("https://sts.windesheim.nl/adfs/ls/?SAMLRequest=")) {
+                if (url.startsWith("https://sts.windesheim.nl/adfs/ls/")) {
                     // We have the proper login page
                     if (loginUrl != null && loginUrl.equals(url)) {
                         // second time the login page displays, wrong credentials
@@ -185,10 +191,18 @@ public class AuthenticationActivity extends AppCompatActivity {
                         }
                     });
                     loginUrl = url;
+                } else if (url.startsWith("https://windesheimapi.azurewebsites.net")) {
+                    editor.putString("username", username);
+                    editor.putString("password", password);
+                    editor.apply();
+
+                    Intent intent = new Intent(AuthenticationActivity.this, ProgressActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
-        webView.loadUrl("https://elo.windesheim.nl/");
+        webView.loadUrl(isEducator ? "https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=windesheim.nl&wreply=https://liveadminwindesheim.sharepoint.com/sites/wip" : "https://elo.windesheim.nl/");
     }
 
     /**

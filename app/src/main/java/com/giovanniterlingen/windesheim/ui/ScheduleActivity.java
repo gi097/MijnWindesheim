@@ -25,7 +25,6 @@
 package com.giovanniterlingen.windesheim.ui;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,16 +45,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.CookieHandler;
-import com.giovanniterlingen.windesheim.handlers.DownloadHandler;
-import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
 import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -69,7 +69,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private static String componentId;
     private static int type;
-    public static volatile View view;
+    public static View view;
     private static FragmentManager fragmentManager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
@@ -155,6 +155,14 @@ public class ScheduleActivity extends AppCompatActivity {
 
         view = findViewById(R.id.coordinator_layout);
 
+        final LinearLayout layout = (LinearLayout) findViewById(R.id.pager_container);
+        int height = AdSize.SMART_BANNER.getHeightInPixels(ScheduleActivity.this);
+        layout.setPadding(0, 0, 0, height);
+
+        final AdView mAdView = (AdView) findViewById(R.id.bottom_ad);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         setViewPager();
 
         showRateSnackbar();
@@ -175,8 +183,12 @@ public class ScheduleActivity extends AppCompatActivity {
                                 finish();
                                 menuItem.setChecked(false);
                                 return true;
-                            case R.id.natschool:
-                                CookieHandler.checkCookieAndIntent(ScheduleActivity.this);
+                            case R.id.elo:
+                                CookieHandler.checkCookieAndIntent(ScheduleActivity.this, false);
+                                menuItem.setChecked(false);
+                                return true;
+                            case R.id.progress:
+                                CookieHandler.checkCookieAndIntent(ScheduleActivity.this, true);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.downloads:
@@ -186,9 +198,9 @@ public class ScheduleActivity extends AppCompatActivity {
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.restore_lessons:
-                                Intent intent2 = new Intent(ScheduleActivity.this,
+                                Intent intent4 = new Intent(ScheduleActivity.this,
                                         HiddenLessonsActivity.class);
-                                startActivity(intent2);
+                                startActivity(intent4);
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.about:
@@ -198,9 +210,9 @@ public class ScheduleActivity extends AppCompatActivity {
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.settings:
-                                Intent intent4 = new Intent(ApplicationLoader.applicationContext,
+                                Intent intent5 = new Intent(ApplicationLoader.applicationContext,
                                         SettingsActivity.class);
-                                startActivity(intent4);
+                                startActivity(intent5);
                                 menuItem.setChecked(false);
                         }
                         return true;
@@ -279,37 +291,9 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.schedule_activity_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
-            return true;
-        }
-        if (item.getItemId() == R.id.download_ical) {
-            ProgressDialog mProgressDialog = new ProgressDialog(ScheduleActivity.this);
-            mProgressDialog.setMessage(getResources().getString(R.string.downloading));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
-
-            if (fragmentManager != null) {
-                List<Fragment> fragments = fragmentManager.getFragments();
-                if (fragments != null) {
-                    for (Fragment fragment : fragments) {
-                        if (fragment != null && fragment.isMenuVisible()) {
-                            new DownloadHandler(ScheduleActivity.this, mProgressDialog, false)
-                                    .execute(ScheduleHandler.getIcalLink(componentId,
-                                            ((ScheduleFragment) fragment).getDate(), type));
-                            break;
-                        }
-                    }
-                }
-            }
             return true;
         }
         return super.onOptionsItemSelected(item);

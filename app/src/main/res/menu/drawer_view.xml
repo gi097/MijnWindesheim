@@ -1,15 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
-        android:id="@+id/main_items"
+        android:id="@+id/one"
         android:checkableBehavior="none">
         <item
             android:id="@+id/change_schedule"
             android:icon="@drawable/ic_calendar"
             android:title="@string/menuitem_change_schedule" />
         <item
-            android:id="@+id/natschool"
+            android:id="@+id/elo"
             android:icon="@drawable/ic_school"
-            android:title="@string/natschool" />
+            android:title="@string/elo" />
+        <item
+            android:id="@+id/progress"
+            android:icon="@drawable/ic_results"
+            android:title="@string/progress" />
         <item
             android:id="@+id/downloads"
             android:icon="@drawable/ic_download"
@@ -20,7 +24,7 @@
             android:title="@string/menuitem_restore_lessons" />
     </group>
     <group
-        android:id="@+id/secondary_items"
+        android:id="@+id/two"
         android:checkableBehavior="none">
         <item
             android:id="@+id/about"

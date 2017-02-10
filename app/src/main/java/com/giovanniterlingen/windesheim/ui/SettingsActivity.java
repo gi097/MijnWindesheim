@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
             deleteAccountButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CookieHandler.deleteCookie();
+                    CookieHandler.deleteCookies();
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.remove("username");
                     editor.remove("password");

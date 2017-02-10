@@ -36,6 +36,7 @@ import android.preference.PreferenceManager;
 import com.giovanniterlingen.windesheim.SQLite.ScheduleDatabase;
 import com.giovanniterlingen.windesheim.handlers.DailyScheduleHandler;
 import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
+import com.google.android.gms.ads.MobileAds;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -80,7 +81,7 @@ public class ApplicationLoader extends Application {
 
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(applicationContext);
-        String classId = preferences.getString("componentId", "" );
+        String classId = preferences.getString("componentId", "");
         if (classId.length() != 0) {
             notificationHandler = new NotificationHandler();
             notificationHandler.start();
@@ -134,7 +135,7 @@ public class ApplicationLoader extends Application {
         scheduleDatabase = new ScheduleDatabase(applicationContext);
         scheduleDatabase.open();
 
-        NetworkReceiver.update(false);
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
 
         startPushService();
     }

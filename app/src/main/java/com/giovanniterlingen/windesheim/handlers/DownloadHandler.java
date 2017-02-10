@@ -43,7 +43,6 @@ import android.view.View;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.ui.ContentsActivity;
-import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,12 +64,10 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
     private final Activity context;
     private final ProgressDialog progressDialog;
     private PowerManager.WakeLock wakeLock;
-    private boolean isNatschoolRequest;
 
-    public DownloadHandler(Activity context, ProgressDialog progressDialog, boolean isNatschoolRequest) {
+    public DownloadHandler(Activity context, ProgressDialog progressDialog) {
         this.context = context;
         this.progressDialog = progressDialog;
-        this.isNatschoolRequest = isNatschoolRequest;
     }
 
     @Override
@@ -87,12 +84,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 DownloadHandler.this.cancel(true);
-                View view = null;
-                if (context instanceof ContentsActivity) {
-                    view = ((ContentsActivity) context).view;
-                } else if (context instanceof ScheduleActivity) {
-                    view = ScheduleActivity.view;
-                }
+                View view = ((ContentsActivity) context).view;
                 if (view != null) {
                     Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
                             R.string.canceled_downloading), Snackbar.LENGTH_SHORT);
@@ -108,12 +100,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         OutputStream output = null;
         HttpURLConnection connection = null;
         int lastSlash = strings[0].lastIndexOf('/');
-        String fileName;
-        if (isNatschoolRequest) {
-            fileName = strings[0].substring(lastSlash + 1);
-        } else {
-            fileName = "calendar.ics";
-        }
+        String fileName = strings[0].substring(lastSlash + 1);
         File newFile = new File(Environment.getExternalStorageDirectory().toString(),
                 "MijnWindesheim" + File.separator + fileName);
         try {
@@ -123,19 +110,10 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             newFile.getParentFile().mkdirs();
             newFile.createNewFile();
 
-            URI uri;
-            if (isNatschoolRequest) {
-                uri = new URI("https", "elo.windesheim.nl", strings[0], null);
-            } else {
-                uri = new URI(strings[0]);
-            }
+            URI uri = new URI("https", "elo.windesheim.nl", strings[0], null);
             URL url = uri.toURL();
             connection = (HttpURLConnection) url.openConnection();
-            if (isNatschoolRequest) {
-                connection.setRequestProperty("Cookie", CookieHandler.getCookie());
-            } else {
-                connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
-            }
+            connection.setRequestProperty("Cookie", CookieHandler.getNatSchoolCookie());
             connection.connect();
 
             int fileLength = connection.getContentLength();
@@ -170,12 +148,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 if (e.getMessage().contains("ENOSPC")) {
-                    View view = null;
-                    if (context instanceof ContentsActivity) {
-                        view = ((ContentsActivity) context).view;
-                    } else if (context instanceof ScheduleActivity) {
-                        view = ScheduleActivity.view;
-                    }
+                    View view = ((ContentsActivity) context).view;
                     if (view != null) {
                         Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
                                 R.string.storage_full), Snackbar.LENGTH_SHORT);
@@ -192,7 +165,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     DownloadHandler.this.cancel(true);
-                                                    new DownloadHandler(context, progressDialog, true).execute(strings);
+                                                    new DownloadHandler(context, progressDialog).execute(strings);
                                                     dialog.cancel();
                                                 }
                                             })
@@ -241,12 +214,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         progressDialog.dismiss();
 
         if (result != null && result.equals("permission")) {
-            View view = null;
-            if (context instanceof ContentsActivity) {
-                view = ((ContentsActivity) context).view;
-            } else if (context instanceof ScheduleActivity) {
-                view = ScheduleActivity.view;
-            }
+            View view = ((ContentsActivity) context).view;
             if (view != null) {
                 Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_permission),
                         Snackbar.LENGTH_LONG);
@@ -285,12 +253,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             try {
                 context.startActivity(target);
             } catch (ActivityNotFoundException e) {
-                View view = null;
-                if (context instanceof ContentsActivity) {
-                    view = ((ContentsActivity) context).view;
-                } else if (context instanceof ScheduleActivity) {
-                    view = ScheduleActivity.view;
-                }
+                View view = ((ContentsActivity) context).view;
                 if (view != null) {
                     Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_app_found),
                             Snackbar.LENGTH_SHORT);

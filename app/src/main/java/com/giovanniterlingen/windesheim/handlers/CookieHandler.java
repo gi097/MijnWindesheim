@@ -37,6 +37,7 @@ import com.giovanniterlingen.windesheim.NetworkReceiver;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.ui.AuthenticationActivity;
 import com.giovanniterlingen.windesheim.ui.ContentsActivity;
+import com.giovanniterlingen.windesheim.ui.ProgressActivity;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -45,17 +46,27 @@ import com.giovanniterlingen.windesheim.ui.ContentsActivity;
  */
 public class CookieHandler {
 
-    public static void checkCookieAndIntent(final Context context) {
+    public static void checkCookieAndIntent(final Context context, final boolean educator) {
         if (NetworkReceiver.isConnected()) {
-            Intent intent1;
-            if (getCookie() != null && getCookie().length() > 0) {
-                intent1 = new Intent(context,
-                        ContentsActivity.class);
+            if (educator) {
+                if (getEducatorCookie() != null && getEducatorCookie().length() > 0) {
+                    Intent intent = new Intent(context, ProgressActivity.class);
+                    context.startActivity(intent);
+                } else {
+                    Intent intent = new Intent(context, AuthenticationActivity.class);
+                    intent.putExtra("educator", true);
+                    context.startActivity(intent);
+                }
             } else {
-                intent1 = new Intent(context,
-                        AuthenticationActivity.class);
+                if (getNatSchoolCookie() != null && getNatSchoolCookie().length() > 0) {
+                    Intent intent = new Intent(context, ContentsActivity.class);
+                    context.startActivity(intent);
+                } else {
+                    Intent intent = new Intent(context, AuthenticationActivity.class);
+                    intent.putExtra("educator", false);
+                    context.startActivity(intent);
+                }
             }
-            context.startActivity(intent1);
         } else {
             ApplicationLoader.runOnUIThread(new Runnable() {
                 @Override
@@ -66,7 +77,7 @@ public class CookieHandler {
                             .setPositiveButton(context.getResources().getString(R.string.connect),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
-                                            checkCookieAndIntent(context);
+                                            checkCookieAndIntent(context, educator);
                                             dialog.cancel();
                                         }
                                     })
@@ -81,15 +92,23 @@ public class CookieHandler {
         }
     }
 
-    public static String getCookie() {
+    public static String getNatSchoolCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
         }
-        return cookieManager.getCookie("https://elo.windesheim.nl/Pages/mobile/");
+        return cookieManager.getCookie("https://elo.windesheim.nl");
     }
 
-    public static void deleteCookie() {
+    public static String getEducatorCookie() {
+        CookieManager cookieManager = CookieManager.getInstance();
+        if (Build.VERSION.SDK_INT < 21) {
+            CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
+        }
+        return cookieManager.getCookie("https://windesheimapi.azurewebsites.net");
+    }
+
+    public static void deleteCookies() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);

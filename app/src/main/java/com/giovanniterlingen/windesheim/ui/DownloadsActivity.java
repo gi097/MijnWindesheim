@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class DownloadsActivity extends AppCompatActivity {
 
-    private static volatile View view;
+    private static View view;
     private RecyclerView recyclerView;
 
     public static void showEmptyTextview() {
