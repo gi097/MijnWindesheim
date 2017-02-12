@@ -37,8 +37,6 @@ import com.giovanniterlingen.windesheim.objects.EC;
 import com.giovanniterlingen.windesheim.objects.Result;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
-import java.util.ArrayList;
-
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -47,10 +45,10 @@ import java.util.ArrayList;
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<Result> results;
-    private EC ec;
+    private Result[][] results;
+    private EC[] ec;
 
-    public ResultsAdapter(Context context, ArrayList<Result> results, EC ec) {
+    public ResultsAdapter(Context context, Result[][] results, EC[] ec) {
         this.context = context;
         this.results = results;
         this.ec = ec;
@@ -72,21 +70,37 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        int index = 0;
+        int total = 0;
+        for (int i = 0; i < results.length; i++) {
+            total += results[i].length + 2;
+            if (position < total) {
+                index = i;
+                break;
+            }
+        }
         if (holder.type == 0) {
             DonutProgress progress = holder.progressBar;
-            float percent = (float) ec.getCurrentEC() / (float) ec.getMaxEC() * 100f;
+            float percent = 0.0f;
+            if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
+                percent = (float) ec[index].getCurrentEC() / (float) ec[index].getMaxEC() * 100f;
+            }
             int scale = (int) Math.pow(10, 2);
             progress.setProgress((float) Math.floor(percent * scale) / scale);
             progress.setMax(100);
             TextView studyName = holder.studyName;
-            studyName.setText(ec.getStudyName());
+            studyName.setText(ec[index].getStudyName());
             TextView ecDescription = holder.description;
-            ecDescription.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.ec_description, Integer.toString(ec.getCurrentEC()), Integer.toString(ec.getMaxEC())));
+            ecDescription.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.ec_description, Integer.toString(ec[index].getCurrentEC()), Integer.toString(ec[index].getMaxEC())));
         }
         if (holder.type == 2) {
             TextView nameTextView = holder.name;
             TextView markTextView = holder.result;
-            Result result = results.get(position - 2);
+            int previous = 0;
+            for (int i = 0; i < index; i++) {
+                previous += results[i].length;
+            }
+            Result result = results[index][position - (((index + 1) * 2) + previous)];
             nameTextView.setText(result.getModule());
             if (result.getMark() != null && result.getMark().length() > 0) {
                 float mark = Float.parseFloat(result.getMark());
@@ -104,10 +118,14 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (results == null || results.size() == 0) {
+        if (results == null || results.length == 0) {
             return 0;
         }
-        return results.size() + 2;
+        int total = 0;
+        for (int i = 0; i < results.length; i++) {
+            total += results[i].length + 2;
+        }
+        return total;
     }
 
     @Override
@@ -117,6 +135,15 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
         }
         if (position == 1) {
             return 1;
+        }
+        int total = 0;
+        for (int i = 0; i < results.length; i++) {
+            total += results[i].length + 2;
+            if (position == total) {
+                return 0;
+            } else if (position == total + 1) {
+                return 1;
+            }
         }
         return 2;
     }

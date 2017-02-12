@@ -46,8 +46,6 @@ import com.giovanniterlingen.windesheim.ui.Adapters.ResultsAdapter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -98,8 +96,8 @@ public class ProgressActivity extends AppCompatActivity {
     public class ResultsFetcher extends AsyncTask<Void, Void, Void> {
 
         private ProgressBar progressBar;
-        private ArrayList<Result> results;
-        private EC ec;
+        private Result[][] results;
+        private EC[] ec;
 
         @Override
         protected void onPreExecute() {
@@ -114,16 +112,20 @@ public class ProgressActivity extends AppCompatActivity {
                 String studentNumber = preferences.getString("username", "").split("@")[0];
                 String response = WindesheimAPIHandler.getStudyInfo(studentNumber);
                 JSONArray studyJson = new JSONArray(response);
-                JSONObject study = studyJson.getJSONObject(0).getJSONObject("WH_study");
-                String studyName = study.getString("description");
-                String isatCode = study.getString("isatcode");
-                JSONObject progress = studyJson.getJSONObject(0).getJSONObject("WH_studyProgress");
-                int maxECs = progress.getInt("ectsTeBehalen");
-                int currentECs = progress.getInt("ectsBehaald");
-                this.ec = new EC(maxECs, currentECs, studyName);
-                String response2 = WindesheimAPIHandler.getResults(studentNumber, isatCode);
-                JSONArray resultsJSON = new JSONArray(response2);
-                results = WindesheimAPIHandler.getResultList(resultsJSON);
+                results = new Result[studyJson.length()][];
+                ec = new EC[studyJson.length()];
+                for (int i = 0; i < studyJson.length(); i++) {
+                    JSONObject study = studyJson.getJSONObject(i).getJSONObject("WH_study");
+                    String studyName = study.getString("description");
+                    String isatCode = study.getString("isatcode");
+                    JSONObject progress = studyJson.getJSONObject(i).getJSONObject("WH_studyProgress");
+                    int maxECs = progress.getInt("ectsTeBehalen");
+                    int currentECs = progress.getInt("ectsBehaald");
+                    ec[i] = new EC(maxECs, currentECs, studyName);
+                    String response2 = WindesheimAPIHandler.getResults(studentNumber, isatCode);
+                    JSONArray resultsJSON = new JSONArray(response2);
+                    results[i] = WindesheimAPIHandler.getResultArray(resultsJSON);
+                }
             } catch (Exception e) {
                 Intent intent = new Intent(ProgressActivity.this, AuthenticationActivity.class);
                 intent.putExtra("educator", true);
@@ -138,7 +140,7 @@ public class ProgressActivity extends AppCompatActivity {
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
             progressBar.setVisibility(View.GONE);
-            if (results != null && results.size() > 0) {
+            if (results != null && results.length > 0) {
                 ResultsAdapter adapter = new ResultsAdapter(ProgressActivity.this, results, ec);
                 RecyclerView recyclerView = (RecyclerView) findViewById(R.id.results_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ProgressActivity.this));

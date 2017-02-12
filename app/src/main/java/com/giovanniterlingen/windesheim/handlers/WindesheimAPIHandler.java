@@ -83,17 +83,16 @@ public class WindesheimAPIHandler {
         return stringBuffer.toString();
     }
 
-    public static ArrayList<Result> getResultList(JSONArray resultsJSON) throws Exception {
+    public static Result[] getResultArray(JSONArray resultsJSON) throws Exception {
         ArrayList<Result> results = new ArrayList<>();
-        for (int i = resultsJSON.length() - 1; i >= 0; i--) {
+        for (int i = 0; i < resultsJSON.length(); i++) {
             JSONObject current = resultsJSON.getJSONObject(i);
-            boolean passed = current.getBoolean("passed");
             String result = current.getString("grade");
             String name = current.getJSONObject("course").getString("name");
-            if (passed && result != null && result.length() > 0 && name != null && name.length() > 0) {
+            if (result != null && result.length() > 0 && name != null && name.length() > 0) {
                 results.add(new Result(name, result));
             }
         }
-        return results;
+        return results.toArray(new Result[results.size()]);
     }
 }
