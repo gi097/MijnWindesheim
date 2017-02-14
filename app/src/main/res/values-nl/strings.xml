@@ -2,7 +2,7 @@
 <resources>
     <string name="about">Over</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).</string>
+    <string name="about_description">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).\n\nDeze app bevat advertenties van Google Adsense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden.</string>
     <string name="about_developer">Ontwikkelaar en onderhouder</string>
     <string name="about_devs">Ontwikkelaars:</string>
     <string name="about_natschool">N@Tschool! implementatie</string>

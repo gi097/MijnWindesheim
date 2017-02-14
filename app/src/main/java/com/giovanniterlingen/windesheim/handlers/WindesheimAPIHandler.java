@@ -85,7 +85,7 @@ public class WindesheimAPIHandler {
 
     public static Result[] getResultArray(JSONArray resultsJSON) throws Exception {
         ArrayList<Result> results = new ArrayList<>();
-        for (int i = 0; i < resultsJSON.length(); i++) {
+        for (int i = resultsJSON.length() - 1; i >= 0; i--) {
             JSONObject current = resultsJSON.getJSONObject(i);
             String result = current.getString("grade");
             String name = current.getJSONObject("course").getString("name");

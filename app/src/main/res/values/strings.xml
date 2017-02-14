@@ -2,7 +2,7 @@
 <resources>
     <string name="about">About</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) and Windesheim are not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).</string>
+    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) and Windesheim are not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).\n\nThis app contains advertisements from Google Adsense, they might track you. I did choose to add advertisements since I want to earn some money for my work and to keep it free forever.</string>
     <string name="about_developer">Developer and maintainer</string>
     <string name="about_devs">Developers:</string>
     <string name="about_natschool">N@Tschool! implementation</string>
