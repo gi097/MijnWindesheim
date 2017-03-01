@@ -44,9 +44,9 @@ import com.github.lzyzsd.circleprogress.DonutProgress;
  */
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHolder> {
 
-    private Context context;
-    private Result[][] results;
-    private EC[] ec;
+    private final Context context;
+    private final Result[][] results;
+    private final EC[] ec;
 
     public ResultsAdapter(Context context, Result[][] results, EC[] ec) {
         this.context = context;
@@ -91,7 +91,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             TextView studyName = holder.studyName;
             studyName.setText(ec[index].getStudyName());
             TextView ecDescription = holder.description;
-            ecDescription.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.ec_description, Integer.toString(ec[index].getCurrentEC()), Integer.toString(ec[index].getMaxEC())));
+            ecDescription.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.ec_description, ec[index].getCurrentEC(), ec[index].getMaxEC()));
         }
         if (holder.type == 2) {
             TextView nameTextView = holder.name;
@@ -102,14 +102,14 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             }
             Result result = results[index][position - (((index + 1) * 2) + previous)];
             nameTextView.setText(result.getModule());
-            if (result.getMark() != null && result.getMark().length() > 0) {
-                float mark = Float.parseFloat(result.getMark());
+            if (result.getResult() != null && result.getResult().length() > 0) {
+                float mark = Float.parseFloat(result.getResult());
                 if (mark >= 5.5) {
                     markTextView.setTextColor(0xff689f38);
                 } else {
                     markTextView.setTextColor(0xffd50000);
                 }
-                markTextView.setText(result.getMark());
+                markTextView.setText(result.getResult());
             } else {
                 markTextView.setText("");
             }
@@ -122,8 +122,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             return 0;
         }
         int total = 0;
-        for (int i = 0; i < results.length; i++) {
-            total += results[i].length + 2;
+        for (Result[] result : results) {
+            total += result.length + 2;
         }
         return total;
     }
@@ -137,8 +137,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             return 1;
         }
         int total = 0;
-        for (int i = 0; i < results.length; i++) {
-            total += results[i].length + 2;
+        for (Result[] result : results) {
+            total += result.length + 2;
             if (position == total) {
                 return 0;
             } else if (position == total + 1) {
@@ -150,7 +150,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public int type;
+        public final int type;
         public TextView name;
         public TextView result;
 

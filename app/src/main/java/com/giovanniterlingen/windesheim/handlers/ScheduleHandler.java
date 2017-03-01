@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.handlers;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
@@ -41,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -85,12 +85,11 @@ public class ScheduleHandler {
      * @return The JSONObject containing the schedule of that day
      * @throws Exception
      */
-    @SuppressLint("SimpleDateFormat")
     public static JSONObject getScheduleFromServer(String id, Date date, int type)
             throws Exception {
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
                 "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
-                "&date=" + new SimpleDateFormat("yyyyMMdd").format(date));
+                "&date=" + new SimpleDateFormat("yyyyMMdd", Locale.US).format(date));
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
@@ -117,7 +116,6 @@ public class ScheduleHandler {
      * @param componentId Specifies the schedule's id
      * @throws Exception
      */
-    @SuppressLint("SimpleDateFormat")
     public static synchronized void saveSchedule(JSONObject jsonObject, Date date, String
             componentId) throws Exception {
         // get the user filtered lessons to exclude them during fetch
@@ -186,17 +184,6 @@ public class ScheduleHandler {
         }
 
         ApplicationLoader.scheduleDatabase.addFetched(date);
-    }
-
-    /**
-     * Returns a link to download the ical file we need.
-     *
-     * @return The generated url
-     */
-    public static String getIcalLink(String id, Date date, int type) {
-        return "https://roosters.windesheim.nl/WebUntis/Ical.do?" +
-                "elemType=" + type + "&elemId=" + id +
-                "&rpt_sd=" + new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     /**

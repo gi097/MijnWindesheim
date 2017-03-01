@@ -51,17 +51,17 @@ import org.json.JSONObject;
  *
  * @author Giovanni Terlingen
  */
-public class ProgressActivity extends AppCompatActivity {
+public class EducatorActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = PreferenceManager.getDefaultSharedPreferences(ProgressActivity.this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(EducatorActivity.this);
         if (preferences.getString("username", "").length() == 0 ||
                 preferences.getString("password", "").length() == 0) {
-            Intent intent = new Intent(ProgressActivity.this, AuthenticationActivity.class);
+            Intent intent = new Intent(EducatorActivity.this, AuthenticationActivity.class);
             intent.putExtra("educator", true);
             startActivity(intent);
             finish();
@@ -127,7 +127,7 @@ public class ProgressActivity extends AppCompatActivity {
                     results[i] = WindesheimAPIHandler.getResultArray(resultsJSON);
                 }
             } catch (Exception e) {
-                Intent intent = new Intent(ProgressActivity.this, AuthenticationActivity.class);
+                Intent intent = new Intent(EducatorActivity.this, AuthenticationActivity.class);
                 intent.putExtra("educator", true);
                 startActivity(intent);
                 finish();
@@ -141,9 +141,9 @@ public class ProgressActivity extends AppCompatActivity {
             super.onPostExecute(param);
             progressBar.setVisibility(View.GONE);
             if (results != null && results.length > 0) {
-                ResultsAdapter adapter = new ResultsAdapter(ProgressActivity.this, results, ec);
+                ResultsAdapter adapter = new ResultsAdapter(EducatorActivity.this, results, ec);
                 RecyclerView recyclerView = (RecyclerView) findViewById(R.id.results_recyclerview);
-                recyclerView.setLayoutManager(new LinearLayoutManager(ProgressActivity.this));
+                recyclerView.setLayoutManager(new LinearLayoutManager(EducatorActivity.this));
                 recyclerView.setAdapter(adapter);
             }
         }

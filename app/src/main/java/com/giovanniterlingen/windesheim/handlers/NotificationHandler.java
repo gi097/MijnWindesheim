@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.handlers;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -45,6 +44,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -63,7 +63,6 @@ public class NotificationHandler extends Thread {
      * This method will start a loop, which will show notifications when needed, they also gets
      * updated. Since it's one big block of code, I won't explain it. It works and it's stable.
      */
-    @SuppressLint("SimpleDateFormat")
     @Override
     public void run() {
         mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext
@@ -73,7 +72,7 @@ public class NotificationHandler extends Thread {
         notificationType = preferences.getInt("notifications_type", 0);
         String componentId = preferences.getString("componentId", "");
         int type = preferences.getInt("type", 0);
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         String notificationText = "";
         long currentTimeMillis;
         while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0

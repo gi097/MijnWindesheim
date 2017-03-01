@@ -36,8 +36,8 @@ import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NetworkReceiver;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.ui.AuthenticationActivity;
-import com.giovanniterlingen.windesheim.ui.ContentsActivity;
-import com.giovanniterlingen.windesheim.ui.ProgressActivity;
+import com.giovanniterlingen.windesheim.ui.EducatorActivity;
+import com.giovanniterlingen.windesheim.ui.NatschoolActivity;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -50,7 +50,7 @@ public class CookieHandler {
         if (NetworkReceiver.isConnected()) {
             if (educator) {
                 if (getEducatorCookie() != null && getEducatorCookie().length() > 0) {
-                    Intent intent = new Intent(context, ProgressActivity.class);
+                    Intent intent = new Intent(context, EducatorActivity.class);
                     context.startActivity(intent);
                 } else {
                     Intent intent = new Intent(context, AuthenticationActivity.class);
@@ -59,7 +59,7 @@ public class CookieHandler {
                 }
             } else {
                 if (getNatSchoolCookie() != null && getNatSchoolCookie().length() > 0) {
-                    Intent intent = new Intent(context, ContentsActivity.class);
+                    Intent intent = new Intent(context, NatschoolActivity.class);
                     context.startActivity(intent);
                 } else {
                     Intent intent = new Intent(context, AuthenticationActivity.class);

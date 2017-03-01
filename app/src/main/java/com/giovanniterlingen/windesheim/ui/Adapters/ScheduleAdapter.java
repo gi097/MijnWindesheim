@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.ui.Adapters;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -49,11 +48,12 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
+import com.giovanniterlingen.windesheim.objects.IScheduleView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -62,7 +62,7 @@ import java.util.Date;
  */
 public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.ViewHolder> {
 
-    private static Activity context;
+    private final Activity activity;
     private final String dateString;
     private final Date date;
     private final String componentId;
@@ -70,15 +70,14 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
     public ScheduleAdapter(Activity context, Cursor cursor, String dateString, String componentId,
                            Date date) {
         super(cursor);
-        ScheduleAdapter.context = context;
+        this.activity = context;
         this.dateString = dateString;
         this.componentId = componentId;
         this.date = date;
     }
 
-    @SuppressLint("SimpleDateFormat")
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
+    public void onBindViewHolder(final ViewHolder viewHolder, Cursor cursor) {
         final TextView lessonName = viewHolder.lessonName;
         final TextView lessonTime = viewHolder.lessonTime;
         final TextView lessonRoom = viewHolder.lessonRoom;
@@ -86,7 +85,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         final FrameLayout menuButton = viewHolder.menuButton;
         final ImageView menuButtonImage = viewHolder.menuButtonImage;
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
         long databaseDateStart = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(3).replaceAll(":", ""));
         long databaseDateEnd = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(4).replaceAll(":", ""));
         long currentDate = Long.parseLong(simpleDateFormat.format(new Date()));
@@ -96,12 +95,12 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         lessonComponent.setText(cursor.getString(7));
 
         if (databaseDateStart <= currentDate && databaseDateEnd >= currentDate) {
-            lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
             lessonTime.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_started));
             viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cursor.moveToPosition(viewHolder.getAdapterPosition());
+                    getCursor().moveToPosition(viewHolder.getAdapterPosition());
                     if (!lessonTime.getText().toString().equals(ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_started))) {
                         TranslateAnimation animation = new TranslateAnimation(
                                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
@@ -109,7 +108,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                         lessonTime.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_started));
                     } else {
                         TranslateAnimation animation = new TranslateAnimation(
@@ -118,19 +117,19 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
-                        lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        String lessonTimes = getCursor().getString(3) + " - " + getCursor().getString(4);
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
                 }
             });
         } else if (databaseDateEnd < currentDate) {
-            lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
             lessonTime.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.finished));
             viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cursor.moveToPosition(viewHolder.getAdapterPosition());
+                    getCursor().moveToPosition(viewHolder.getAdapterPosition());
                     if (!lessonTime.getText().toString().equals(ApplicationLoader.applicationContext.getResources().getString(R.string.finished))) {
                         TranslateAnimation animation = new TranslateAnimation(
                                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
@@ -138,7 +137,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                         lessonTime.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.finished));
                     } else {
                         TranslateAnimation animation = new TranslateAnimation(
@@ -147,15 +146,15 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
-                        lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        String lessonTimes = getCursor().getString(3) + " - " + getCursor().getString(4);
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
                 }
             });
         } else {
             String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
-            lessonTime.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
             lessonTime.setText(lessonTimes);
             viewHolder.cardView.setOnClickListener(null);
         }
@@ -163,18 +162,18 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
             @Override
             public void onClick(View v) {
                 menuButtonImage.setImageDrawable(ResourcesCompat.getDrawable(
-                        context.getResources(), R.drawable.overflow_open, null));
-                PopupMenu popupMenu = new PopupMenu(context, menuButton);
+                        activity.getResources(), R.drawable.overflow_open, null));
+                PopupMenu popupMenu = new PopupMenu(activity, menuButton);
                 popupMenu.inflate(R.menu.schedule_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        cursor.moveToPosition(viewHolder.getAdapterPosition());
+                        getCursor().moveToPosition(viewHolder.getAdapterPosition());
                         if (item.getItemId() == R.id.hide_lesson) {
-                            showPromptDialog(cursor.getLong(0));
+                            showPromptDialog(getCursor().getLong(0));
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
-                            showCalendarDialog(cursor.getLong(0));
+                            showCalendarDialog(getCursor().getLong(0));
                         }
                         return true;
                     }
@@ -183,7 +182,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                     @Override
                     public void onDismiss(PopupMenu menu) {
                         menuButtonImage.setImageDrawable(ResourcesCompat.getDrawable(
-                                context.getResources(), R.drawable.overflow_normal, null));
+                                activity.getResources(), R.drawable.overflow_normal, null));
                     }
                 });
                 popupMenu.show();
@@ -216,9 +215,9 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
             intent.putExtra("eventLocation", cursor.getString(3));
 
             try {
-                context.startActivity(intent);
+                activity.startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                ScheduleActivity.showSnackbar(context.getResources()
+                ((IScheduleView) activity).showSnackbar(activity.getResources()
                         .getString(R.string.no_calendar_found));
             }
         }
@@ -229,10 +228,10 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context)
-                        .setTitle(context.getResources().getString(R.string.confirmation))
-                        .setMessage(context.getResources().getString(R.string.deletion_description))
-                        .setPositiveButton(context.getResources().getString(R.string.hide),
+                new AlertDialog.Builder(activity)
+                        .setTitle(activity.getResources().getString(R.string.confirmation))
+                        .setMessage(activity.getResources().getString(R.string.deletion_description))
+                        .setPositiveButton(activity.getResources().getString(R.string.hide),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         ApplicationLoader.scheduleDatabase.hideLesson(lessonId);
@@ -240,10 +239,10 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                                                 .getLessons(dateString, componentId));
                                         final boolean isEmpty = getItemCount() == 0;
                                         if (isEmpty) {
-                                            ScheduleActivity.updateFragmentView();
+                                            ((IScheduleView) activity).updateFragmentView();
                                         }
-                                        Snackbar snackbar = Snackbar.make(context.findViewById(R.id.coordinator_layout), context.getResources().getString(R.string.lesson_hidden), Snackbar.LENGTH_SHORT);
-                                        snackbar.setAction(context.getResources().getString(R.string.undo), new View.OnClickListener() {
+                                        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.coordinator_layout), activity.getResources().getString(R.string.lesson_hidden), Snackbar.LENGTH_SHORT);
+                                        snackbar.setAction(activity.getResources().getString(R.string.undo), new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
                                                 ApplicationLoader.scheduleDatabase.restoreLessons(lessonId);
@@ -251,9 +250,9 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                                                         dateString, componentId
                                                 ));
                                                 if (isEmpty) {
-                                                    ScheduleActivity.updateFragmentView();
+                                                    ((IScheduleView) activity).updateFragmentView();
                                                 }
-                                                Snackbar snackbar1 = Snackbar.make(context.findViewById(R.id.coordinator_layout), context.getResources().getString(R.string.lesson_restored), Snackbar.LENGTH_SHORT);
+                                                Snackbar snackbar1 = Snackbar.make(activity.findViewById(R.id.coordinator_layout), activity.getResources().getString(R.string.lesson_restored), Snackbar.LENGTH_SHORT);
                                                 snackbar1.show();
                                                 ApplicationLoader.restartNotificationThread();
                                             }
@@ -263,7 +262,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                                         dialog.cancel();
                                     }
                                 })
-                        .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
@@ -274,12 +273,12 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(context).
+        View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.schedule_adapter_item, parent, false);
         return new ViewHolder(itemView);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView lessonName;
         final TextView lessonTime;

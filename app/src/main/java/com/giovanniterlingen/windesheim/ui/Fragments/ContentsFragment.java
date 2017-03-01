@@ -42,7 +42,7 @@ import com.giovanniterlingen.windesheim.handlers.DownloadHandler;
 import com.giovanniterlingen.windesheim.handlers.NatSchoolWebHandler;
 import com.giovanniterlingen.windesheim.objects.Content;
 import com.giovanniterlingen.windesheim.ui.Adapters.ContentAdapter;
-import com.giovanniterlingen.windesheim.ui.ContentsActivity;
+import com.giovanniterlingen.windesheim.ui.NatschoolActivity;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class ContentsFragment extends Fragment {
         final ProgressBar progressBar = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
         Bundle bundle = this.getArguments();
-        ActionBar toolbar = ((ContentsActivity) getActivity()).getSupportActionBar();
+        ActionBar toolbar = ((NatschoolActivity) getActivity()).getSupportActionBar();
         String studyRouteName;
         if (toolbar != null) {
             if (bundle != null && (studyRouteName = bundle.getString(STUDYROUTE_NAME)) != null &&
@@ -130,7 +130,7 @@ public class ContentsFragment extends Fragment {
                                         .execute(content.url);
                                 return;
                             }
-                            View view = ((ContentsActivity) getActivity()).view;
+                            View view = ((NatschoolActivity) getActivity()).getView();
                             if (view != null) {
                                 Snackbar snackbar = Snackbar.make(view, getContext().getResources()
                                         .getString(R.string.not_supported), Snackbar.LENGTH_SHORT);

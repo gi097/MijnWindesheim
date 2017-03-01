@@ -11,7 +11,7 @@
         android:layout_marginLeft="16.0dip"
         android:layout_marginRight="16.0dip"
         android:gravity="center_vertical"
-        android:text="@string/progress_results"
+        android:text="@string/educator_results"
         android:textColor="#8a8a8a"
         android:textSize="13.0dip" />
 

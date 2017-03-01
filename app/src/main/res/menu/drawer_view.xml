@@ -7,13 +7,13 @@
             android:icon="@drawable/ic_calendar"
             android:title="@string/menuitem_change_schedule" />
         <item
-            android:id="@+id/elo"
+            android:id="@+id/natschool"
             android:icon="@drawable/ic_school"
-            android:title="@string/elo" />
+            android:title="@string/natschool" />
         <item
-            android:id="@+id/progress"
+            android:id="@+id/educator"
             android:icon="@drawable/ic_results"
-            android:title="@string/progress" />
+            android:title="@string/educator" />
         <item
             android:id="@+id/downloads"
             android:icon="@drawable/ic_download"

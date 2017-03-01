@@ -168,10 +168,10 @@ public class ChooseTypeFragment extends Fragment {
                                 })
                         .setNegativeButton(getResources().getString(R.string.cancel), new
                                 DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        }).show();
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                }).show();
             }
         });
     }

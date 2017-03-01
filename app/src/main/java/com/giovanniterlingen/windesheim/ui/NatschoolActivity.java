@@ -40,9 +40,9 @@ import com.giovanniterlingen.windesheim.ui.Fragments.ContentsFragment;
  *
  * @author Giovanni Terlingen
  */
-public class ContentsActivity extends AppCompatActivity {
+public class NatschoolActivity extends AppCompatActivity {
 
-    public View view;
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,5 +73,9 @@ public class ContentsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public View getView() {
+        return view;
     }
 }

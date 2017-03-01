@@ -42,7 +42,7 @@ import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.ui.ContentsActivity;
+import com.giovanniterlingen.windesheim.ui.NatschoolActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,7 +84,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 DownloadHandler.this.cancel(true);
-                View view = ((ContentsActivity) context).view;
+                View view = ((NatschoolActivity) context).getView();
                 if (view != null) {
                     Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
                             R.string.canceled_downloading), Snackbar.LENGTH_SHORT);
@@ -148,7 +148,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 if (e.getMessage().contains("ENOSPC")) {
-                    View view = ((ContentsActivity) context).view;
+                    View view = ((NatschoolActivity) context).getView();
                     if (view != null) {
                         Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
                                 R.string.storage_full), Snackbar.LENGTH_SHORT);
@@ -214,7 +214,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         progressDialog.dismiss();
 
         if (result != null && result.equals("permission")) {
-            View view = ((ContentsActivity) context).view;
+            View view = ((NatschoolActivity) context).getView();
             if (view != null) {
                 Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_permission),
                         Snackbar.LENGTH_LONG);
@@ -253,7 +253,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             try {
                 context.startActivity(target);
             } catch (ActivityNotFoundException e) {
-                View view = ((ContentsActivity) context).view;
+                View view = ((NatschoolActivity) context).getView();
                 if (view != null) {
                     Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_app_found),
                             Snackbar.LENGTH_SHORT);

@@ -53,7 +53,6 @@ import com.giovanniterlingen.windesheim.R;
  */
 public class AuthenticationActivity extends AppCompatActivity {
 
-    private SharedPreferences.Editor editor;
     private TextView usernameTextView;
     private TextView passwordTextView;
     private TextView headerTextView;
@@ -63,6 +62,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private boolean isRedirected = false;
     private WebView webView;
     private boolean isEducator = false;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +79,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         usernameTextLayout = (TextInputLayout) findViewById(R.id.input_username_layout);
         passwordTextLayout = (TextInputLayout) findViewById(R.id.input_password_layout);
 
-        SharedPreferences preferences = PreferenceManager
+        preferences = PreferenceManager
                 .getDefaultSharedPreferences(AuthenticationActivity.this);
-        editor = preferences.edit();
 
         String username;
         String password;
@@ -155,11 +154,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                 passwordTextLayout.setErrorEnabled(false);
                 if (!isEducator && url.equals("https://elo.windesheim.nl/pages/default.aspx") ||
                         url.equals("https://elo.windesheim.nl/Pages/Mobile/index.html")) {
+                    SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);
-                    editor.apply();
+                    editor.commit();
 
-                    Intent intent = new Intent(AuthenticationActivity.this, ContentsActivity.class);
+                    Intent intent = new Intent(AuthenticationActivity.this, NatschoolActivity.class);
                     startActivity(intent);
                     finish();
                 } else if (url.startsWith("https://liveadminwindesheim.sharepoint.com/sites/wip")) {
@@ -174,9 +174,10 @@ public class AuthenticationActivity extends AppCompatActivity {
                     if (loginUrl != null && loginUrl.equals(url)) {
                         // second time the login page displays, wrong credentials
                         if (isRedirected) {
+                            SharedPreferences.Editor editor = preferences.edit();
                             editor.remove("username");
                             editor.remove("password");
-                            editor.apply();
+                            editor.commit();
                         }
                         headerTextView.setText(getString(R.string.auth_add_account));
                         progressBar.setVisibility(View.GONE);
@@ -192,11 +193,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                     });
                     loginUrl = url;
                 } else if (url.startsWith("https://windesheimapi.azurewebsites.net")) {
+                    SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);
-                    editor.apply();
+                    editor.commit();
 
-                    Intent intent = new Intent(AuthenticationActivity.this, ProgressActivity.class);
+                    Intent intent = new Intent(AuthenticationActivity.this, EducatorActivity.class);
                     startActivity(intent);
                     finish();
                 }

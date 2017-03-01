@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.ui.Fragments;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -51,6 +50,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -59,8 +59,11 @@ import java.util.Date;
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private static String componentId;
-    private static int type;
+    private final int[] dateStrings = new int[]{R.string.january, R.string.february, R.string.march, R.string.april,
+            R.string.may, R.string.june, R.string.july, R.string.august, R.string.september,
+            R.string.october, R.string.november, R.string.december};
+    private String componentId;
+    private int type;
     private Date date;
     private ScheduleAdapter adapter;
     private DateFormat simpleDateFormat;
@@ -70,21 +73,16 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     private RecyclerView recyclerView;
     private SimpleDateFormat dayFormat;
     private Calendar calendar;
-    private int[] dateStrings;
 
-    @SuppressLint("SimpleDateFormat")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         componentId = getArguments().getString("componentId");
         type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
-        simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        dayFormat = new SimpleDateFormat("dd");
+        simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        dayFormat = new SimpleDateFormat("dd", Locale.US);
         calendar = Calendar.getInstance();
-        dateStrings = new int[]{R.string.january, R.string.february, R.string.march, R.string.april,
-                R.string.may, R.string.june, R.string.july, R.string.august, R.string.september,
-                R.string.october, R.string.november, R.string.december};
     }
 
     @Override
@@ -200,10 +198,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    public Date getDate() {
-        return date;
-    }
-
     public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         private final boolean fetchData;
@@ -211,7 +205,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         private final boolean showSwipeRefresh;
         private Cursor scheduleDay;
 
-        public ScheduleFetcher(boolean fetchData, boolean showSpinner, boolean showSwipeRefresh) {
+        ScheduleFetcher(boolean fetchData, boolean showSpinner, boolean showSwipeRefresh) {
             this.fetchData = fetchData;
             this.showSpinner = showSpinner;
             this.showSwipeRefresh = showSwipeRefresh;

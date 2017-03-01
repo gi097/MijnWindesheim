@@ -24,7 +24,7 @@
  **/
 package com.giovanniterlingen.windesheim.ui.Adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,7 +35,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.ui.HiddenLessonsActivity;
+import com.giovanniterlingen.windesheim.objects.IHiddenLessonsView;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -44,16 +44,16 @@ import com.giovanniterlingen.windesheim.ui.HiddenLessonsActivity;
  */
 public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLessonsAdapter.ViewHolder> {
 
-    private final Context context;
+    private final Activity activity;
 
-    public HiddenLessonsAdapter(Context context, Cursor cursor) {
+    public HiddenLessonsAdapter(Activity activity, Cursor cursor) {
         super(cursor);
-        this.context = context;
+        this.activity = activity;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(context).
+        View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.hidden_schedule_adapter_item, parent, false);
         return new ViewHolder(itemView);
     }
@@ -69,24 +69,24 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
         Button button = (Button) viewHolder.itemView.findViewById(R.id.restore_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                cursor.moveToPosition(position);
-                ApplicationLoader.scheduleDatabase.restoreLessons(cursor.getLong(0));
-                HiddenLessonsActivity.showSnackbar();
+                getCursor().moveToPosition(position);
+                ApplicationLoader.scheduleDatabase.restoreLessons(getCursor().getLong(0));
+                ((IHiddenLessonsView) activity).showSnackbar();
                 ApplicationLoader.restartNotificationThread();
                 changeCursor(ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter());
                 if (getCursor().getCount() == 0) {
-                    HiddenLessonsActivity.showEmptyTextView();
+                    ((IHiddenLessonsView) activity).showEmptyTextView();
                 }
             }
         });
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView lessonName;
         final TextView lessonComponent;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
             lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);

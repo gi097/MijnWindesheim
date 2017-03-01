@@ -65,13 +65,13 @@ public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAda
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         TextView name = holder.name;
         name.setText(componentFilterable.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onContentClick(componentFilterable.get(position).id);
+                onContentClick(componentFilterable.get(holder.getAdapterPosition()).id);
             }
         });
     }

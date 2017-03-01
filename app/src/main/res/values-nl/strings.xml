@@ -60,9 +60,10 @@
 
     <string name="downloads">Downloads</string>
 
-    <string name="ec_description">%1$s van de %2$s EC\'s zijn behaald</string>
+    <string name="ec_description">%1$d van de %2$d EC\'s zijn behaald</string>
 
-    <string name="elo">ELO</string>
+    <string name="educator">Educator</string>
+    <string name="educator_results">Resultaten</string>
 
     <string name="february">februari</string>
 
@@ -95,12 +96,12 @@
     <string name="june">juni</string>
 
     <string name="lesson_hidden">Les is verborgen</string>
-    <string name="lesson_multiple_hours">Je hebt over %2$s uur %1$s in %3$s</string>
-    <string name="lesson_multiple_hours_multiple_minutes">Je hebt over %2$s uur en %3$s minuten %1$s in %4$s</string>
-    <string name="lesson_multiple_hours_one_minute">Je hebt over %2$s uur en 1 minuut %1$s in %3$s</string>
-    <string name="lesson_multiple_minutes">Je hebt over %2$s minuten %1$s in %3$s</string>
+    <string name="lesson_multiple_hours">Je hebt over %2$d uur %1$s in %3$s</string>
+    <string name="lesson_multiple_hours_multiple_minutes">Je hebt over %2$d uur en %3$d minuten %1$s in %4$s</string>
+    <string name="lesson_multiple_hours_one_minute">Je hebt over %2$d uur en 1 minuut %1$s in %3$s</string>
+    <string name="lesson_multiple_minutes">Je hebt over %2$d minuten %1$s in %3$s</string>
     <string name="lesson_one_hour">Je hebt over 1 uur %1$s in %2$s</string>
-    <string name="lesson_one_hour_multiple_minutes">Je hebt over 1 uur en %2$s minuten %1$s in %3$s</string>
+    <string name="lesson_one_hour_multiple_minutes">Je hebt over 1 uur en %2$d minuten %1$s in %3$s</string>
     <string name="lesson_one_hour_one_minute">Je hebt over 1 uur en 1 minuut %1$s in %2$s</string>
     <string name="lesson_one_minute">Je hebt over 1 minuut %1$s in %2$s</string>
     <string name="lesson_restored">Les is hersteld</string>
@@ -120,14 +121,16 @@
 
     <string name="monday">maandag</string>
 
-    <string name="multiple_lessons_multiple_hours">Je hebt over %1$s uur meerdere lessen</string>
-    <string name="multiple_lessons_multiple_hours_multiple_minutes">Je hebt over %1$s uur en %2$s minuten meerdere lessen</string>
-    <string name="multiple_lessons_multiple_hours_one_minute">Je hebt over %1$s uur en 1 minuut meerdere lessen</string>
-    <string name="multiple_lessons_multiple_minutes">Je hebt over %1$s minuten meerdere lessen</string>
+    <string name="multiple_lessons_multiple_hours">Je hebt over %1$d uur meerdere lessen</string>
+    <string name="multiple_lessons_multiple_hours_multiple_minutes">Je hebt over %1$d uur en %2$d minuten meerdere lessen</string>
+    <string name="multiple_lessons_multiple_hours_one_minute">Je hebt over %1$d uur en 1 minuut meerdere lessen</string>
+    <string name="multiple_lessons_multiple_minutes">Je hebt over %1$d minuten meerdere lessen</string>
     <string name="multiple_lessons_one_hour">Je hebt over 1 uur meerdere lessen</string>
-    <string name="multiple_lessons_one_hour_multiple_minutes">Je hebt over 1 uur en %1$s minuten meerdere lessen</string>
+    <string name="multiple_lessons_one_hour_multiple_minutes">Je hebt over 1 uur en %1$d minuten meerdere lessen</string>
     <string name="multiple_lessons_one_hour_one_minute">Je hebt over 1 uur en 1 minuut meerdere lessen</string>
     <string name="multiple_lessons_one_minute">Je hebt over 1 minuut meerdere lessen</string>
+
+    <string name="natschool">N@Tschool!</string>
 
     <string name="no_app_found">Er is geen app gevonden om dit bestand te openen</string>
     <string name="no_calendar_found">Er is geen agenda gevonden</string>
@@ -149,9 +152,6 @@
     <string name="pager_item_classes">Klassen</string>
     <string name="pager_item_subjects">Vakken</string>
     <string name="pager_item_teachers">Docenten</string>
-
-    <string name="progress">Voortgang</string>
-    <string name="progress_results">Resultaten</string>
 
     <string name="rate">BEOORDELEN</string>
     <string name="rate_dialog">Geef me een review :)</string>

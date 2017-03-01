@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.objects.IHiddenLessonsView;
 import com.giovanniterlingen.windesheim.ui.Adapters.HiddenLessonsAdapter;
 
 /**
@@ -44,24 +45,19 @@ import com.giovanniterlingen.windesheim.ui.Adapters.HiddenLessonsAdapter;
  *
  * @author Giovanni Terlingen
  */
-public class HiddenLessonsActivity extends AppCompatActivity {
+public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenLessonsView {
 
-    private static View view;
+    private View view;
 
-    public static void showSnackbar() {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_restored),
-                            Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
-            }
-        });
+    @Override
+    public void showSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_restored),
+                Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
-    public static void showEmptyTextView() {
+    @Override
+    public void showEmptyTextView() {
         ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {

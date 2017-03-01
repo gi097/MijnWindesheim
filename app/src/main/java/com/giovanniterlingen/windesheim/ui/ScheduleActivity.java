@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.ui;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +51,7 @@ import android.widget.LinearLayout;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.CookieHandler;
+import com.giovanniterlingen.windesheim.objects.IScheduleView;
 import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -65,44 +65,32 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends AppCompatActivity implements IScheduleView {
 
-    private static String componentId;
-    private static int type;
-    public static View view;
-    private static FragmentManager fragmentManager;
+    private String componentId;
+    private int type;
+    private View view;
+    private FragmentManager fragmentManager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
 
-    public static void showSnackbar(final String text) {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
-            }
-        });
+    @Override
+    public void showSnackbar(final String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
-    public static void updateFragmentView() {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (fragmentManager != null) {
-                    List<Fragment> fragments = fragmentManager.getFragments();
-                    if (fragments != null) {
-                        for (Fragment fragment : fragments) {
-                            if (fragment != null && fragment.isMenuVisible()) {
-                                ((ScheduleFragment) fragment).updateLayout();
-                                break;
-                            }
-                        }
-                    }
+    @Override
+    public void updateFragmentView() {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment != null && fragment.isMenuVisible()) {
+                    ((ScheduleFragment) fragment).updateLayout();
+                    break;
                 }
             }
-        });
+        }
     }
 
     @Override
@@ -183,11 +171,11 @@ public class ScheduleActivity extends AppCompatActivity {
                                 finish();
                                 menuItem.setChecked(false);
                                 return true;
-                            case R.id.elo:
+                            case R.id.natschool:
                                 CookieHandler.checkCookieAndIntent(ScheduleActivity.this, false);
                                 menuItem.setChecked(false);
                                 return true;
-                            case R.id.progress:
+                            case R.id.educator:
                                 CookieHandler.checkCookieAndIntent(ScheduleActivity.this, true);
                                 menuItem.setChecked(false);
                                 return true;
@@ -301,11 +289,10 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        @SuppressLint("SimpleDateFormat")
         @Override
         public Fragment getItem(int position) {
             Calendar calendar = Calendar.getInstance();

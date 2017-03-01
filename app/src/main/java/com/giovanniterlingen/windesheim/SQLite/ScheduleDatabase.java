@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.SQLite;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -45,7 +44,7 @@ import io.requery.android.database.sqlite.SQLiteOpenHelper;
  */
 public class ScheduleDatabase extends SQLiteOpenHelper {
 
-    private static SQLiteDatabase database;
+    private SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
         super(context, "schedulestore.db", null, 6);
@@ -158,7 +157,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     public Cursor getLessons(String date, String componentId) {
         return database.rawQuery("WITH cte AS (SELECT _id, component_id, date, start, end, name, " +
                 "room, component, class_id, visible FROM subject t WHERE NOT EXISTS (SELECT NULL " +
-                "FROM subject t2 WHERE t2.component_id = t.component_id AND t2.end = t.start) " +
+                "FROM subject t2 WHERE t2.component_id = t.component_id AND t2.end = t.start AND t.date = t2.date) " +
                 "UNION ALL SELECT t._id, t.component_id, t.date, cte.start, t.end, t.name, t" +
                 ".room, t.component, t.class_id, t.visible FROM cte JOIN subject t ON t" +
                 ".component_id = cte.component_id AND t.start = cte.end AND t.date = cte.date) " +
@@ -256,7 +255,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      *
      * @param date The last date we need to keep, everything smaller than that date will be deleted.
      */
-    public void deleteOldFetched(String date) {
+    private void deleteOldFetched(String date) {
         database.execSQL("DELETE FROM fetched_dates WHERE date < ?", new String[]{date});
     }
 
@@ -282,9 +281,8 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
      * @param date The date we want to parse
      * @return The parsed date
      */
-    @SuppressLint("SimpleDateFormat")
     private String parseDate(Date date) {
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         return simpleDateFormat.format(date);
     }
 

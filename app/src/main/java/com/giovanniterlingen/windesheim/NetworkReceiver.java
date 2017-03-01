@@ -37,13 +37,6 @@ import android.net.NetworkInfo;
  */
 public class NetworkReceiver extends BroadcastReceiver {
 
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-        if (intent.getExtras() != null) {
-            checkThreadsState();
-        }
-    }
-
     private static void checkThreadsState() {
         if (isConnected()) {
             if (ApplicationLoader.notificationHandler != null &&
@@ -62,5 +55,13 @@ public class NetworkReceiver extends BroadcastReceiver {
                 .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    @Override
+    public void onReceive(final Context context, final Intent intent) {
+        if ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction())
+                && intent.getExtras() != null) {
+            checkThreadsState();
+        }
     }
 }

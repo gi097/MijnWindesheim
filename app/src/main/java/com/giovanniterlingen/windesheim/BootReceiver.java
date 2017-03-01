@@ -41,11 +41,13 @@ public class BootReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                ApplicationLoader.startPushService();
-            }
-        });
+        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            ApplicationLoader.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    ApplicationLoader.startPushService();
+                }
+            });
+        }
     }
 }

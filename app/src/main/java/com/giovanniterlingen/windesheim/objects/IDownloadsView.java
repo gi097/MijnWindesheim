@@ -29,22 +29,8 @@ package com.giovanniterlingen.windesheim.objects;
  *
  * @author Giovanni Terlingen
  */
-public class Result {
+public interface IDownloadsView {
 
-    private final String module;
-    private final String result;
-
-    public Result(String module, String result) {
-        this.module = module;
-        this.result = result;
-    }
-
-    public String getModule() {
-        return module;
-    }
-
-    public String getResult() {
-        return result;
-    }
+    void showEmptyTextview();
 
 }

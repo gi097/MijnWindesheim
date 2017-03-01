@@ -40,10 +40,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.PermissionHandler;
 import com.giovanniterlingen.windesheim.objects.Content;
+import com.giovanniterlingen.windesheim.objects.IDownloadsView;
 import com.giovanniterlingen.windesheim.ui.Adapters.ContentAdapter;
 
 import java.io.File;
@@ -55,37 +55,24 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class DownloadsActivity extends AppCompatActivity {
+public class DownloadsActivity extends AppCompatActivity implements IDownloadsView {
 
-    private static View view;
+    private View view;
     private RecyclerView recyclerView;
 
-    public static void showEmptyTextview() {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    TextView empty = (TextView) view.findViewById(R.id.empty_textview);
-                    empty.setVisibility(View.VISIBLE);
-                    RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
-                    recyclerView.setVisibility(View.GONE);
-                }
-            }
-        });
+    @Override
+    public void showEmptyTextview() {
+        TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+        empty.setVisibility(View.VISIBLE);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+        recyclerView.setVisibility(View.GONE);
     }
 
-    private static void hideEmptyTextview() {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    TextView empty = (TextView) view.findViewById(R.id.empty_textview);
-                    empty.setVisibility(View.GONE);
-                    RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
-                    recyclerView.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+    private void hideEmptyTextview() {
+        TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+        empty.setVisibility(View.GONE);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -48,6 +48,7 @@ public class ApplicationLoader extends Application {
     public static ScheduleDatabase scheduleDatabase;
     public static NotificationHandler notificationHandler;
     public static DailyScheduleHandler dailyScheduleHandler;
+
     public static volatile Context applicationContext;
     private static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;

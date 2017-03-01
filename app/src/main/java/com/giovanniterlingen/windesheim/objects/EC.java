@@ -31,9 +31,9 @@ package com.giovanniterlingen.windesheim.objects;
  */
 public class EC {
 
-    public int currentEC;
-    public int maxEC;
-    public String studyName;
+    private final int currentEC;
+    private final int maxEC;
+    private final String studyName;
 
     public EC(int maxEC, int currentEC, String studyName) {
         this.maxEC = maxEC;
@@ -45,23 +45,12 @@ public class EC {
         return currentEC;
     }
 
-    public void setCurrentEC(int currentEC) {
-        this.currentEC = currentEC;
-    }
-
     public int getMaxEC() {
         return maxEC;
-    }
-
-    public void setMaxEC(int maxEC) {
-        this.maxEC = maxEC;
     }
 
     public String getStudyName() {
         return studyName;
     }
 
-    public void setStudyName(String studyName) {
-        this.studyName = studyName;
-    }
 }
