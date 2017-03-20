@@ -3,17 +3,17 @@
         android:id="@+id/one"
         android:checkableBehavior="none">
         <item
-            android:id="@+id/change_schedule"
+            android:id="@+id/manage_schedules"
             android:icon="@drawable/ic_calendar"
-            android:title="@string/menuitem_change_schedule" />
+            android:title="@string/menuitem_manage_schedules" />
         <item
             android:id="@+id/natschool"
             android:icon="@drawable/ic_school"
-            android:title="@string/natschool" />
+            android:title="@string/elo" />
         <item
             android:id="@+id/educator"
             android:icon="@drawable/ic_results"
-            android:title="@string/educator" />
+            android:title="@string/progress" />
         <item
             android:id="@+id/downloads"
             android:icon="@drawable/ic_download"

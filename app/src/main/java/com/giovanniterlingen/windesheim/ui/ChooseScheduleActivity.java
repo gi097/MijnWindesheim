@@ -25,9 +25,7 @@
 package com.giovanniterlingen.windesheim.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -38,18 +36,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.ui.Fragments.ChooseTypeFragment;
+import com.giovanniterlingen.windesheim.ui.Fragments.ChooseScheduleFragment;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class ChooseTypeActivity extends AppCompatActivity {
-
-    private String componentId;
-    private int type;
+public class ChooseScheduleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +55,6 @@ public class ChooseTypeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Instantiate a ViewPager and a PagerAdapter.
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
                 getSupportFragmentManager());
@@ -70,11 +65,7 @@ public class ChooseTypeActivity extends AppCompatActivity {
                 tabLayout.setupWithViewPager(mPager);
             }
         }
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ChooseTypeActivity.this);
-        componentId = sharedPreferences.getString("componentId", "");
-        type = sharedPreferences.getInt("type", 0);
-        if (componentId.length() != 0 && type != 0) {
+        if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
             final ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
@@ -95,24 +86,22 @@ public class ChooseTypeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (componentId.length() != 0 && type != 0) {
-            Intent intent = new Intent(ChooseTypeActivity.this, ScheduleActivity.class);
+        if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
+            Intent intent = new Intent(ChooseScheduleActivity.this, ScheduleActivity.class);
             startActivity(intent);
-            finish();
-        } else {
-            finish();
         }
+        finish();
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = new ChooseTypeFragment();
+            Fragment fragment = new ChooseScheduleFragment();
             Bundle args = new Bundle();
             args.putInt("position", position);
             fragment.setArguments(args);

@@ -35,19 +35,11 @@ import android.os.IBinder;
  */
 public class NotificationService extends Service {
 
-    /**
-     * If the service gets started, we want to init the application in order to let it start the
-     * NotificationHandler.
-     */
     @Override
     public void onCreate() {
         ApplicationLoader.postInitApplication();
     }
 
-    /**
-     * Start the service as STICKY, this means the service will restart automatically after it gets
-     * killed.
-     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
@@ -58,10 +50,6 @@ public class NotificationService extends Service {
         return null;
     }
 
-    /**
-     * A workaround, just sends an intent in order to try to start the service again if it's get
-     * destroyed.
-     */
     @Override
     public void onDestroy() {
         Intent intent = new Intent("com.giovanniterlingen.windesheim.start");

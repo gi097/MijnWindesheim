@@ -61,19 +61,19 @@ import java.net.URL;
  */
 public class DownloadHandler extends AsyncTask<String, Integer, String> {
 
-    private final Activity context;
+    private final Activity activity;
     private final ProgressDialog progressDialog;
     private PowerManager.WakeLock wakeLock;
 
-    public DownloadHandler(Activity context, ProgressDialog progressDialog) {
-        this.context = context;
+    public DownloadHandler(Activity activity, ProgressDialog progressDialog) {
+        this.activity = activity;
         this.progressDialog = progressDialog;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
         progressDialog.show();
@@ -84,10 +84,11 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 DownloadHandler.this.cancel(true);
-                View view = ((NatschoolActivity) context).getView();
+                View view = ((NatschoolActivity) activity).getView();
                 if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
-                            R.string.canceled_downloading), Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(view, activity.getResources().getString(
+                            R.string.canceled_downloading),
+                            Snackbar.LENGTH_SHORT);
                     snackbar.show();
                 }
             }
@@ -137,9 +138,8 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                 output.write(data, 0, count);
             }
         } catch (Exception e) {
-            // Ask user to let the app write to sdcard
             if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                    !PermissionHandler.verifyStoragePermissions(context)) {
+                    !PermissionHandler.verifyStoragePermissions(activity)) {
                 return "permission";
             }
             if (e instanceof IOException) {
@@ -148,28 +148,33 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 if (e.getMessage().contains("ENOSPC")) {
-                    View view = ((NatschoolActivity) context).getView();
+                    View view = ((NatschoolActivity) activity).getView();
                     if (view != null) {
-                        Snackbar snackbar = Snackbar.make(view, context.getResources().getString(
-                                R.string.storage_full), Snackbar.LENGTH_SHORT);
+                        Snackbar snackbar = Snackbar.make(view, activity.getResources()
+                                .getString(R.string.storage_full), Snackbar.LENGTH_SHORT);
                         snackbar.show();
                     }
                 } else {
                     ApplicationLoader.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
-                            new AlertDialog.Builder(context)
-                                    .setTitle(context.getResources().getString(R.string.alert_connection_title))
-                                    .setMessage(context.getResources().getString(R.string.alert_connection_description))
-                                    .setPositiveButton(context.getResources().getString(R.string.connect),
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(activity.getResources()
+                                            .getString(R.string.alert_connection_title))
+                                    .setMessage(activity.getResources()
+                                            .getString(R.string.alert_connection_description))
+                                    .setPositiveButton(activity.getResources()
+                                                    .getString(R.string.connect),
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     DownloadHandler.this.cancel(true);
-                                                    new DownloadHandler(context, progressDialog).execute(strings);
+                                                    new DownloadHandler(activity, progressDialog)
+                                                            .execute(strings);
                                                     dialog.cancel();
                                                 }
                                             })
-                                    .setNegativeButton(context.getResources().getString(R.string.cancel),
+                                    .setNegativeButton(activity.getResources()
+                                                    .getString(R.string.cancel),
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     dialog.cancel();
@@ -212,22 +217,22 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             wakeLock.release();
         }
         progressDialog.dismiss();
-
         if (result != null && result.equals("permission")) {
-            View view = ((NatschoolActivity) context).getView();
+            View view = ((NatschoolActivity) activity).getView();
             if (view != null) {
-                Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_permission),
-                        Snackbar.LENGTH_LONG);
-                snackbar.setAction(context.getResources().getString(R.string.fix), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-                        intent.setData(uri);
-                        context.startActivity(intent);
-                    }
-                });
+                Snackbar snackbar = Snackbar.make(view, activity.getResources()
+                        .getString(R.string.no_permission), Snackbar.LENGTH_LONG);
+                snackbar.setAction(activity.getResources().getString(R.string.fix),
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                                intent.setData(uri);
+                                activity.startActivity(intent);
+                            }
+                        });
                 snackbar.show();
             }
             return;
@@ -236,7 +241,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             Uri uri;
             Intent target = new Intent(Intent.ACTION_VIEW);
             if (android.os.Build.VERSION.SDK_INT >= 24) {
-                uri = FileProvider.getUriForFile(context,
+                uri = FileProvider.getUriForFile(activity,
                         "com.giovanniterlingen.windesheim.provider",
                         new File(result));
                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
@@ -249,13 +254,13 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             String mimetype = android.webkit.MimeTypeMap.getSingleton()
                     .getMimeTypeFromExtension(extension);
             target.setDataAndType(uri, mimetype);
-
             try {
-                context.startActivity(target);
+                activity.startActivity(target);
             } catch (ActivityNotFoundException e) {
-                View view = ((NatschoolActivity) context).getView();
+                View view = ((NatschoolActivity) activity).getView();
                 if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, context.getResources().getString(R.string.no_app_found),
+                    Snackbar snackbar = Snackbar.make(view, activity.getResources()
+                                    .getString(R.string.no_app_found),
                             Snackbar.LENGTH_SHORT);
                     snackbar.show();
                 }

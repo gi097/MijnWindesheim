@@ -57,12 +57,12 @@ import java.util.List;
 public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
 
     private final List<Content> content = new ArrayList<>();
-    private final Activity context;
+    private final Activity activity;
     private final String type;
     private final int courseId;
     private final int id;
 
-    public NatSchoolWebHandler(int courseId, int id, Activity context) {
+    protected NatSchoolWebHandler(int courseId, int id, Activity activity) {
         if (courseId == -1 && id == -1) {
             this.type = "courses";
         } else {
@@ -70,7 +70,7 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
         }
         this.courseId = courseId;
         this.id = id;
-        this.context = context;
+        this.activity = activity;
     }
 
     public abstract void onFinished(List<Content> content);
@@ -81,7 +81,8 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
             createWebRequest("LoadStudyroutes", "start=0&length=1000&filter=0&search=");
         }
         if (type.equals("content")) {
-            createWebRequest("LoadStudyrouteContent", "studyrouteid=" + courseId + "&parentid=" + id + "&start=0&length=100");
+            createWebRequest("LoadStudyrouteContent", "studyrouteid=" + courseId + "&parentid="
+                    + id + "&start=0&length=100");
         }
         return null;
     }
@@ -95,11 +96,13 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
     private void createWebRequest(final String path, final String urlParameters) {
         HttpURLConnection connection = null;
         try {
-            URL url = new URL("http://elo.windesheim.nl/services/Studyroutemobile.asmx/" + path + "?" + urlParameters);
+            URL url = new URL("http://elo.windesheim.nl/services/Studyroutemobile.asmx/"
+                    + path + "?" + urlParameters);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Length", Integer
+                    .toString(urlParameters.getBytes().length));
             connection.setRequestProperty("Content-Language", "en-US");
             connection.setRequestProperty("Cookie", CookieHandler.getNatSchoolCookie());
 
@@ -107,7 +110,6 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            //Send request
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(urlParameters);
             wr.flush();
@@ -115,8 +117,8 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
 
             int status = connection.getResponseCode();
 
-            //Get Response
-            InputStream is = status >= 400 ? connection.getErrorStream() : connection.getInputStream();
+            InputStream is = status >= 400 ? connection.getErrorStream() :
+                    connection.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String line;
             StringBuilder response = new StringBuilder();
@@ -138,31 +140,35 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
                 JSONArray jsonArray = jsonObject.getJSONArray("STUDYROUTE_CONTENT");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonobj = jsonArray.getJSONObject(i);
-                    content.add(new Content(jsonobj.getInt("ID"), jsonobj.getString("NAME"),
-                            jsonobj.getInt("STUDYROUTE_ITEM_ID"),
-                            jsonobj.getInt("ITEMTYPE"),
-                            (jsonobj.has("URL") ? jsonobj.getString("URL") : null)));
+                    int type = jsonobj.getInt("ITEMTYPE");
+                    if (type == 0 || type == 1 || type == 3 || type == 10) {
+                        content.add(new Content(jsonobj.getInt("ID"), jsonobj.getString("NAME"),
+                                jsonobj.getInt("STUDYROUTE_ITEM_ID"), type,
+                                (jsonobj.has("URL") ? jsonobj.getString("URL") : null)));
+                    }
                 }
             }
         } catch (Exception e) {
             if (e instanceof JSONException) {
-                Intent intent = new Intent(context, AuthenticationActivity.class);
+                Intent intent = new Intent(activity, AuthenticationActivity.class);
                 intent.putExtra("educator", false);
-                context.startActivity(intent);
-                context.finish();
+                activity.startActivity(intent);
+                activity.finish();
                 return;
             }
             ApplicationLoader.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(context)
-                            .setTitle(context.getResources().getString(R.string.alert_connection_title))
-                            .setMessage(context.getResources().getString(R.string.alert_connection_description))
-                            .setPositiveButton(context.getResources().getString(R.string.connect),
+                    new AlertDialog.Builder(activity)
+                            .setTitle(activity.getResources()
+                                    .getString(R.string.alert_connection_title))
+                            .setMessage(activity.getResources()
+                                    .getString(R.string.alert_connection_description))
+                            .setPositiveButton(activity.getResources().getString(R.string.connect),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             NatSchoolWebHandler.this.cancel(true);
-                                            new NatSchoolWebHandler(courseId, id, context) {
+                                            new NatSchoolWebHandler(courseId, id, activity) {
                                                 @Override
                                                 public void onFinished(List<Content> content) {
                                                     NatSchoolWebHandler.this.onFinished(content);
@@ -171,7 +177,7 @@ public abstract class NatSchoolWebHandler extends AsyncTask<Void, Void, Void> {
                                             dialog.cancel();
                                         }
                                     })
-                            .setNegativeButton(context.getResources().getString(R.string.cancel),
+                            .setNegativeButton(activity.getResources().getString(R.string.cancel),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();

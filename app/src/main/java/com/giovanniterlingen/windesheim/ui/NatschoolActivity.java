@@ -56,7 +56,6 @@ public class NatschoolActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
-
         PermissionHandler.verifyStoragePermissions(this);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

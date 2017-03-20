@@ -18,10 +18,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="16.0dip"
-        android:layout_marginRight="16.0dip"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="16.0dip"
+        android:paddingRight="16.0dip">
 
         <TextView
             android:id="@+id/lesson_name"

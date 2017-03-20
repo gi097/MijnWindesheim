@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.ColorHandler;
 import com.giovanniterlingen.windesheim.objects.IHiddenLessonsView;
 
 /**
@@ -54,7 +55,7 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity).
-                inflate(R.layout.hidden_schedule_adapter_item, parent, false);
+                inflate(R.layout.adapter_item_hidden_schedule, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -62,8 +63,12 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
         TextView lessonName = viewHolder.lessonName;
         TextView lessonComponent = viewHolder.lessonComponent;
+        View scheduleIdentifier = viewHolder.scheduleIdentifier;
+
         lessonName.setText(cursor.getString(1));
         lessonComponent.setText(cursor.getString(2));
+        scheduleIdentifier.setBackgroundColor(ColorHandler.getColorById(cursor.getInt(3)));
+
         final int position = cursor.getPosition();
 
         Button button = (Button) viewHolder.itemView.findViewById(R.id.restore_button);
@@ -85,11 +90,13 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
 
         final TextView lessonName;
         final TextView lessonComponent;
+        final View scheduleIdentifier;
 
         ViewHolder(View view) {
             super(view);
             lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
             lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
+            scheduleIdentifier = view.findViewById(R.id.schedule_identifier);
         }
     }
 }

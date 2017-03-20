@@ -35,19 +35,8 @@ import android.content.Intent;
  */
 public class BootReceiver extends BroadcastReceiver {
 
-    /**
-     * This method is called when the phone is booted. We will start the pushService to start the
-     * NotificationHandler.
-     */
     @Override
     public void onReceive(Context context, Intent intent) {
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-            ApplicationLoader.runOnUIThread(new Runnable() {
-                @Override
-                public void run() {
-                    ApplicationLoader.startPushService();
-                }
-            });
-        }
+        ApplicationLoader.startPushService();
     }
 }

@@ -66,7 +66,8 @@ public class WindesheimAPIHandler {
     public static String getResults(String studentNumber, String isat) throws Exception {
         StringBuilder stringBuffer = new StringBuilder("");
         URL urlLink = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
-                + studentNumber + "/Study/" + isat + "/CourseResults?onlydata=true&$orderby=lastmodified");
+                + studentNumber + "/Study/" + isat
+                + "/CourseResults?onlydata=true&$orderby=lastmodified");
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");

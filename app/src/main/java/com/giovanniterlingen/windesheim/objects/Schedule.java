@@ -29,7 +29,27 @@ package com.giovanniterlingen.windesheim.objects;
  *
  * @author Giovanni Terlingen
  */
-public interface IDownloadsView {
+public class Schedule {
 
-    void showEmptyTextview();
+    private final int type;
+    private String name;
+    private int id;
+
+    public Schedule(String name, int id, int type) {
+        this.name = name;
+        this.id = id;
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getType() {
+        return type;
+    }
 }

@@ -27,6 +27,8 @@ package com.giovanniterlingen.windesheim.SQLite;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.giovanniterlingen.windesheim.objects.Schedule;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,43 +49,23 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     private SQLiteDatabase database;
 
     public ScheduleDatabase(Context context) {
-        super(context, "schedulestore.db", null, 6);
+        super(context, "schedulestore.db", null, 7);
     }
 
-    /**
-     * Open the database once to keep communicating with it. According to Google, it isn't a bad
-     * idea to leave a database open.
-     */
     public void open() {
         database = this.getWritableDatabase();
     }
 
-    /**
-     * Create needed tables, only if they don't exist yet.
-     *
-     * @param database The opened database object.
-     */
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL("CREATE TABLE subject (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "component_id INTEGER, date TEXT, start TEXT, end TEXT, name TEXT, room TEXT, " +
                 "component TEXT, class_id INTEGER, visible INTEGER)");
         database.execSQL("CREATE TABLE fetched_dates (date TEXT UNIQUE)");
+        database.execSQL("CREATE TABLE schedules (schedule_id INTEGER UNIQUE, schedule_name TEXT, " +
+                "schedule_type INTEGER)");
     }
 
-    /**
-     * Insert all schedule data in the database.
-     *
-     * @param id          The id from the lesson
-     * @param date        The date of the lesson
-     * @param start       The start time of the lesson
-     * @param end         The end time of the lesson
-     * @param name        The name of the lesson
-     * @param room        The location of the lesson.
-     * @param component   Class or teacher name
-     * @param componentId The lesson's id
-     * @param visible     Defines if the user has hidden or shown the lesson
-     */
     public void saveScheduleData(int id, String date, String start, String end, String name,
                                  String room, String component, int componentId, int visible) {
         database.execSQL("INSERT INTO subject (component_id, date, start, end, name, room, " +
@@ -91,36 +73,21 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
                 Object[]{id, date, start, end, name, room, component, componentId, visible});
     }
 
-    /**
-     * Clears all lessons for one week.
-     *
-     * @param date The date in the week we want to delete.
-     */
-    public void clearScheduleData(Date date) {
+    public void clearScheduleData(Date date, int id) {
         String[] weekDates = getWeekDates(date);
-        database.execSQL("DELETE FROM subject WHERE date >= ? AND date <= ? AND visible =" +
-                " 1", new String[]{weekDates[0], weekDates[1]});
+        database.execSQL("DELETE FROM subject WHERE date >= ? AND date <= ? AND class_id = ? " +
+                "AND visible = 1", new Object[]{weekDates[0], weekDates[1], id});
     }
 
-    /**
-     * Clears all schedule data we don't need anymore. It will only delete visible lessons.
-     *
-     * @param date The date we need to keep, everything before that date will be deleted.
-     */
     public void clearOldScheduleData(Date date) {
         database.execSQL("DELETE FROM subject WHERE date < ? AND visible = 1",
                 new String[]{parseDate(date)});
-        deleteOldFetched(parseDate(date));
+        deleteOldFetched(date);
     }
 
-    /**
-     * Sets a lesson to unvisible, so the user will not see the lesson anymore.
-     *
-     * @param id The database id that needs to be set to unvisible
-     */
     public void hideLesson(long id) {
-        Cursor cursor = database.rawQuery("SELECT component_id FROM subject WHERE _id = ?", new
-                Object[]{id});
+        Cursor cursor = database.rawQuery("SELECT component_id FROM subject WHERE _id = ?",
+                new Object[]{id});
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 database.execSQL("UPDATE subject SET visible = 0 WHERE component_id = ? AND " +
@@ -130,14 +97,9 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * Sets a lesson to visible again, so the user will see it.
-     *
-     * @param id The database id that needs to be set to visible
-     */
     public void restoreLessons(long id) {
-        Cursor cursor = database.rawQuery("SELECT component_id FROM subject WHERE _id = ?", new
-                Object[]{id});
+        Cursor cursor = database.rawQuery("SELECT component_id FROM subject WHERE _id = ?",
+                new Object[]{id});
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 database.execSQL("UPDATE subject SET visible = 1 WHERE component_id = ? AND " +
@@ -147,33 +109,52 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * Get all saved lessons from the database.
-     *
-     * @param date        The date of the lessons we want to see
-     * @param componentId The id of the schedule
-     * @return The Cursor containing all lessons.
-     */
-    public Cursor getLessons(String date, String componentId) {
-        return database.rawQuery("WITH cte AS (SELECT _id, component_id, date, start, end, name, " +
-                "room, component, class_id, visible FROM subject t WHERE NOT EXISTS (SELECT NULL " +
-                "FROM subject t2 WHERE t2.component_id = t.component_id AND t2.end = t.start AND t.date = t2.date) " +
-                "UNION ALL SELECT t._id, t.component_id, t.date, cte.start, t.end, t.name, t" +
-                ".room, t.component, t.class_id, t.visible FROM cte JOIN subject t ON t" +
-                ".component_id = cte.component_id AND t.start = cte.end AND t.date = cte.date) " +
-                "SELECT _id, component_id, date, min(start), max(end) AS end, name, max(room), " +
-                "component, class_id FROM cte WHERE date = ? and class_id = ? AND visible = 1 " +
-                "GROUP BY component_id, start ORDER BY start, end, name", new String[]{date,
-                componentId});
+    public Cursor getLessons(String date) {
+        String query = "WITH cte AS (SELECT _id, component_id, date, start, end, name, " +
+                "room, component, visible, class_id FROM subject t WHERE NOT EXISTS (SELECT NULL " +
+                "FROM subject t2 WHERE t2.component_id = t.component_id AND t2.end = t.start AND " +
+                "t.date = t2.date) UNION ALL SELECT t._id, t.component_id, t.date, cte.start, " +
+                "t.end, t.name, t.room, t.component, t.visible, t.class_id FROM cte JOIN subject t ON " +
+                "t.component_id = cte.component_id AND t.start = cte.end AND t.date = cte.date) " +
+                "SELECT _id, component_id, date, MIN(start), MAX(end), name, MAX(room), " +
+                "component, class_id FROM cte WHERE date = ? AND visible = 1 GROUP BY component_id, " +
+                "start ORDER BY start, end, name";
+        return database.rawQuery(query, new String[]{date});
     }
 
-    /**
-     * Get a lesson by the database id
-     *
-     * @param date The date of the lessons we want to see, will be parsed to week dates
-     * @param id   The database id
-     * @return The cursor containing a lesson
-     */
+    public void addSchedule(int id, String name, int type) {
+        database.execSQL("INSERT INTO schedules (schedule_id, schedule_name, schedule_type) " +
+                "VALUES (?, ?, ?)", new Object[]{id, name, type});
+    }
+
+    public void deleteSchedule(int id) {
+        database.execSQL("DELETE FROM schedules WHERE schedule_id = ?", new Object[]{id});
+        database.execSQL("DELETE FROM subject WHERE class_id = ?", new Object[]{id});
+    }
+
+    public Schedule[] getSchedules() {
+        Cursor cursor = database.rawQuery("SELECT schedule_id, schedule_name, schedule_type " +
+                "FROM schedules", null);
+        Schedule[] schedules = new Schedule[cursor.getCount()];
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            schedules[i] = new Schedule(cursor.getString(1), cursor.getInt(0), cursor.getInt(2));
+        }
+        cursor.close();
+        return schedules;
+    }
+
+    public boolean hasSchedules() {
+        return countSchedules() > 0;
+    }
+
+    public int countSchedules() {
+        Cursor cursor = database.rawQuery("SELECT schedule_id FROM schedules", null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
     public Cursor getSingleLesson(String date, long id) {
         Cursor cursor = database.rawQuery("SELECT component_id FROM subject WHERE _id = ?", new
                 Object[]{id});
@@ -187,50 +168,29 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
                 String[]{date, componentId});
     }
 
-    /**
-     * Gets all hidden lessons for the adapter.
-     *
-     * @return the Cursor containing all hidden lessons
-     */
     public Cursor getFilteredLessonsForAdapter() {
-        return database.rawQuery("SELECT _id, name, component FROM subject WHERE visible = 0 " +
-                "GROUP BY component_id ORDER BY name", null);
+        return database.rawQuery("SELECT _id, name, component, class_id FROM subject WHERE " +
+                "visible = 0 GROUP BY component_id ORDER BY name", null);
     }
 
-    /**
-     * Gets unvisible lessons.
-     *
-     * @return the lessons which are hidden
-     */
     public Cursor getFilteredLessons() {
         return database.rawQuery("SELECT component_id FROM subject WHERE visible = 0 GROUP BY " +
                 "component_id", null);
     }
 
-    /**
-     * Checks if the database contains lessons for a specific week.
-     *
-     * @param date        The date in the week we want to check.
-     * @param componentId The id of the schedule.
-     * @return true or false, depending on cursor size.
-     */
-    public boolean containsWeek(Date date, String componentId) {
-        String[] weekDates = getWeekDates(date);
-        Cursor cursor = database.rawQuery("SELECT _id FROM subject WHERE date >= ? AND date <= ? " +
-                "AND class_id = ? AND visible = 1", new String[]{weekDates[0], weekDates[1],
-                componentId});
-        boolean bool = cursor.getCount() > 0;
+    public int getPositionByScheduleId(int id) {
+        Cursor cursor = database.rawQuery("SELECT schedule_id FROM schedules", null);
+        while (cursor.moveToNext()) {
+            if (id == cursor.getInt(0)) {
+                int i = cursor.getPosition();
+                cursor.close();
+                return i;
+            }
+        }
         cursor.close();
-        return bool;
+        return 0;
     }
 
-    /**
-     * Checks if a week was already fetched from the server.
-     *
-     * @param date The date within a week
-     * @return true if the database contains values, which means the schedule was already fetched
-     * before
-     */
     public boolean isFetched(Date date) {
         String[] weekDates = getWeekDates(date);
         Cursor cursor = database.rawQuery("SELECT date FROM fetched_dates WHERE date >= ? AND " +
@@ -240,58 +200,34 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         return bool;
     }
 
-    /**
-     * Means we fetched the schedule for a specific day.
-     *
-     * @param date The date we fetched.
-     */
     public void addFetched(Date date) {
-        database.execSQL("INSERT OR IGNORE INTO fetched_dates VALUES (?)", new String[]{parseDate
-                (date)});
+        String[] weekdates = getWeekDates(date);
+        for (String weekdate : weekdates) {
+            database.execSQL("INSERT OR IGNORE INTO fetched_dates VALUES (?)",
+                    new String[]{weekdate});
+        }
     }
 
-    /**
-     * Clears old dates which specifies the fetch times.
-     *
-     * @param date The last date we need to keep, everything smaller than that date will be deleted.
-     */
-    private void deleteOldFetched(String date) {
-        database.execSQL("DELETE FROM fetched_dates WHERE date < ?", new String[]{date});
+    private void deleteOldFetched(Date date) {
+        String[] weekDates = getWeekDates(date);
+        database.execSQL("DELETE FROM fetched_dates WHERE date < ?", new String[]{weekDates[1]});
     }
 
-    /**
-     * Clears all dates which specifies the fetch times.
-     **/
     public void clearFetched() {
         database.execSQL("DELETE FROM fetched_dates");
     }
 
-    /**
-     * Clears all dates which specifies the fetch times.
-     **/
-    public void clearFetched(Date date) {
+    public void deleteFetched(Date date) {
         String[] weekDates = getWeekDates(date);
-        database.execSQL("DELETE FROM fetched_dates WHERE date >= ? AND date <= ?", new
-                String[]{weekDates[0], weekDates[1]});
+        database.execSQL("DELETE FROM fetched_dates WHERE date >= ? AND date <= ?",
+                new String[]{weekDates[0], weekDates[1]});
     }
 
-    /**
-     * Parsed the Date object to a string
-     *
-     * @param date The date we want to parse
-     * @return The parsed date
-     */
     private String parseDate(Date date) {
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         return simpleDateFormat.format(date);
     }
 
-    /**
-     * Creates an array of all the lowest and highest day in a week.
-     *
-     * @param date The date in a week
-     * @return An array of the lowest and highest date
-     */
     private String[] getWeekDates(Date date) {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.setTime(date);
@@ -303,17 +239,17 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
         return new String[]{lowestDate, highestDate};
     }
 
-    /**
-     * Clear the database if the scheme get's updated.
-     */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         database.execSQL("DROP TABLE subject");
         database.execSQL("DROP TABLE fetched_dates");
+        //database.execSQL("DROP TABLE schedules");
+
         database.execSQL("CREATE TABLE subject (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "component_id INTEGER, date TEXT, start TEXT, end TEXT, name TEXT, room TEXT, " +
                 "component TEXT, class_id INTEGER, visible INTEGER)");
         database.execSQL("CREATE TABLE fetched_dates (date TEXT UNIQUE)");
+        database.execSQL("CREATE TABLE schedules (schedule_id INTEGER UNIQUE, " +
+                "schedule_type INTEGER, schedule_name TEXT)");
     }
-
 }

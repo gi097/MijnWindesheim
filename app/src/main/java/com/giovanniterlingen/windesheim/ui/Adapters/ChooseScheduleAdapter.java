@@ -42,25 +42,24 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAdapter.ViewHolder> {
+public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseScheduleAdapter.ViewHolder> {
 
     private final List<Component> component;
     private final List<Component> componentFilterable = new ArrayList<>();
     private final Context context;
 
-
-    public ComponentAdapter(Context context, List<Component> component) {
+    protected ChooseScheduleAdapter(Context context, List<Component> component) {
         this.context = context;
         this.component = component;
         this.componentFilterable.addAll(component);
     }
 
-    protected abstract void onContentClick(int id);
+    protected abstract void onContentClick(int id, String name);
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(context).
-                inflate(R.layout.component_adapter_item, parent, false);
+                inflate(R.layout.adapter_item_component, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -71,7 +70,8 @@ public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAda
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onContentClick(componentFilterable.get(holder.getAdapterPosition()).id);
+                onContentClick(componentFilterable.get(holder.getAdapterPosition()).id,
+                        componentFilterable.get(holder.getAdapterPosition()).name);
             }
         });
     }
@@ -97,11 +97,11 @@ public abstract class ComponentAdapter extends RecyclerView.Adapter<ComponentAda
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView name;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.component_item);
         }

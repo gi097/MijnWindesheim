@@ -68,31 +68,26 @@ public class CookieHandler {
                 }
             }
         } else {
-            ApplicationLoader.runOnUIThread(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(context)
-                            .setTitle(context.getResources().getString(R.string.alert_connection_title))
-                            .setMessage(context.getResources().getString(R.string.alert_connection_description))
-                            .setPositiveButton(context.getResources().getString(R.string.connect),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            checkCookieAndIntent(context, educator);
-                                            dialog.cancel();
-                                        }
-                                    })
-                            .setNegativeButton(context.getResources().getString(R.string.cancel),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    }).show();
-                }
-            });
+            new AlertDialog.Builder(context)
+                    .setTitle(context.getResources().getString(R.string.alert_connection_title))
+                    .setMessage(context.getResources().getString(R.string.alert_connection_description))
+                    .setPositiveButton(context.getResources().getString(R.string.connect),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    checkCookieAndIntent(context, educator);
+                                    dialog.cancel();
+                                }
+                            })
+                    .setNegativeButton(context.getResources().getString(R.string.cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            }).show();
         }
     }
 
-    public static String getNatSchoolCookie() {
+    static String getNatSchoolCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
@@ -100,7 +95,7 @@ public class CookieHandler {
         return cookieManager.getCookie("https://elo.windesheim.nl");
     }
 
-    public static String getEducatorCookie() {
+    static String getEducatorCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);

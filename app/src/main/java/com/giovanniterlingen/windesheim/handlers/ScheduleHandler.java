@@ -27,6 +27,7 @@ package com.giovanniterlingen.windesheim.handlers;
 import android.database.Cursor;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.objects.Schedule;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,13 +50,17 @@ import java.util.Locale;
  */
 public class ScheduleHandler {
 
-    /**
-     * Gets a list of available classes, teachers or lessons depending on type.
-     *
-     * @param type The type of the object
-     * @return The retrieved response, it will be JSON format
-     * @throws Exception
-     */
+    public static synchronized void getAndSaveAllSchedules(Date date) throws Exception {
+        ApplicationLoader.scheduleDatabase.deleteFetched(date);
+        Schedule[] schedules = ApplicationLoader.scheduleDatabase.getSchedules();
+        for (Schedule schedule : schedules) {
+            ScheduleHandler.saveSchedule(ScheduleHandler
+                    .getScheduleFromServer(schedule.getId(), date,
+                            schedule.getType()), date, schedule.getId());
+        }
+        ApplicationLoader.scheduleDatabase.addFetched(date);
+    }
+
     public static String getListFromServer(int type) throws Exception {
         StringBuilder stringBuffer = new StringBuilder("");
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
@@ -76,17 +81,7 @@ public class ScheduleHandler {
         return stringBuffer.toString();
     }
 
-    /**
-     * Gets a JSONObject of lessons depending on date, id and type.
-     *
-     * @param id   The class' teacher's or subject's id
-     * @param date The date we want the schedule from
-     * @param type Type specifies schedule type, class, subject or teacher
-     * @return The JSONObject containing the schedule of that day
-     * @throws Exception
-     */
-    public static JSONObject getScheduleFromServer(String id, Date date, int type)
-            throws Exception {
+    private static JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
                 "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
                 "&date=" + new SimpleDateFormat("yyyyMMdd", Locale.US).format(date));
@@ -107,18 +102,8 @@ public class ScheduleHandler {
         return new JSONObject(stringBuffer.toString());
     }
 
-    /**
-     * Here we will parse and the retrieved JSON data in the local database. WebUntis uses a weird
-     * JSON structure. It's hard to explain here, so take a look at the for-loops I used.
-     *
-     * @param jsonObject  Contains the fetched lessons
-     * @param date        Specifies the date of the fetched lessons
-     * @param componentId Specifies the schedule's id
-     * @throws Exception
-     */
-    public static synchronized void saveSchedule(JSONObject jsonObject, Date date, String
-            componentId) throws Exception {
-        // get the user filtered lessons to exclude them during fetch
+    private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id)
+            throws Exception {
         List<String> list = new ArrayList<>();
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
         while (cursor.moveToNext()) {
@@ -126,19 +111,15 @@ public class ScheduleHandler {
         }
         cursor.close();
 
-        // delete old schedule data
-        ApplicationLoader.scheduleDatabase.clearScheduleData(date);
-        // delete fetch date
-        ApplicationLoader.scheduleDatabase.clearFetched(date);
+        ApplicationLoader.scheduleDatabase.clearScheduleData(date, id);
 
-        // init required global values
         String component = "";
         String classRoom = "";
         String module = "";
 
-        // start parsing the json object
         JSONObject resultData = jsonObject.getJSONObject("result").getJSONObject("data");
-        JSONArray data = resultData.getJSONObject("elementPeriods").getJSONArray(componentId);
+        JSONArray data = resultData.getJSONObject("elementPeriods")
+                .getJSONArray(Integer.toString(id));
         for (int i = 0; i < data.length(); i++) {
             JSONObject lessonObject = data.getJSONObject(i);
             JSONArray lessonElements = lessonObject.getJSONArray("elements");
@@ -172,27 +153,17 @@ public class ScheduleHandler {
             } else if (!subject.equals("")) {
                 module += " - " + subject;
             }
-            // save it and reset fields
             ApplicationLoader.scheduleDatabase.saveScheduleData(lessonObject.getInt("lessonId"),
                     lessonObject.getString("date"), parseTime(lessonObject.getString("startTime")),
                     parseTime(lessonObject.getString("endTime")), module, classRoom, component,
-                    Integer.parseInt(componentId), list.contains(lessonObject.getString
+                    id, list.contains(lessonObject.getString
                             ("lessonId")) ? 0 : 1);
             component = "";
             classRoom = "";
             module = "";
         }
-
-        ApplicationLoader.scheduleDatabase.addFetched(date);
     }
 
-    /**
-     * A little workaround to parse the time. We need to add a 0 to let SQLite sort the entries
-     * properly.
-     *
-     * @param time The string we want to pad with a 0
-     * @return The parsed string
-     */
     private static String parseTime(String time) {
         if (time.length() == 3) {
             time = "0" + time;

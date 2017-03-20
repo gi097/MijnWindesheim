@@ -22,14 +22,39 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.objects;
+package com.giovanniterlingen.windesheim.handlers;
+
+import android.support.v4.util.LruCache;
+
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public interface IDownloadsView {
+public class ColorHandler {
 
-    void showEmptyTextview();
+    private static final int[] colors = new int[]{
+            0xff008dd7,
+            0xff82189e,
+            0xffe64310,
+            0xff23a669,
+            0xff545454
+    };
+    public static final LruCache<Integer, Integer> cachedColors = new LruCache<>(colors.length);
+
+    private static int getColorByPosition(int position) {
+        return colors[position];
+    }
+
+    public static int getColorById(int id) {
+        if (cachedColors.get(id) == null) {
+            int position = ApplicationLoader.scheduleDatabase.getPositionByScheduleId(id);
+            int color = getColorByPosition(position);
+            cachedColors.put(id, color);
+            return color;
+        }
+        return cachedColors.get(id);
+    }
 }

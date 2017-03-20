@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -46,9 +47,10 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.handlers.ColorHandler;
 import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
 import com.giovanniterlingen.windesheim.objects.Component;
-import com.giovanniterlingen.windesheim.ui.Adapters.ComponentAdapter;
+import com.giovanniterlingen.windesheim.ui.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
 import org.json.JSONArray;
@@ -62,14 +64,15 @@ import java.util.ArrayList;
  *
  * @author Giovanni Terlingen
  */
-public class ChooseTypeFragment extends Fragment {
+public class ChooseScheduleFragment extends Fragment {
 
     private ArrayList<Component> componentList;
-    private ComponentAdapter adapter;
+    private ChooseScheduleAdapter adapter;
     private RecyclerView recyclerView;
     private int type;
     private Context context;
     private ProgressBar spinner;
+    private View view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +93,7 @@ public class ChooseTypeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_choose_type, container, false);
+        view = inflater.inflate(R.layout.fragment_choose_schedule, container, false);
         TextView chooseTextview = (TextView) view.findViewById(R.id.choose_textview);
         TextView descriptionTextview = (TextView) view.findViewById(R.id.description_textview);
         EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
@@ -123,9 +126,6 @@ public class ChooseTypeFragment extends Fragment {
             }
 
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                if (adapter == null) {
-                    new ComponentFetcher().execute();
-                }
             }
 
             public void afterTextChanged(Editable arg0) {
@@ -136,7 +136,8 @@ public class ChooseTypeFragment extends Fragment {
     }
 
 
-    private void buildClassArray(JSONArray jsonArray) {
+    private synchronized void buildClassArray(JSONArray jsonArray) {
+        this.componentList.clear();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -176,13 +177,39 @@ public class ChooseTypeFragment extends Fragment {
         });
     }
 
+    private void alertScheduleExists() {
+        new AlertDialog.Builder(context)
+                .setTitle(getResources().getString(R.string.duplicate_title))
+                .setMessage(getResources().getString(R.string.duplicate_description))
+                .setNegativeButton(getResources().getString(R.string.cancel), new
+                        DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
+    }
+
+    private void alertTooMuchSchedules() {
+        new AlertDialog.Builder(context)
+                .setTitle(getResources().getString(R.string.exceed_limit_title))
+                .setMessage(getResources().getString(R.string.exceed_limit_description))
+                .setNegativeButton(getResources().getString(R.string.cancel), new
+                        DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
+    }
+
     private class ComponentFetcher extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             spinner.setVisibility(View.VISIBLE);
-            componentList = new ArrayList<>();
+            if (componentList == null) {
+                componentList = new ArrayList<>();
+            }
         }
 
         @Override
@@ -190,32 +217,49 @@ public class ChooseTypeFragment extends Fragment {
             try {
                 buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type))
                         .getJSONArray("elements"));
-                adapter = new ComponentAdapter(context, componentList) {
+                adapter = new ChooseScheduleAdapter(context, componentList) {
                     @Override
-                    protected void onContentClick(int id) {
-                        SharedPreferences preferences = PreferenceManager
-                                .getDefaultSharedPreferences(context);
-                        if (preferences.getString("componentId", "").length() != 0 &&
-                                preferences.getInt("type", 0) != 0) {
+                    protected void onContentClick(int id, String name) {
+                        try {
+                            int count = ApplicationLoader.scheduleDatabase.countSchedules();
+                            if (count >= 5) {
+                                alertTooMuchSchedules();
+                                return;
+                            }
+                            boolean hasSchedules = ApplicationLoader.scheduleDatabase.hasSchedules();
+
+                            ColorHandler.cachedColors.evictAll();
+                            ApplicationLoader.scheduleDatabase.addSchedule(id, name, type);
                             ApplicationLoader.scheduleDatabase.clearFetched();
-                        }
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("componentId", Integer.toString(id));
-                        editor.putInt("notifications_type", 5);
-                        editor.putInt("type", type);
-                        if (preferences.getLong("checkTime", 0) > 0) {
-                            editor.remove("checkTime");
-                        }
-                        editor.apply();
 
-                        ApplicationLoader.restartDailyScheduleFetcher();
-                        ApplicationLoader.restartNotificationThread();
+                            SharedPreferences preferences = PreferenceManager
+                                    .getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            if (!hasSchedules) {
+                                editor.putInt("notifications_type", 5);
+                            }
+                            if (preferences.getLong("checkTime", 0) > 0) {
+                                editor.remove("checkTime");
+                            }
+                            editor.apply();
 
-                        Intent intent = new Intent(context, ScheduleActivity.class);
-                        startActivity(intent);
-                        getActivity().finish();
+                            ApplicationLoader.restartNotificationThread();
+                            ApplicationLoader.restartDailyScheduleFetcher();
+
+                            if (!hasSchedules) {
+                                Intent intent = new Intent(context, ScheduleActivity.class);
+                                startActivity(intent);
+                            }
+                            getActivity().finish();
+                        } catch (SQLiteConstraintException e) {
+                            alertScheduleExists();
+                        }
                     }
                 };
+                EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
+                if (dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
+                    adapter.filter(dataSearch.getText().toString());
+                }
             } catch (Exception e) {
                 alertConnectionProblem();
             }

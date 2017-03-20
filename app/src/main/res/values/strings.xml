@@ -2,11 +2,13 @@
 <resources>
     <string name="about">About</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">This is an unofficial app for students and teachers of Windesheim. I (Giovanni) and Windesheim are not responsible for any data that is shown incorrect. This app is NOT being maintained NOR supervised by Windesheim Zwolle, but by me (Giovanni).\n\nThis app contains advertisements from Google Adsense, they might track you. I did choose to add advertisements since I want to earn some money for my work and to keep it free forever.</string>
     <string name="about_developer">Developer and maintainer</string>
-    <string name="about_devs">Developers:</string>
+    <string name="about_devs">Developers</string>
+    <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Me and Windeheim can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nThis app contains advertisements from Google AdSense, they might track you. I did choose to add advertisements since I want to earn some money for my work and to keep this app free. When you are using this app you automatically agree with this disclaimer.</string>
     <string name="about_natschool">N@Tschool! implementation</string>
     <string name="about_thomas">Thomas Visch</string>
+
+    <string name="add">Add</string>
 
     <string name="alert_connection_description">The data could not be retrieved. Check your internet connection and try again.</string>
     <string name="alert_connection_title">Problem while connecting!</string>
@@ -32,13 +34,13 @@
     <string name="canceled_downloading">Download has been cancelled</string>
 
     <string name="choose_class">Choose your class</string>
-    <string name="choose_class_description">Here you can search your class, after that click on it to set it as your default schedule.</string>
+    <string name="choose_class_description">Here you can search your class, after that click on it to set it as your schedule.</string>
     <string name="choose_class_hint">Enter your class</string>
     <string name="choose_subject">Choose your subject</string>
-    <string name="choose_subject_description">Here you can search your desired subject, after that click on it to set it as your default schedule.</string>
+    <string name="choose_subject_description">Here you can search your desired subject, after that click on it to set it as your schedule.</string>
     <string name="choose_subject_hint">Enter your subject</string>
     <string name="choose_teacher">Choose your name or teacher-code</string>
-    <string name="choose_teacher_description">Here you can search your name or teacher-code, after that click on it to set it as your default schedule.</string>
+    <string name="choose_teacher_description">Here you can search your name or teacher-code, after that click on it to set it as your schedule.</string>
     <string name="choose_teacher_hint">Enter your name or teacher-code</string>
 
     <string name="confirmation">Are you sure?</string>
@@ -53,17 +55,25 @@
 
     <string name="delete">Delete</string>
     <string name="delete_file_description">This will delete the file permanently.</string>
+    <string name="delete_schedule_description">This will remove the schedule from this device.</string>
 
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
+
+    <string name="disclaimer">Disclaimer</string>
 
     <string name="downloading">Downloading…</string>
 
     <string name="downloads">Downloads</string>
 
+    <string name="duplicate_description">This schedule already exists. Choose another one.</string>
+    <string name="duplicate_title">Duplicate</string>
+
     <string name="ec_description">%1$d of the %2$d EC\'s have been achieved</string>
 
-    <string name="educator">Educator</string>
-    <string name="educator_results">Results</string>
+    <string name="elo">ELO</string>
+
+    <string name="exceed_limit_description">You can only use a maximum of 5 schedules at once. Delete a schedule first and try it again.v</string>
+    <string name="exceed_limit_title">Too much schedules</string>
 
     <string name="february">February</string>
 
@@ -111,12 +121,14 @@
 
     <string name="login">Login</string>
 
+    <string name="manage_schedules">Manage schedules</string>
+
     <string name="march">March</string>
 
     <string name="may">May</string>
 
     <string name="menuitem_about">About this app</string>
-    <string name="menuitem_change_schedule">Change schedule</string>
+    <string name="menuitem_manage_schedules">Manage schedules</string>
     <string name="menuitem_restore_lessons">Restore lessons</string>
 
     <string name="monday">Monday</string>
@@ -130,16 +142,10 @@
     <string name="multiple_lessons_one_hour_one_minute">You have multiple lessons in about 1 hour and 1 minute</string>
     <string name="multiple_lessons_one_minute">You have multiple lessons in about 1 minute</string>
 
-    <string name="natschool">N@Tschool!</string>
-
     <string name="no_app_found">There is no app found to open this file</string>
     <string name="no_calendar_found">No calendar found</string>
     <string name="no_content_found">No files found</string>
-    <string name="no_lessons_found">There are no lessons found for today</string>
-    <string name="no_more_lessons">You have no more upcoming lessons today :)</string>
     <string name="no_permission">No access to the sdcard</string>
-
-    <string name="not_supported">This file is not supported</string>
 
     <string name="november">November</string>
 
@@ -153,13 +159,14 @@
     <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>
 
-    <string name="rate">RATE</string>
-    <string name="rate_dialog">Give me a review :)</string>
+    <string name="progress">Progress</string>
+    <string name="progress_results">Results</string>
 
     <string name="restore">Restore</string>
 
     <string name="save_lesson">Save lesson to calendar</string>
 
+    <string name="schedule_deleted">Schedule has been deleted</string>
     <string name="schedule_not_found">No schedule found for this day</string>
 
     <string name="september">September</string>

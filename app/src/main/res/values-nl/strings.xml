@@ -2,11 +2,13 @@
 <resources>
     <string name="about">Over</string>
     <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_description">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ik (Giovanni) en Windesheim zijn niet verantwoordelijk voor gegevens die verkeerd worden weergegeven. Deze app wordt NIET bijgewerkt NOCH gecontroleerd door Windesheim Zwolle, maar door mij (Giovanni).\n\nDeze app bevat advertenties van Google Adsense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden.</string>
     <string name="about_developer">Ontwikkelaar en onderhouder</string>
-    <string name="about_devs">Ontwikkelaars:</string>
+    <string name="about_devs">Ontwikkelaars</string>
+    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Ik en Windesheim kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nDeze app bevat advertenties van Google AdSense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden. Wanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
     <string name="about_natschool">N@Tschool! implementatie</string>
     <string name="about_thomas">Thomas Visch</string>
+
+    <string name="add">Toevoegen</string>
 
     <string name="alert_connection_description">De gegevens konden niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.</string>
     <string name="alert_connection_title">Probleem met verbinden!</string>
@@ -32,13 +34,13 @@
     <string name="canceled_downloading">Download geannuleerd</string>
 
     <string name="choose_class">Kies je klas</string>
-    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
+    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
     <string name="choose_class_hint">Typ hier je klas</string>
     <string name="choose_subject">Kies je vak</string>
-    <string name="choose_subject_description">Je kunt hier je gewenste vak zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
+    <string name="choose_subject_description">Je kunt hier je gewenste vak zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
     <string name="choose_subject_hint">Typ hier je vak</string>
     <string name="choose_teacher">Kies je naam of docentcode</string>
-    <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze als je standaardrooster in te stellen.</string>
+    <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
     <string name="choose_teacher_hint">Typ hier je naam of docentcode</string>
 
     <string name="confirmation">Weet je het zeker?</string>
@@ -53,17 +55,25 @@
 
     <string name="delete">Verwijderen</string>
     <string name="delete_file_description">Het bestand zal permanent verwijdert worden.</string>
+    <string name="delete_schedule_description">Dit zal het rooster van je apparaat verwijderen.</string>
 
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
+
+    <string name="disclaimer">Disclaimer</string>
 
     <string name="downloading">Downloaden…</string>
 
     <string name="downloads">Downloads</string>
 
+    <string name="duplicate_description">Dit rooster bestaat al, kies een ander rooster.</string>
+    <string name="duplicate_title">Duplicaat</string>
+
     <string name="ec_description">%1$d van de %2$d EC\'s zijn behaald</string>
 
-    <string name="educator">Educator</string>
-    <string name="educator_results">Resultaten</string>
+    <string name="elo">ELO</string>
+
+    <string name="exceed_limit_description">Je kan maximaal 5 roosters tegelijk gebruiken. Verwijder eerst een rooster en probeer het dan opnieuw.</string>
+    <string name="exceed_limit_title">Teveel roosters</string>
 
     <string name="february">februari</string>
 
@@ -111,12 +121,14 @@
 
     <string name="login">Inloggen</string>
 
+    <string name="manage_schedules">Roosters beheren</string>
+
     <string name="march">maart</string>
 
     <string name="may">mei</string>
 
     <string name="menuitem_about">Over deze app</string>
-    <string name="menuitem_change_schedule">Wijzig rooster</string>
+    <string name="menuitem_manage_schedules">Roosters beheren</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
 
     <string name="monday">maandag</string>
@@ -130,16 +142,10 @@
     <string name="multiple_lessons_one_hour_one_minute">Je hebt over 1 uur en 1 minuut meerdere lessen</string>
     <string name="multiple_lessons_one_minute">Je hebt over 1 minuut meerdere lessen</string>
 
-    <string name="natschool">N@Tschool!</string>
-
     <string name="no_app_found">Er is geen app gevonden om dit bestand te openen</string>
     <string name="no_calendar_found">Er is geen agenda gevonden</string>
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
-    <string name="no_lessons_found">Er zijn geen lessen gevonden voor vandaag</string>
-    <string name="no_more_lessons">Je hebt geen komende lessen meer vandaag :)</string>
     <string name="no_permission">Geen toegang tot de sdkaart</string>
-
-    <string name="not_supported">Dit bestand wordt niet ondersteund</string>
 
     <string name="november">november</string>
 
@@ -153,13 +159,14 @@
     <string name="pager_item_subjects">Vakken</string>
     <string name="pager_item_teachers">Docenten</string>
 
-    <string name="rate">BEOORDELEN</string>
-    <string name="rate_dialog">Geef me een review :)</string>
+    <string name="progress">Voortgang</string>
+    <string name="progress_results">Resultaten</string>
 
     <string name="restore">Herstellen</string>
 
     <string name="save_lesson">Les opslaan in agenda</string>
 
+    <string name="schedule_deleted">Rooster is verwijderd</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
 
     <string name="september">september</string>

@@ -45,47 +45,33 @@ public class DailyScheduleHandler extends Thread {
     public void run() {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
-        if (sharedPreferences.getBoolean("schedule_change_service", true)) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            String componentId = sharedPreferences.getString("componentId", "");
-            int type = sharedPreferences.getInt("type", 0);
-            while (isRunning()) {
-                if (sharedPreferences.getLong("checkTime", 0) == 0 ||
-                        !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
-                    try {
-                        Calendar calendar = Calendar.getInstance();
-                        ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(), componentId);
-                        calendar.add(Calendar.DATE, 7);
-                        ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                                componentId, calendar.getTime(), type), calendar.getTime(), componentId);
-                        editor.putLong("checkTime", System.currentTimeMillis());
-                        editor.apply();
-                    } catch (Exception e) {
-                        stopRunning();
-                    }
-                }
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        while (isRunning()) {
+            if (sharedPreferences.getLong("checkTime", 0) == 0 ||
+                    !DateUtils.isToday(sharedPreferences.getLong("checkTime", 0))) {
                 try {
-                    sleep(60000);
-                } catch (InterruptedException e) {
-                    //
+                    Calendar calendar = Calendar.getInstance();
+                    ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                    calendar.add(Calendar.DATE, 7);
+                    ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                    editor.putLong("checkTime", System.currentTimeMillis());
+                    editor.apply();
+                } catch (Exception e) {
+                    stopRunning();
                 }
+            }
+            try {
+                sleep(60000);
+            } catch (InterruptedException e) {
+                //
             }
         }
     }
 
-    /**
-     * Check if the thread is running.
-     *
-     * @return The value of the running variable.
-     */
     public boolean isRunning() {
         return running;
     }
 
-    /**
-     * Stop the thread.
-     */
     public void stopRunning() {
         running = false;
     }

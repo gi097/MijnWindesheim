@@ -73,7 +73,6 @@ public class EducatorActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        // fetch results
         new ResultsFetcher().execute();
     }
 

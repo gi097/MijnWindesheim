@@ -13,13 +13,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_margin="16.0dip"
-        android:layout_marginBottom="5.0dip"
         android:layout_toLeftOf="@+id/result"
         android:layout_toStartOf="@+id/result"
         android:maxLines="1"
-        android:textColor="#212121"
-        android:textSize="14.0sp" />
+        android:padding="16.0dip"
+        android:paddingBottom="5.0dip"
+        android:textColor="@color/title"
+        android:textSize="@dimen/title_size" />
 
     <TextView
         android:id="@+id/result"
@@ -28,7 +28,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_margin="16.0dip"
+        android:padding="16.0dip"
         android:textColor="@color/colorSecondaryText"
         android:textSize="@dimen/text_size_title" />
 </RelativeLayout>

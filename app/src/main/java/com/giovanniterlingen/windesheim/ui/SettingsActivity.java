@@ -162,8 +162,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 SharedPreferences.Editor editor = preferences.edit();
-                // Since we use an array, the index is 0 based.
-                // Add 2 to support my older versions
                 if (notificationId > -1) {
                     int id = notificationId + 2;
                     switch (notificationId) {

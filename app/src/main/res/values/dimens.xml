@@ -8,4 +8,7 @@
     <dimen name="card_text_margin">16.0dip</dimen>
     <dimen name="card_text_margin_half">8.0dip</dimen>
     <dimen name="statusbar_padding">24.0dip</dimen>
+    <dimen name="schedule_identifier_padding">5.0dip</dimen>
+    <dimen name="title_size">14.0sp</dimen>
+    <dimen name="description_size">12.0sp</dimen>
 </resources>

@@ -26,7 +26,6 @@ package com.giovanniterlingen.windesheim.ui.Fragments;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,10 +60,13 @@ public class ContentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents, container, false);
-        final RecyclerView recyclerView = (RecyclerView) viewGroup.findViewById(R.id.contents_recyclerview);
+        final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents,
+                container, false);
+        final RecyclerView recyclerView = (RecyclerView) viewGroup
+                .findViewById(R.id.contents_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final ProgressBar progressBar = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
+        final ProgressBar progressBar = (ProgressBar) viewGroup
+                .findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
         Bundle bundle = this.getArguments();
         ActionBar toolbar = ((NatschoolActivity) getActivity()).getSupportActionBar();
@@ -76,7 +78,6 @@ public class ContentsFragment extends Fragment {
             } else {
                 toolbar.setTitle(getResources().getString(R.string.courses));
             }
-            // ugly workaround to fix toolbar title truncation
             toolbar.setDisplayHomeAsUpEnabled(false);
             toolbar.setDisplayHomeAsUpEnabled(true);
         }
@@ -128,13 +129,6 @@ public class ContentsFragment extends Fragment {
                                 mProgressDialog.setCancelable(true);
                                 new DownloadHandler(getActivity(), mProgressDialog)
                                         .execute(content.url);
-                                return;
-                            }
-                            View view = ((NatschoolActivity) getActivity()).getView();
-                            if (view != null) {
-                                Snackbar snackbar = Snackbar.make(view, getContext().getResources()
-                                        .getString(R.string.not_supported), Snackbar.LENGTH_SHORT);
-                                snackbar.show();
                             }
                         }
                     }

@@ -25,28 +25,34 @@
 package com.giovanniterlingen.windesheim.ui;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.ui.Adapters.ManageSchedulesAdapter;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class AboutActivity extends AppCompatActivity {
+public class ManageSchedulesActivity extends AppCompatActivity {
+
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_manage_schedules);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -54,37 +60,15 @@ public class AboutActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        TextView header = (TextView) findViewById(R.id.about_header);
-        if (header != null) {
-            try {
-                String versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-                String title = getResources().getString(R.string.app_name) + " " + versionCode;
-                header.setText(title);
-            } catch (PackageManager.NameNotFoundException e) {
-                header.setText(getResources().getString(R.string.app_name));
-            }
-        }
+        view = findViewById(R.id.coordinator_layout);
+        setAdapter();
+    }
 
-        View view = findViewById(R.id.gi097);
-        if (view != null) {
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://giovanniterlingen.com")));
-                }
-            });
-        }
-        View view1 = findViewById(R.id.thomas);
-        if (view1 != null) {
-            view1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://www.thomasvisch.nl")));
-                }
-            });
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity_manage_schedule, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -94,6 +78,10 @@ public class AboutActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.action_add_schedule:
+                Intent intent = new Intent(ManageSchedulesActivity.this, ChooseScheduleActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -101,5 +89,33 @@ public class AboutActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    public void showDeletionSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources().getString(R.string.schedule_deleted),
+                Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    public void intent() {
+        Intent intent = new Intent(ManageSchedulesActivity.this, ChooseScheduleActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void setAdapter() {
+        ManageSchedulesAdapter adapter = new ManageSchedulesAdapter(ManageSchedulesActivity.this,
+                ApplicationLoader.scheduleDatabase.getSchedules());
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        if (recyclerView != null) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setAdapter();
     }
 }

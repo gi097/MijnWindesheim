@@ -24,10 +24,8 @@
  **/
 package com.giovanniterlingen.windesheim.ui;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -67,8 +65,6 @@ import java.util.List;
  */
 public class ScheduleActivity extends AppCompatActivity implements IScheduleView {
 
-    private String componentId;
-    private int type;
     private View view;
     private FragmentManager fragmentManager;
     private long onPauseMillis;
@@ -96,7 +92,6 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
-        // Fix previous versions
         String classId = sharedPreferences.getString("classId", "");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (classId.length() > 0) {
@@ -104,13 +99,14 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             editor.putInt("type", 1);
             editor.remove("classId");
             editor.remove("schedule_change_service");
+            editor.remove("componentId");
+            editor.remove("type");
             editor.apply();
         }
         editor.remove("notifications");
-        componentId = sharedPreferences.getString("componentId", "");
-        type = sharedPreferences.getInt("type", 0);
-        if (componentId.length() == 0 || type == 0) {
-            Intent intent = new Intent(ScheduleActivity.this, ChooseTypeActivity.class);
+
+        if (!ApplicationLoader.scheduleDatabase.hasSchedules()) {
+            Intent intent = new Intent(ScheduleActivity.this, ChooseScheduleActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);
             finish();
@@ -136,7 +132,7 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
@@ -152,8 +148,6 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
         mAdView.loadAd(adRequest);
 
         setViewPager();
-
-        showRateSnackbar();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -164,11 +158,10 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         switch (menuItem.getItemId()) {
-                            case R.id.change_schedule:
+                            case R.id.manage_schedules:
                                 Intent intent = new Intent(ScheduleActivity.this,
-                                        ChooseTypeActivity.class);
+                                        ManageSchedulesActivity.class);
                                 startActivity(intent);
-                                finish();
                                 menuItem.setChecked(false);
                                 return true;
                             case R.id.natschool:
@@ -208,9 +201,6 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
                 });
     }
 
-    /**
-     * Bind activities and set the position according to the current date.
-     */
     private void setViewPager() {
         Calendar calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
@@ -246,35 +236,9 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
 
     @Override
     public void onResume() {
-        // Lets check if day has changed while app was in background
         super.onResume();
         if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
-        }
-    }
-
-    /**
-     * Show a snackbar which asks to review this app in the PlayStore.
-     */
-    private void showRateSnackbar() {
-        if (view != null) {
-            Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.rate_dialog),
-                    Snackbar.LENGTH_LONG);
-            snackbar.setAction(getResources().getString(R.string.rate), new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String appName = ApplicationLoader.applicationContext.getPackageName();
-                    try {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=" + appName)));
-                    } catch (ActivityNotFoundException e) {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://play.google.com/store/apps/details?id="
-                                        + appName)));
-                    }
-                }
-            });
-            snackbar.show();
         }
     }
 
@@ -309,13 +273,11 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             if (position <= 4) {
                 calendar.add(Calendar.DATE, position);
             } else {
-                calendar.add(Calendar.DATE, position + 2); // Skip weekends
+                calendar.add(Calendar.DATE, position + 2);
             }
 
             Fragment fragment = new ScheduleFragment();
             Bundle args = new Bundle();
-            args.putString("componentId", componentId);
-            args.putInt("type", type);
             args.putSerializable("date", calendar.getTime());
             fragment.setArguments(args);
 

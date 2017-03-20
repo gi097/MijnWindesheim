@@ -59,9 +59,6 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        if ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction())
-                && intent.getExtras() != null) {
-            checkThreadsState();
-        }
+        checkThreadsState();
     }
 }

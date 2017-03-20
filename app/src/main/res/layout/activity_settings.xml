@@ -43,11 +43,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="1.0dip"
-                        android:background="?android:listDivider" />
-
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -62,8 +57,8 @@
                             android:paddingRight="@dimen/activity_margin"
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_lessons"
-                            android:textColor="#dd000000"
-                            android:textSize="@dimen/text_size" />
+                            android:textColor="@color/title"
+                            android:textSize="@dimen/title_size" />
 
                         <TextView
                             android:layout_width="fill_parent"
@@ -74,8 +69,8 @@
                             android:paddingLeft="@dimen/activity_margin"
                             android:paddingRight="@dimen/activity_margin"
                             android:text="@string/settings_lessons_description"
-                            android:textColor="#8a000000"
-                            android:textSize="12.0sp" />
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/description_size" />
 
                         <android.support.v7.widget.SwitchCompat
                             android:id="@+id/lesson_notification_switch"
@@ -107,8 +102,8 @@
                             android:paddingRight="@dimen/activity_margin"
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_interval"
-                            android:textColor="#dd000000"
-                            android:textSize="@dimen/text_size" />
+                            android:textColor="@color/title"
+                            android:textSize="@dimen/title_size" />
 
                         <TextView
                             android:id="@+id/settings_interval_textview"
@@ -118,8 +113,8 @@
                             android:paddingBottom="@dimen/activity_margin"
                             android:paddingLeft="@dimen/activity_margin"
                             android:paddingRight="@dimen/activity_margin"
-                            android:textColor="#8a000000"
-                            android:textSize="12.0sp" />
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/description_size" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -165,12 +160,13 @@
                         android:textColor="@color/colorAccent" />
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1.0dip"
+                    android:layout_gravity="bottom"
+                    android:background="?android:listDivider" />
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1.0dip"
-                android:background="?android:listDivider" />
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

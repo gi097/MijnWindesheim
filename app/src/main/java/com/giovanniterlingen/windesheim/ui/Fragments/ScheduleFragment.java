@@ -59,11 +59,20 @@ import java.util.Locale;
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final int[] dateStrings = new int[]{R.string.january, R.string.february, R.string.march, R.string.april,
-            R.string.may, R.string.june, R.string.july, R.string.august, R.string.september,
-            R.string.october, R.string.november, R.string.december};
-    private String componentId;
-    private int type;
+    private final int[] dateStrings = new int[]{
+            R.string.january,
+            R.string.february,
+            R.string.march,
+            R.string.april,
+            R.string.may,
+            R.string.june,
+            R.string.july,
+            R.string.august,
+            R.string.september,
+            R.string.october,
+            R.string.november,
+            R.string.december
+    };
     private Date date;
     private ScheduleAdapter adapter;
     private DateFormat simpleDateFormat;
@@ -77,8 +86,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        componentId = getArguments().getString("componentId");
-        type = getArguments().getInt("type");
         date = (Date) getArguments().getSerializable("date");
         simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         dayFormat = new SimpleDateFormat("dd", Locale.US);
@@ -107,7 +114,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                 String title = dayFormat.format(date) + " " + monthString;
                 if (!title.equals(toolbar.getTitle())) {
                     toolbar.setTitle(title);
-                    // ugly workaround to fix toolbar title truncation
                     toolbar.setDisplayHomeAsUpEnabled(false);
                     toolbar.setDisplayHomeAsUpEnabled(true);
                 }
@@ -118,8 +124,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
-            if (!ApplicationLoader.scheduleDatabase.containsWeek(date, componentId) &&
-                    !ApplicationLoader.scheduleDatabase.isFetched(date)) {
+            if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
                 new ScheduleFetcher(true, true, false).execute();
             } else {
                 new ScheduleFetcher(false, false, false).execute();
@@ -138,17 +143,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         spinner = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
         recyclerView = (RecyclerView) viewGroup.findViewById(R.id.schedule_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(
-                simpleDateFormat.format(date), componentId);
+        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
         if (scheduleDay.getCount() > 0) {
-            adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date),
-                    componentId, date);
+            adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date), date);
             recyclerView.setAdapter(adapter);
         } else {
             emptyTextView.setVisibility(View.VISIBLE);
-            if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
-                new ScheduleFetcher(true, true, false).execute();
-            }
         }
         return viewGroup;
     }
@@ -185,9 +185,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         new ScheduleFetcher(true, false, true).execute();
     }
 
-    /**
-     * Workaround, this method is called from another class
-     */
     public void updateLayout() {
         if (emptyTextView != null) {
             if (adapter == null || adapter.getItemCount() == 0) {
@@ -215,14 +212,15 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected void onPreExecute() {
             super.onPreExecute();
             updateToolbar();
-            if (adapter == null && showSpinner && spinner != null) {
-                emptyTextView.setVisibility(View.GONE);
-                spinner.setVisibility(View.VISIBLE);
-            }
-            if (adapter != null && adapter.getItemCount() == 0) {
+            if (adapter == null) {
+                if (showSpinner) {
+                    emptyTextView.setVisibility(View.GONE);
+                    spinner.setVisibility(View.VISIBLE);
+                }
+            } else if (adapter.getItemCount() == 0) {
                 emptyTextView.setVisibility(View.VISIBLE);
             }
-            if (showSwipeRefresh && swipeRefreshLayout != null) {
+            if (showSwipeRefresh) {
                 swipeRefreshLayout.setRefreshing(true);
             }
         }
@@ -231,12 +229,11 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected Void doInBackground(Void... param) {
             if (fetchData) {
                 try {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(componentId, date, type), date, componentId);
+                    ScheduleHandler.getAndSaveAllSchedules(date);
                 } catch (Exception e) {
                     alertConnectionProblem();
                 }
             }
-            scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date), componentId);
             return null;
         }
 
@@ -244,29 +241,22 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
+            scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
             if (adapter == null) {
-                adapter = new ScheduleAdapter(getActivity(), scheduleDay,
-                        simpleDateFormat.format(date), componentId, date);
-                if (recyclerView != null) {
-                    recyclerView.setAdapter(adapter);
-                }
+                adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date), date);
+                recyclerView.setAdapter(adapter);
             } else {
                 adapter.changeCursor(scheduleDay);
             }
             if (adapter.getItemCount() == 0) {
-                if (emptyTextView != null) {
-                    emptyTextView.setVisibility(View.VISIBLE);
-                }
+                emptyTextView.setVisibility(View.VISIBLE);
             } else {
-                if (emptyTextView != null) {
-                    emptyTextView.setVisibility(View.GONE);
-                }
+                emptyTextView.setVisibility(View.GONE);
             }
-            if (showSpinner && spinner != null) {
+            if (showSpinner) {
                 spinner.setVisibility(View.GONE);
             }
-            if (showSwipeRefresh && swipeRefreshLayout != null
-                    && swipeRefreshLayout.isRefreshing()) {
+            if (showSwipeRefresh && swipeRefreshLayout.isRefreshing()) {
                 swipeRefreshLayout.setRefreshing(false);
             }
         }

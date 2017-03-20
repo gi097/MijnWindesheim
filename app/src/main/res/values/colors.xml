@@ -7,4 +7,5 @@
     <color name="colorBackground">#FAFAFA</color>
     <color name="colorBackgroundTint">#EEEEEE</color>
     <color name="white">#FFFFFF</color>
+    <color name="title">#DD000000</color>
 </resources>

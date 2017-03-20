@@ -41,7 +41,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NetworkReceiver;
 import com.giovanniterlingen.windesheim.R;
 
@@ -63,6 +62,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private WebView webView;
     private boolean isEducator = false;
     private SharedPreferences preferences;
+    private boolean isBusy = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,12 +130,18 @@ public class AuthenticationActivity extends AppCompatActivity {
     }
 
     private void authenticate(final String username, final String password) {
+        if (isBusy) {
+            return;
+        }
         if (!NetworkReceiver.isConnected()) {
             headerTextView.setText(getString(R.string.auth_add_account));
             progressBar.setVisibility(View.GONE);
             showConnectionError();
             return;
         }
+
+        isBusy = true;
+
         if (webView != null) {
             webView.destroy();
         }
@@ -158,6 +164,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                     editor.putString("username", username);
                     editor.putString("password", password);
                     editor.commit();
+
+                    isBusy = false;
 
                     Intent intent = new Intent(AuthenticationActivity.this, NatschoolActivity.class);
                     startActivity(intent);
@@ -183,20 +191,18 @@ public class AuthenticationActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         usernameTextLayout.setError(getString(R.string.auth_login_failed));
                         loginUrl = null;
+                        isBusy = false;
                         return;
                     }
-                    ApplicationLoader.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            view.loadUrl(getJavascriptString(username, password));
-                        }
-                    });
+                    view.loadUrl(getJavascriptString(username, password));
                     loginUrl = url;
                 } else if (url.startsWith("https://windesheimapi.azurewebsites.net")) {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);
                     editor.commit();
+
+                    isBusy = false;
 
                     Intent intent = new Intent(AuthenticationActivity.this, EducatorActivity.class);
                     startActivity(intent);

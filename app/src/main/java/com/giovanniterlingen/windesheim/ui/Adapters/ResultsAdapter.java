@@ -91,7 +91,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             TextView studyName = holder.studyName;
             studyName.setText(ec[index].getStudyName());
             TextView ecDescription = holder.description;
-            ecDescription.setText(ApplicationLoader.applicationContext.getResources().getString(R.string.ec_description, ec[index].getCurrentEC(), ec[index].getMaxEC()));
+            ecDescription.setText(ApplicationLoader.applicationContext.getResources()
+                    .getString(R.string.ec_description, ec[index].getCurrentEC(), ec[index].getMaxEC()));
         }
         if (holder.type == 2) {
             TextView nameTextView = holder.name;

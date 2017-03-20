@@ -40,7 +40,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.objects.Content;
 import com.giovanniterlingen.windesheim.objects.IDownloadsView;
@@ -66,7 +65,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
     };
 
 
-    public ContentAdapter(Activity activity, List<Content> content) {
+    protected ContentAdapter(Activity activity, List<Content> content) {
         this.activity = activity;
         this.content = content;
     }
@@ -76,7 +75,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity).
-                inflate(R.layout.content_adapter_item, parent, false);
+                inflate(R.layout.adapter_item_content, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -94,7 +93,8 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
             }
         });
         if (content.get(position).type == -1) {
-            icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), getDrawableByName(content.get(position).name), null));
+            icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                    getDrawableByName(content.get(position).name), null));
             menuButton.setVisibility(View.VISIBLE);
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,7 +102,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
                     menuButtonImage.setImageDrawable(ResourcesCompat.getDrawable(
                             activity.getResources(), R.drawable.overflow_open, null));
                     PopupMenu popupMenu = new PopupMenu(activity, menuButton);
-                    popupMenu.inflate(R.menu.file_menu);
+                    popupMenu.inflate(R.menu.menu_file);
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.delete_file) {
@@ -124,52 +124,54 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
             });
         } else if (content.get(position).url == null || (content.get(position).url.length() == 0)) {
             if (content.get(position).imageUrl != null) {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_work, null));
+                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                        R.drawable.ic_work, null));
             } else {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_folder, null));
+                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                        R.drawable.ic_folder, null));
             }
         } else {
             if (content.get(position).type == 1 || content.get(position).type == 3) {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_link, null));
+                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                        R.drawable.ic_link, null));
             } else if (content.get(position).type == 10) {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), getDrawableByName(content.get(position).url), null));
-            } else {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_unknown, null));
+                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                        getDrawableByName(content.get(position).url), null));
             }
         }
     }
 
     private void showPromptDialog(final int position) {
-        ApplicationLoader.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                new AlertDialog.Builder(activity)
-                        .setTitle(activity.getResources().getString(R.string.confirmation))
-                        .setMessage(activity.getResources().getString(R.string.delete_file_description))
-                        .setPositiveButton(activity.getResources().getString(R.string.delete),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        File file = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim" + File.separator + content.get(position).name);
-                                        if (file.exists()) {
-                                            file.delete();
-                                        }
-                                        content.remove(position);
-                                        notifyItemRemoved(position);
-                                        if (content.size() == 0) {
-                                            ((IDownloadsView) activity).showEmptyTextview();
-                                        }
-                                        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.coordinator_layout), activity.getResources().getString(R.string.file_deleted), Snackbar.LENGTH_SHORT);
-                                        snackbar.show();
-                                        dialog.cancel();
-                                    }
-                                })
-                        .setNegativeButton(activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(activity)
+                .setTitle(activity.getResources().getString(R.string.confirmation))
+                .setMessage(activity.getResources().getString(R.string.delete_file_description))
+                .setPositiveButton(activity.getResources().getString(R.string.delete),
+                        new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                File file = new File(Environment
+                                        .getExternalStorageDirectory().toString(),
+                                        "MijnWindesheim" + File.separator + content.get(position).name);
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                                content.remove(position);
+                                notifyItemRemoved(position);
+                                if (content.size() == 0) {
+                                    ((IDownloadsView) activity).showEmptyTextview();
+                                }
+                                Snackbar snackbar = Snackbar.make(activity
+                                                .findViewById(R.id.coordinator_layout),
+                                        activity.getResources().getString(R.string.file_deleted),
+                                        Snackbar.LENGTH_SHORT);
+                                snackbar.show();
                                 dialog.cancel();
                             }
-                        }).show();
-            }
-        });
+                        })
+                .setNegativeButton(activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
     }
 
     private int getDrawableByName(String name) {
@@ -181,7 +183,8 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
                 color = 1;
             } else if (name.contains(".pdf") || name.contains(".ppt") || name.contains(".key")) {
                 color = 2;
-            } else if (name.contains(".zip") || name.contains(".rar") || name.contains(".ai") || name.contains(".mp3") || name.contains(".mov") || name.contains(".avi")) {
+            } else if (name.contains(".zip") || name.contains(".rar") || name.contains(".ai") ||
+                    name.contains(".mp3") || name.contains(".mov") || name.contains(".avi")) {
                 color = 3;
             }
             if (color == -1) {
@@ -203,14 +206,14 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
         return content.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView contentName;
         final ImageView icon;
         final FrameLayout menuButton;
         final ImageView menuButtonImage;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             contentName = (TextView) view.findViewById(R.id.content_name);
             icon = (ImageView) view.findViewById(R.id.content_icon);

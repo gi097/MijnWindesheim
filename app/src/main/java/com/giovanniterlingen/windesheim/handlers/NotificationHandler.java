@@ -53,50 +53,37 @@ import java.util.Locale;
  */
 public class NotificationHandler extends Thread {
 
-    private static String lastNotification = "";
+    private String lastNotification = "";
     private volatile boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
-    private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar;
 
-    /**
-     * This method will start a loop, which will show notifications when needed, they also gets
-     * updated. Since it's one big block of code, I won't explain it. It works and it's stable.
-     */
     @Override
     public void run() {
         mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+        calendar = Calendar.getInstance();
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         notificationType = preferences.getInt("notifications_type", 0);
-        String componentId = preferences.getString("componentId", "");
-        int type = preferences.getInt("type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         String notificationText = "";
         long currentTimeMillis;
-        while (isRunning() && componentId.length() > 0 && type != 0 && notificationType != 0
-                && notificationType != 6) {
+        while (isRunning() && notificationType != 0 && notificationType != 6) {
             try {
                 calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
-                Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(
-                        simpleDateFormat.format(date), componentId);
-                if (cursor.getCount() == 0 && !ApplicationLoader.scheduleDatabase.containsWeek(date,
-                        componentId) && !ApplicationLoader.scheduleDatabase.isFetched(date)) {
-                    ScheduleHandler.saveSchedule(ScheduleHandler.getScheduleFromServer(
-                            componentId, date, type), date, componentId);
-                    cursor = ApplicationLoader.scheduleDatabase.getLessons(
-                            simpleDateFormat.format(date), componentId);
+                if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
+                    ScheduleHandler.getAndSaveAllSchedules(date);
                 }
-                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(
-                        simpleDateFormat.format(date), componentId);
+                Cursor cursor = ApplicationLoader.scheduleDatabase
+                        .getLessons(simpleDateFormat.format(date));
+                Cursor cursor1 = ApplicationLoader.scheduleDatabase
+                        .getLessons(simpleDateFormat.format(date));
                 if (cursor != null && cursor.getCount() == 0) {
+                    clearNotification();
                     while (checkIfNeedsContinue()) {
-                        if (notificationType == 5) {
-                            createNotification(ApplicationLoader.applicationContext.getResources()
-                                    .getString(R.string.no_lessons_found), false, false);
-                        }
                         sleep(1000);
                     }
                 } else {
@@ -120,9 +107,7 @@ public class NotificationHandler extends Thread {
                                     if (diffMinutes != 0) {
                                         if (diffHours == 1) {
                                             if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader
-                                                        .applicationContext.getResources()
-                                                        .getString(R.string.multiple_lessons_one_hour_one_minute);
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_one_minute);
                                             } else {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_multiple_minutes, diffMinutes);
                                             }
@@ -206,18 +191,15 @@ public class NotificationHandler extends Thread {
                         }
                     }
                 }
-                while (checkIfNeedsContinue()) {
-                    if (notificationType == 5) {
-                        createNotification(ApplicationLoader.applicationContext
-                                .getString(R.string.no_more_lessons), false, false);
-                    }
-                    sleep(1000);
-                }
                 if (cursor != null) {
                     cursor.close();
                 }
                 if (cursor1 != null) {
                     cursor1.close();
+                }
+                clearNotification();
+                while (checkIfNeedsContinue()) {
+                    sleep(1000);
                 }
             } catch (InterruptedException e) {
                 //
@@ -229,29 +211,14 @@ public class NotificationHandler extends Thread {
         }
     }
 
-    /**
-     * Check if the thread is running.
-     *
-     * @return The value of the running variable.
-     */
     public boolean isRunning() {
         return running;
     }
 
-    /**
-     * Stop the thread.
-     */
     public void stopRunning() {
         running = false;
     }
 
-    /**
-     * Show a notification in the Android system.
-     *
-     * @param notificationText The text we want to see
-     * @param onGoing          Means the notification should be persistent or not.
-     * @param headsUp          Means the user needs to get a push notification or a silent one.
-     */
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
         if (notificationType != 0 && notificationType != 6 && mNotificationManager != null) {
             if (lastNotification.equals(notificationText)) {
@@ -261,9 +228,10 @@ public class NotificationHandler extends Thread {
 
             Intent intent = new Intent(ApplicationLoader.applicationContext,
                     ScheduleActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    ApplicationLoader.applicationContext, (int) System.currentTimeMillis(),
-                    intent, 0);
+            PendingIntent pendingIntent = PendingIntent
+                    .getActivity(ApplicationLoader.applicationContext,
+                            (int) System.currentTimeMillis(),
+                            intent, 0);
 
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                     ApplicationLoader.applicationContext)
@@ -290,9 +258,6 @@ public class NotificationHandler extends Thread {
         }
     }
 
-    /**
-     * Clears a notification if it's shown.
-     */
     public void clearNotification() {
         lastNotification = "";
         if (mNotificationManager != null) {
@@ -300,11 +265,6 @@ public class NotificationHandler extends Thread {
         }
     }
 
-    /**
-     * Collects several values in order to check if the while loop needs to be established again.
-     *
-     * @return true or false, depending on the variables.
-     */
     private boolean checkIfNeedsContinue() {
         return (isRunning() && System.currentTimeMillis() >= calendar.getTimeInMillis()
                 && DateUtils.isToday(calendar.getTimeInMillis()));
