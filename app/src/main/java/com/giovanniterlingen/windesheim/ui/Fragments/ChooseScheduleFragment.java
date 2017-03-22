@@ -66,13 +66,13 @@ import java.util.ArrayList;
  */
 public class ChooseScheduleFragment extends Fragment {
 
-    private ArrayList<Component> componentList;
     private ChooseScheduleAdapter adapter;
     private RecyclerView recyclerView;
     private int type;
     private Context context;
     private ProgressBar spinner;
     private View view;
+    private ComponentFetcher componentFetcher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,10 @@ public class ChooseScheduleFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (adapter == null) {
-            new ComponentFetcher().execute();
+            if (componentFetcher == null || componentFetcher.getStatus()
+                    == AsyncTask.Status.FINISHED) {
+                (componentFetcher = new ComponentFetcher()).execute();
+            }
         }
     }
 
@@ -136,18 +139,19 @@ public class ChooseScheduleFragment extends Fragment {
     }
 
 
-    private synchronized void buildClassArray(JSONArray jsonArray) {
-        this.componentList.clear();
+    private synchronized ArrayList<Component> buildClassArray(JSONArray jsonArray) {
+        ArrayList<Component> componentList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                this.componentList.add(new Component(jsonObject.getInt("id"),
+                componentList.add(new Component(jsonObject.getInt("id"),
                         jsonObject.getString("name") + " - " + jsonObject.getString("longName")));
             } catch (JSONException e) {
                 alertConnectionProblem();
-                break;
+                return null;
             }
         }
+        return componentList;
     }
 
     private void alertConnectionProblem() {
@@ -163,7 +167,10 @@ public class ChooseScheduleFragment extends Fragment {
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        new ComponentFetcher().execute();
+                                        if (componentFetcher == null || componentFetcher
+                                                .getStatus() == AsyncTask.Status.FINISHED) {
+                                            (componentFetcher = new ComponentFetcher()).execute();
+                                        }
                                         dialog.cancel();
                                     }
                                 })
@@ -207,16 +214,14 @@ public class ChooseScheduleFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             spinner.setVisibility(View.VISIBLE);
-            if (componentList == null) {
-                componentList = new ArrayList<>();
-            }
+            adapter = null;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                buildClassArray(new JSONObject(ScheduleHandler.getListFromServer(type))
-                        .getJSONArray("elements"));
+                ArrayList<Component> componentList = buildClassArray
+                        (new JSONObject(ScheduleHandler.getListFromServer(type)).getJSONArray("elements"));
                 adapter = new ChooseScheduleAdapter(context, componentList) {
                     @Override
                     protected void onContentClick(int id, String name) {
@@ -228,9 +233,12 @@ public class ChooseScheduleFragment extends Fragment {
                             }
                             boolean hasSchedules = ApplicationLoader.scheduleDatabase.hasSchedules();
 
-                            ColorHandler.cachedColors.evictAll();
                             ApplicationLoader.scheduleDatabase.addSchedule(id, name, type);
                             ApplicationLoader.scheduleDatabase.clearFetched();
+                            ApplicationLoader.restartNotificationThread();
+                            ApplicationLoader.restartDailyScheduleFetcher();
+
+                            ColorHandler.cachedColors.evictAll();
 
                             SharedPreferences preferences = PreferenceManager
                                     .getDefaultSharedPreferences(context);
@@ -243,9 +251,6 @@ public class ChooseScheduleFragment extends Fragment {
                             }
                             editor.apply();
 
-                            ApplicationLoader.restartNotificationThread();
-                            ApplicationLoader.restartDailyScheduleFetcher();
-
                             if (!hasSchedules) {
                                 Intent intent = new Intent(context, ScheduleActivity.class);
                                 startActivity(intent);
@@ -256,10 +261,6 @@ public class ChooseScheduleFragment extends Fragment {
                         }
                     }
                 };
-                EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
-                if (dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
-                    adapter.filter(dataSearch.getText().toString());
-                }
             } catch (Exception e) {
                 alertConnectionProblem();
             }
@@ -271,6 +272,10 @@ public class ChooseScheduleFragment extends Fragment {
             super.onPostExecute(param);
             spinner.setVisibility(View.GONE);
             recyclerView.setAdapter(adapter);
+            EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
+            if (dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
+                adapter.filter(dataSearch.getText().toString());
+            }
         }
     }
 }

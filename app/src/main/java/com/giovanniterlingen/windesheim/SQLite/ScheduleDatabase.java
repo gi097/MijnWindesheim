@@ -117,8 +117,11 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
                 "t.end, t.name, t.room, t.component, t.visible, t.class_id FROM cte JOIN subject t ON " +
                 "t.component_id = cte.component_id AND t.start = cte.end AND t.date = cte.date) " +
                 "SELECT _id, component_id, date, MIN(start), MAX(end), name, MAX(room), " +
-                "component, class_id FROM cte WHERE date = ? AND visible = 1 GROUP BY component_id, " +
-                "start ORDER BY start, end, name";
+                "component, class_id, s.schedule_id FROM cte " +
+                "INNER JOIN schedules s ON (cte.class_id = s.schedule_id) " +
+                "WHERE date = ? AND visible = 1 " +
+                "GROUP BY component_id, start " +
+                "ORDER BY start, end, name";
         return database.rawQuery(query, new String[]{date});
     }
 
@@ -188,6 +191,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             }
         }
         cursor.close();
+        deleteSchedule(id);
         return 0;
     }
 

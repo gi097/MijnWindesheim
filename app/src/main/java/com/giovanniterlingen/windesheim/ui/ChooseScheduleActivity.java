@@ -59,6 +59,7 @@ public class ChooseScheduleActivity extends AppCompatActivity {
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
                 getSupportFragmentManager());
         if (mPager != null) {
+            mPager.setOffscreenPageLimit(2);
             mPager.setAdapter(mPagerAdapter);
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             if (tabLayout != null) {

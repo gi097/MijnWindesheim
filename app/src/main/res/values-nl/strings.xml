@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="about">Over</string>
-    <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_developer">Ontwikkelaar en onderhouder</string>
+    <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
     <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Ik en Windesheim kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nDeze app bevat advertenties van Google AdSense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden. Wanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
-    <string name="about_natschool">N@Tschool! implementatie</string>
-    <string name="about_thomas">Thomas Visch</string>
 
     <string name="add">Toevoegen</string>
 
@@ -58,6 +55,11 @@
     <string name="delete_schedule_description">Dit zal het rooster van je apparaat verwijderen.</string>
 
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
+
+    <string name="description_coen">Spellingscontrole</string>
+    <string name="description_giovanni">Ontwikkelaar en onderhouder</string>
+    <string name="description_hyunjeong">Koreaanse vertaling</string>
+    <string name="description_thomas">N@Tschool! implementatie</string>
 
     <string name="disclaimer">Disclaimer</string>
 
@@ -183,6 +185,11 @@
     <string name="storage_full">Onvoldoende ruimte op de sdkaart!</string>
 
     <string name="thursday">donderdag</string>
+
+    <string name="title_coen">Coen van Dam</string>
+    <string name="title_giovanni">Giovanni Terlingen</string>
+    <string name="title_hyunjeong">HyunJeong Shin</string>
+    <string name="title_thomas">Thomas Visch</string>
 
     <string name="today">Vandaag</string>
 

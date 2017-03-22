@@ -89,12 +89,12 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                             public void onClick(DialogInterface dialog, int id) {
                                 ApplicationLoader.scheduleDatabase
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
+                                ApplicationLoader.restartNotificationThread();
+                                ApplicationLoader.restartDailyScheduleFetcher();
+
                                 ColorHandler.cachedColors.evictAll();
                                 schedules = ApplicationLoader.scheduleDatabase.getSchedules();
                                 notifyDataSetChanged();
-
-                                ApplicationLoader.restartNotificationThread();
-                                ApplicationLoader.restartDailyScheduleFetcher();
 
                                 ((ManageSchedulesActivity) activity).showDeletionSnackbar();
                                 if (schedules.length == 0) {

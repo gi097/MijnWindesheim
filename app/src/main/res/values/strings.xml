@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="about">About</string>
-    <string name="about_author">Giovanni Terlingen</string>
-    <string name="about_developer">Developer and maintainer</string>
+    <string name="about_contributors">Contributors</string>
     <string name="about_devs">Developers</string>
     <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Me and Windeheim can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nThis app contains advertisements from Google AdSense, they might track you. I did choose to add advertisements since I want to earn some money for my work and to keep this app free. When you are using this app you automatically agree with this disclaimer.</string>
-    <string name="about_natschool">N@Tschool! implementation</string>
-    <string name="about_thomas">Thomas Visch</string>
 
     <string name="add">Add</string>
 
@@ -58,6 +55,11 @@
     <string name="delete_schedule_description">This will remove the schedule from this device.</string>
 
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
+
+    <string name="description_coen">Spell checking</string>
+    <string name="description_giovanni">Developer and maintainer</string>
+    <string name="description_hyunjeong">Korean translation</string>
+    <string name="description_thomas">N@Tschool! implementation</string>
 
     <string name="disclaimer">Disclaimer</string>
 
@@ -183,6 +185,11 @@
     <string name="storage_full">No space left on sdcard!</string>
 
     <string name="thursday">Thursday</string>
+
+    <string name="title_coen">Coen van Dam</string>
+    <string name="title_giovanni">Giovanni Terlingen</string>
+    <string name="title_hyunjeong">HyunJeong Shin</string>
+    <string name="title_thomas">Thomas Visch</string>
 
     <string name="today">Today</string>
 
