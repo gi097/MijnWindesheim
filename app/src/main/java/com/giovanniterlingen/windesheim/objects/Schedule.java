@@ -32,8 +32,8 @@ package com.giovanniterlingen.windesheim.objects;
 public class Schedule {
 
     private final int type;
-    private String name;
-    private int id;
+    private final String name;
+    private final int id;
 
     public Schedule(String name, int id, int type) {
         this.name = name;

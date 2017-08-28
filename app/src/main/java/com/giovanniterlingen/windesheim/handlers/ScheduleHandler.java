@@ -61,10 +61,19 @@ public class ScheduleHandler {
         ApplicationLoader.scheduleDatabase.addFetched(date);
     }
 
-    public static String getListFromServer(int type) throws Exception {
+    public static String getListFromServer(int type, Date date) throws Exception {
+        // workaround for wrong id's provided by WebUntis
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        Date foo = dateFormat.parse("20170904");
+        if (date.before(foo)) {
+            date = foo;
+        }
+        // end of workaround
+
         StringBuilder stringBuffer = new StringBuilder("");
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                "ajaxCommand=getPageConfig&type=" + type);
+                "ajaxCommand=getPageConfig&type=" + type +
+                "&date=" + dateFormat.format(date));
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");

@@ -58,6 +58,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -221,7 +222,7 @@ public class ChooseScheduleFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             try {
                 ArrayList<Component> componentList = buildClassArray
-                        (new JSONObject(ScheduleHandler.getListFromServer(type)).getJSONArray("elements"));
+                        (new JSONObject(ScheduleHandler.getListFromServer(type, new Date())).getJSONArray("elements"));
                 adapter = new ChooseScheduleAdapter(context, componentList) {
                     @Override
                     protected void onContentClick(int id, String name) {
