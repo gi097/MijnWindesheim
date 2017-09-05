@@ -87,7 +87,7 @@
                         android:clickable="true"
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
-                        android:paddingLeft="@dimen/activity_margin"
+                        android:paddingEnd="@dimen/activity_margin"
                         android:paddingStart="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
@@ -131,7 +131,7 @@
                         android:clickable="true"
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
-                        android:paddingLeft="@dimen/activity_margin"
+                        android:paddingEnd="@dimen/activity_margin"
                         android:paddingStart="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
@@ -187,7 +187,7 @@
                     android:clickable="true"
                     android:foreground="?selectableItemBackground"
                     android:orientation="horizontal"
-                    android:paddingLeft="@dimen/activity_margin"
+                    android:paddingEnd="@dimen/activity_margin"
                     android:paddingStart="@dimen/activity_margin">
 
                     <de.hdodenhof.circleimageview.CircleImageView

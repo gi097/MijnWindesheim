@@ -25,14 +25,17 @@
 package com.giovanniterlingen.windesheim.handlers;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 
@@ -58,6 +61,9 @@ public class NotificationHandler extends Thread {
     private NotificationManager mNotificationManager;
     private int notificationType;
     private Calendar calendar;
+
+    private static final String PERSISTENT_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.persistent";
+    private static final String NORMAL_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.normal";
 
     @Override
     public void run() {
@@ -228,13 +234,41 @@ public class NotificationHandler extends Thread {
 
             Intent intent = new Intent(ApplicationLoader.applicationContext,
                     ScheduleActivity.class);
+            intent.putExtra("notification", true);
             PendingIntent pendingIntent = PendingIntent
                     .getActivity(ApplicationLoader.applicationContext,
                             (int) System.currentTimeMillis(),
                             intent, 0);
 
+            // create Android O channel
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                // normal notifications
+                NotificationChannel normalChannel = new NotificationChannel(NORMAL_NOTIFICATION_ID,
+                        ApplicationLoader.applicationContext.getResources()
+                                .getString(R.string.normal_notification),
+                        NotificationManager.IMPORTANCE_HIGH);
+                normalChannel.enableLights(true);
+                normalChannel.enableVibration(true);
+                normalChannel.setLightColor(Color.YELLOW);
+                normalChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+                // persistent notification, does not need headsup
+                NotificationChannel persistentChannel = new NotificationChannel(PERSISTENT_NOTIFICATION_ID,
+                        ApplicationLoader.applicationContext.getResources()
+                                .getString(R.string.persistent_notification),
+                        NotificationManager.IMPORTANCE_LOW);
+                persistentChannel.enableLights(false);
+                persistentChannel.enableVibration(false);
+                persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+                NotificationManager mManager = (NotificationManager) ApplicationLoader
+                        .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                mManager.createNotificationChannel(normalChannel);
+                mManager.createNotificationChannel(persistentChannel);
+            }
+
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                    ApplicationLoader.applicationContext)
+                    ApplicationLoader.applicationContext, headsUp ? NORMAL_NOTIFICATION_ID : PERSISTENT_NOTIFICATION_ID)
                     .setContentTitle(ApplicationLoader.applicationContext.getResources()
                             .getString(R.string.app_name))
                     .setContentText(notificationText)
@@ -248,7 +282,7 @@ public class NotificationHandler extends Thread {
                             R.color.colorPrimary));
             if (headsUp) {
                 if (android.os.Build.VERSION.SDK_INT >= 16) {
-                    mBuilder.setPriority(Notification.PRIORITY_HIGH);
+                    mBuilder.setPriority(NotificationManagerCompat.IMPORTANCE_HIGH);
                 }
                 mBuilder.setDefaults(Notification.DEFAULT_ALL);
             }

@@ -71,7 +71,7 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
 
         final int position = cursor.getPosition();
 
-        Button button = (Button) viewHolder.itemView.findViewById(R.id.restore_button);
+        Button button = viewHolder.itemView.findViewById(R.id.restore_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 getCursor().moveToPosition(position);
@@ -94,8 +94,8 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
 
         ViewHolder(View view) {
             super(view);
-            lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
-            lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
+            lessonName = view.findViewById(R.id.schedule_list_row_name);
+            lessonComponent = view.findViewById(R.id.schedule_list_row_component);
             scheduleIdentifier = view.findViewById(R.id.schedule_identifier);
         }
     }

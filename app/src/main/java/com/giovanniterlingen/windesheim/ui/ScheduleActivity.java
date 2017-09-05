@@ -67,8 +67,10 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
 
     private View view;
     private FragmentManager fragmentManager;
+    private ViewPager mPager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
+    private int today;
 
     @Override
     public void showSnackbar(final String text) {
@@ -87,6 +89,15 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
                 }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == today) {
+            super.onBackPressed();
+            return;
+        }
+        mPager.setCurrentItem(today);
     }
 
     @Override
@@ -121,7 +132,7 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
 
         setContentView(R.layout.activity_schedule);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -130,20 +141,20 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
 
         view = findViewById(R.id.coordinator_layout);
 
-        final LinearLayout layout = (LinearLayout) findViewById(R.id.pager_container);
+        final LinearLayout layout = findViewById(R.id.pager_container);
         int height = AdSize.SMART_BANNER.getHeightInPixels(ScheduleActivity.this);
         layout.setPadding(0, 0, 0, height);
 
-        final AdView mAdView = (AdView) findViewById(R.id.bottom_ad);
+        final AdView mAdView = findViewById(R.id.bottom_ad);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
@@ -204,28 +215,27 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
     private void setViewPager() {
         Calendar calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
-        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
-        if (mPager != null) {
-            ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
-                    getSupportFragmentManager());
-            mPager.setAdapter(mPagerAdapter);
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-            if (tabLayout != null) {
-                tabLayout.setupWithViewPager(mPager);
-            }
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
-                mPager.setCurrentItem(1);
-            }
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
-                mPager.setCurrentItem(2);
-            }
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
-                mPager.setCurrentItem(3);
-            }
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
-                mPager.setCurrentItem(4);
-            }
+        mPager = findViewById(R.id.pager);
+
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+            today = 0;
+        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
+            today = 1;
+        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
+            today = 2;
+        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
+            today = 3;
+        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+            today = 4;
         }
+        ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
+                getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mPager);
+
+        mPager.setCurrentItem(today);
     }
 
     @Override
@@ -239,6 +249,17 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
         super.onResume();
         if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra("notification")) {
+            boolean fromNotification = intent.getExtras().getBoolean("notification");
+            if (fromNotification) {
+                setViewPager();
+            }
         }
     }
 
@@ -291,12 +312,7 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Calendar calendar = Calendar.getInstance();
-            if (position == 0 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
-                    || position == 1 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY
-                    || position == 2 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY
-                    || position == 3 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY
-                    || position == 4 && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+            if (position == today) {
                 return getResources().getString(R.string.today);
             }
             switch (position) {

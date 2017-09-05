@@ -34,11 +34,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -84,13 +81,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 DownloadHandler.this.cancel(true);
-                View view = ((NatschoolActivity) activity).getView();
-                if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, activity.getResources().getString(
-                            R.string.canceled_downloading),
-                            Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
+                ((NatschoolActivity) activity).downloadCanceled();
             }
         });
     }
@@ -148,12 +139,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
                     wakeLock.release();
                 }
                 if (e.getMessage().contains("ENOSPC")) {
-                    View view = ((NatschoolActivity) activity).getView();
-                    if (view != null) {
-                        Snackbar snackbar = Snackbar.make(view, activity.getResources()
-                                .getString(R.string.storage_full), Snackbar.LENGTH_SHORT);
-                        snackbar.show();
-                    }
+                    ((NatschoolActivity) activity).noSpace();
                 } else {
                     ApplicationLoader.runOnUIThread(new Runnable() {
                         @Override
@@ -218,23 +204,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         }
         progressDialog.dismiss();
         if (result != null && result.equals("permission")) {
-            View view = ((NatschoolActivity) activity).getView();
-            if (view != null) {
-                Snackbar snackbar = Snackbar.make(view, activity.getResources()
-                        .getString(R.string.no_permission), Snackbar.LENGTH_LONG);
-                snackbar.setAction(activity.getResources().getString(R.string.fix),
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
-                                intent.setData(uri);
-                                activity.startActivity(intent);
-                            }
-                        });
-                snackbar.show();
-            }
+            ((NatschoolActivity) activity).noPermission();
             return;
         }
         if (result != null) {
@@ -257,13 +227,7 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
             try {
                 activity.startActivity(target);
             } catch (ActivityNotFoundException e) {
-                View view = ((NatschoolActivity) activity).getView();
-                if (view != null) {
-                    Snackbar snackbar = Snackbar.make(view, activity.getResources()
-                                    .getString(R.string.no_app_found),
-                            Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
+                ((NatschoolActivity) activity).noSupportedApp();
             }
         }
     }

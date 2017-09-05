@@ -66,7 +66,7 @@
 
     <string name="downloads">Downloads</string>
 
-    <string name="duplicate_description">This schedule already exists. Choose another one.</string>
+    <string name="duplicate_description">You have already chosen this schedule. Choose another one.</string>
     <string name="duplicate_title">Duplicate</string>
 
     <string name="ec_description">%1$d of the %2$d EC\'s have been achieved</string>
@@ -99,6 +99,22 @@
     <string name="interval_off">Off</string>
     <string name="interval_one_hour">1 hour before lesson</string>
     <string name="interval_thirty_minutes">30 minutes before lesson</string>
+
+    <string name="intro">Introduction</string>
+    <string name="intro_1_description">MyWindesheim gives you easy access to all services of Windesheim.</string>
+    <string name="intro_1_title">Welcome to MyWindesheim</string>
+    <string name="intro_2_description">View up to five schedules at the same time, whenever and wherever you want.</string>
+    <string name="intro_2_title">Schedules</string>
+    <string name="intro_3_description">Hide lessons you do not need, or save them to your calendar.</string>
+    <string name="intro_3_title">Manage</string>
+    <string name="intro_4_description">Download all files from the ELO, easily and quickly.</string>
+    <string name="intro_4_title">ELO</string>
+    <string name="intro_5_description">View your results and know what you\'re up to.</string>
+    <string name="intro_5_title">Progress</string>
+    <string name="intro_6_description">Know exactly when your class starts.</string>
+    <string name="intro_6_title">Notifications</string>
+    <string name="intro_7_description">Thank you for choosing MyWindesheim, good luck with your study!</string>
+    <string name="intro_7_title">You are set!</string>
 
     <string name="january">January</string>
 
@@ -148,6 +164,8 @@
     <string name="no_content_found">No files found</string>
     <string name="no_permission">No access to the sdcard</string>
 
+    <string name="normal_notification">Normal notifications</string>
+
     <string name="november">November</string>
 
     <string name="october">October</string>
@@ -160,6 +178,8 @@
     <string name="pager_item_subjects">Subjects</string>
     <string name="pager_item_teachers">Teachers</string>
 
+    <string name="persistent_notification">Persistent notification</string>
+
     <string name="progress">Progress</string>
     <string name="progress_results">Results</string>
 
@@ -169,6 +189,8 @@
 
     <string name="schedule_deleted">Schedule has been deleted</string>
     <string name="schedule_not_found">No schedule found for this day</string>
+
+    <string name="search_hint">Search…</string>
 
     <string name="september">September</string>
 

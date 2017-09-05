@@ -62,10 +62,10 @@ public class ContentsFragment extends Fragment {
             savedInstanceState) {
         final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents,
                 container, false);
-        final RecyclerView recyclerView = (RecyclerView) viewGroup
+        final RecyclerView recyclerView = viewGroup
                 .findViewById(R.id.contents_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final ProgressBar progressBar = (ProgressBar) viewGroup
+        final ProgressBar progressBar = viewGroup
                 .findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
         Bundle bundle = this.getArguments();
@@ -86,7 +86,7 @@ public class ContentsFragment extends Fragment {
             @Override
             public void onFinished(final List<Content> courses) {
                 progressBar.setVisibility(View.GONE);
-                TextView emptyTextView = (TextView) viewGroup.findViewById(R.id.empty_textview);
+                TextView emptyTextView = viewGroup.findViewById(R.id.empty_textview);
                 if (courses.isEmpty()) {
                     emptyTextView.setVisibility(View.VISIBLE);
                 } else {

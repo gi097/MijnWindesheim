@@ -101,7 +101,7 @@ public class EducatorActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            progressBar = findViewById(R.id.progress_bar);
             progressBar.setVisibility(View.VISIBLE);
         }
 
@@ -141,7 +141,7 @@ public class EducatorActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             if (results != null && results.length > 0) {
                 ResultsAdapter adapter = new ResultsAdapter(EducatorActivity.this, results, ec);
-                RecyclerView recyclerView = (RecyclerView) findViewById(R.id.results_recyclerview);
+                RecyclerView recyclerView = findViewById(R.id.results_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(EducatorActivity.this));
                 recyclerView.setAdapter(adapter);
             }

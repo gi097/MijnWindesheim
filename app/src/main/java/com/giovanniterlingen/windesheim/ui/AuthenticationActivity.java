@@ -72,12 +72,12 @@ public class AuthenticationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         isEducator = intent.getBooleanExtra("educator", false);
 
-        usernameTextView = (TextView) findViewById(R.id.input_username);
-        passwordTextView = (TextView) findViewById(R.id.input_password);
-        progressBar = (ProgressBar) findViewById(R.id.login_progress);
-        headerTextView = (TextView) findViewById(R.id.login_header);
-        usernameTextLayout = (TextInputLayout) findViewById(R.id.input_username_layout);
-        passwordTextLayout = (TextInputLayout) findViewById(R.id.input_password_layout);
+        usernameTextView = findViewById(R.id.input_username);
+        passwordTextView = findViewById(R.id.input_password);
+        progressBar = findViewById(R.id.login_progress);
+        headerTextView = findViewById(R.id.login_header);
+        usernameTextLayout = findViewById(R.id.input_username_layout);
+        passwordTextLayout = findViewById(R.id.input_password_layout);
 
         preferences = PreferenceManager
                 .getDefaultSharedPreferences(AuthenticationActivity.this);
@@ -95,7 +95,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             return;
         }
 
-        Button button = (Button) findViewById(R.id.login_button);
+        Button button = findViewById(R.id.login_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,7 +148,9 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         webView = new WebView(AuthenticationActivity.this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setSaveFormData(false);
+        if (android.os.Build.VERSION.SDK_INT < 26) {
+            webView.getSettings().setSaveFormData(false);
+        }
 
         webView.setWebViewClient(new WebViewClient() {
 

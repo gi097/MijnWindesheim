@@ -32,8 +32,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/card_text_margin"
+                android:paddingStart="@dimen/card_text_margin"
                 android:paddingLeft="@dimen/card_text_margin"
                 android:paddingRight="48.0dip"
+                android:paddingEnd="48.0dip"
                 android:paddingTop="@dimen/card_text_margin"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/text_size" />

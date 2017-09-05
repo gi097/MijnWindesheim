@@ -66,7 +66,7 @@
 
     <string name="downloads">Downloads</string>
 
-    <string name="duplicate_description">Dit rooster bestaat al, kies een ander rooster.</string>
+    <string name="duplicate_description">Je hebt dit rooster al gekozen, kies een ander rooster.</string>
     <string name="duplicate_title">Duplicaat</string>
 
     <string name="ec_description">%1$d van de %2$d EC\'s zijn behaald</string>
@@ -99,6 +99,22 @@
     <string name="interval_off">Uit</string>
     <string name="interval_one_hour">1 uur voor de les</string>
     <string name="interval_thirty_minutes">30 minuten voor de les</string>
+
+    <string name="intro">Introductie</string>
+    <string name="intro_1_description">MijnWindesheim geeft je gemakkelijk toegang tot alle diensten van Windesheim.</string>
+    <string name="intro_1_title">Welkom bij MijnWindesheim</string>
+    <string name="intro_2_description">Bekijk tot wel vijf roosters tegelijkertijd, waar en wanneer je wil.</string>
+    <string name="intro_2_title">Roosters</string>
+    <string name="intro_3_description">Verberg lessen die je niet nodig hebt, of sla ze op in je agenda.</string>
+    <string name="intro_3_title">Beheren</string>
+    <string name="intro_4_description">Download alle bestanden van de ELO, gemakkelijk en snel.</string>
+    <string name="intro_4_title">ELO</string>
+    <string name="intro_5_description">Bekijk je resultaten en weet waar je aantoe bent.</string>
+    <string name="intro_5_title">Voortgang</string>
+    <string name="intro_6_description">Weet precies wanneer je les begint.</string>
+    <string name="intro_6_title">Meldingen</string>
+    <string name="intro_7_description">Bedankt voor het kiezen van MijnWindesheim, succes met je studie!</string>
+    <string name="intro_7_title">Je bent klaar!</string>
 
     <string name="january">januari</string>
 
@@ -148,6 +164,8 @@
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
     <string name="no_permission">Geen toegang tot de sdkaart</string>
 
+    <string name="normal_notification">Normale meldingen</string>
+
     <string name="november">november</string>
 
     <string name="october">oktober</string>
@@ -160,6 +178,8 @@
     <string name="pager_item_subjects">Vakken</string>
     <string name="pager_item_teachers">Docenten</string>
 
+    <string name="persistent_notification">Permanente melding</string>
+
     <string name="progress">Voortgang</string>
     <string name="progress_results">Resultaten</string>
 
@@ -169,6 +189,8 @@
 
     <string name="schedule_deleted">Rooster is verwijderd</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
+
+    <string name="search_hint">Zoeken…</string>
 
     <string name="september">september</string>
 

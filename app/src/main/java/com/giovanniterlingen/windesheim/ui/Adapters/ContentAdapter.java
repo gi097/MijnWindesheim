@@ -215,10 +215,10 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
 
         ViewHolder(View view) {
             super(view);
-            contentName = (TextView) view.findViewById(R.id.content_name);
-            icon = (ImageView) view.findViewById(R.id.content_icon);
-            menuButton = (FrameLayout) view.findViewById(R.id.menu_button);
-            menuButtonImage = (ImageView) view.findViewById(R.id.menu_button_image);
+            contentName = view.findViewById(R.id.content_name);
+            icon = view.findViewById(R.id.content_icon);
+            menuButton = view.findViewById(R.id.menu_button);
+            menuButtonImage = view.findViewById(R.id.menu_button_image);
         }
     }
 }

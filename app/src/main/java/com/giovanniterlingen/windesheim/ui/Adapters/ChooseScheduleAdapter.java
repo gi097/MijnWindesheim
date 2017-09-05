@@ -103,7 +103,7 @@ public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseS
 
         ViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.component_item);
+            name = view.findViewById(R.id.component_item);
         }
     }
 }

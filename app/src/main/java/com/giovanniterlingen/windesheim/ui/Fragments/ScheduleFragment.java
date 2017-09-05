@@ -136,12 +136,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_schedule, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) viewGroup.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout = viewGroup.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryText, R.color.colorPrimary);
-        emptyTextView = (TextView) viewGroup.findViewById(R.id.schedule_not_found);
-        spinner = (ProgressBar) viewGroup.findViewById(R.id.progress_bar);
-        recyclerView = (RecyclerView) viewGroup.findViewById(R.id.schedule_recyclerview);
+        emptyTextView = viewGroup.findViewById(R.id.schedule_not_found);
+        spinner = viewGroup.findViewById(R.id.progress_bar);
+        recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
         if (scheduleDay.getCount() > 0) {

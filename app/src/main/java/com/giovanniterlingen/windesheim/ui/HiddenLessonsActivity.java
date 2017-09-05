@@ -59,7 +59,7 @@ public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenL
     @Override
     public void showEmptyTextView() {
         if (view != null) {
-            TextView emptyTextView = (TextView) view.findViewById(
+            TextView emptyTextView = view.findViewById(
                     R.id.hidden_schedule_not_found);
             emptyTextView.setVisibility(View.VISIBLE);
         }
@@ -79,7 +79,7 @@ public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenL
         view = findViewById(R.id.coordinator_layout);
         Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter();
         HiddenLessonsAdapter adapter = new HiddenLessonsAdapter(HiddenLessonsActivity.this, cursor);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);

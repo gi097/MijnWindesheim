@@ -127,8 +127,8 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
 
         ViewHolder(View view) {
             super(view);
-            this.scheduleName = (TextView) view.findViewById(R.id.schedule_name);
-            this.delete = (Button) view.findViewById(R.id.delete_button);
+            this.scheduleName = view.findViewById(R.id.schedule_name);
+            this.delete = view.findViewById(R.id.delete_button);
             this.scheduleIdentifier = view.findViewById(R.id.schedule_identifier);
         }
     }

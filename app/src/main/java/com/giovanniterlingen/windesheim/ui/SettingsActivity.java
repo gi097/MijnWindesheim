@@ -73,7 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
                 getResources().getString(R.string.interval_always_on)};
         preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
 
-        lessonStart = (SwitchCompat) findViewById(R.id.lesson_notification_switch);
+        lessonStart = findViewById(R.id.lesson_notification_switch);
         if (lessonStart != null) {
             lessonStart.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
                 lessonStart.setChecked(true);
             }
 
-            Button deleteAccountButton = (Button) findViewById(R.id.logout_button);
+            Button deleteAccountButton = findViewById(R.id.logout_button);
             deleteAccountButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -108,8 +108,7 @@ public class SettingsActivity extends AppCompatActivity {
                     editor.remove("password");
                     editor.apply();
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout)
-                            findViewById(R.id.coordinator_layout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout,
                             getString(R.string.settings_logout_msg), Snackbar.LENGTH_SHORT);
                     snackbar.show();
@@ -117,7 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
-        intervalTextview = (TextView) findViewById(R.id.settings_interval_textview);
+        intervalTextview = findViewById(R.id.settings_interval_textview);
         updateIntervalTextView();
 
         View intervalRow = findViewById(R.id.settings_interval_row);

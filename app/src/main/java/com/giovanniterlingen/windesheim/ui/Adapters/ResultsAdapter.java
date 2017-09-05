@@ -163,12 +163,12 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             super(view);
             this.type = viewType;
             if (viewType == 0) {
-                progressBar = (DonutProgress) view.findViewById(R.id.ec_progress);
-                studyName = (TextView) view.findViewById(R.id.lesson_name);
-                description = (TextView) view.findViewById(R.id.ec_description);
+                progressBar = view.findViewById(R.id.ec_progress);
+                studyName = view.findViewById(R.id.lesson_name);
+                description = view.findViewById(R.id.ec_description);
             } else if (viewType == 2) {
-                name = (TextView) view.findViewById(R.id.lesson_name);
-                result = (TextView) view.findViewById(R.id.result);
+                name = view.findViewById(R.id.lesson_name);
+                result = view.findViewById(R.id.result);
             }
         }
     }

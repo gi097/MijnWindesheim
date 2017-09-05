@@ -26,8 +26,10 @@ package com.giovanniterlingen.windesheim.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -42,7 +44,15 @@ public class LaunchActivity extends Activity {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(LaunchActivity.this, ScheduleActivity.class);
+                SharedPreferences sharedPreferences = PreferenceManager
+                        .getDefaultSharedPreferences(LaunchActivity.this);
+                boolean introFinished = sharedPreferences.getBoolean("intro_finished", false);
+                Intent intent;
+                if (introFinished) {
+                    intent = new Intent(LaunchActivity.this, ScheduleActivity.class);
+                } else {
+                    intent = new Intent(LaunchActivity.this, IntroActivity.class);
+                }
                 startActivity(intent);
                 finish();
             }

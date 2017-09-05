@@ -22,24 +22,20 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+package com.giovanniterlingen.windesheim.objects;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class BootReceiver extends BroadcastReceiver {
+public interface IDownloadHandler {
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
-                intent.getAction().equals("com.giovanniterlingen.windesheim.start")) {
-            ApplicationLoader.startPushService();
-        }
-    }
+    void downloadCanceled();
+
+    void noSupportedApp();
+
+    void noSpace();
+
+    void noPermission();
 }

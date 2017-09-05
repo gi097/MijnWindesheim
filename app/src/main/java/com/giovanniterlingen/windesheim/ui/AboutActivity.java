@@ -54,7 +54,7 @@ public class AboutActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        TextView header = (TextView) findViewById(R.id.about_header);
+        TextView header = findViewById(R.id.about_header);
         if (header != null) {
             try {
                 String versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;

@@ -61,19 +61,9 @@ public class ScheduleHandler {
         ApplicationLoader.scheduleDatabase.addFetched(date);
     }
 
-    public static String getListFromServer(int type, Date date) throws Exception {
-        // workaround for wrong id's provided by WebUntis
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
-        Date foo = dateFormat.parse("20170904");
-        if (date.before(foo)) {
-            date = foo;
-        }
-        // end of workaround
-
-        StringBuilder stringBuffer = new StringBuilder("");
+    public static JSONObject getListFromServer(int type) throws Exception {
         URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                "ajaxCommand=getPageConfig&type=" + type +
-                "&date=" + dateFormat.format(date));
+                "ajaxCommand=getPageConfig&type=" + type);
         HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
@@ -81,13 +71,14 @@ public class ScheduleHandler {
         connection.setDoInput(true);
         connection.connect();
 
+        StringBuilder stringBuffer = new StringBuilder("");
         InputStream inputStream = connection.getInputStream();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
-        while ((line = rd.readLine()) != null) {
+        while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
         }
-        return stringBuffer.toString();
+        return new JSONObject(stringBuffer.toString());
     }
 
     private static JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {

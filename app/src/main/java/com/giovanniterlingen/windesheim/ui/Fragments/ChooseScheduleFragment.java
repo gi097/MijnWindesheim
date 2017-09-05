@@ -58,7 +58,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -98,9 +97,9 @@ public class ChooseScheduleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_choose_schedule, container, false);
-        TextView chooseTextview = (TextView) view.findViewById(R.id.choose_textview);
-        TextView descriptionTextview = (TextView) view.findViewById(R.id.description_textview);
-        EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
+        TextView chooseTextview = view.findViewById(R.id.choose_textview);
+        TextView descriptionTextview = view.findViewById(R.id.description_textview);
+        EditText dataSearch = view.findViewById(R.id.filter_edittext);
         if (type == 1) {
             chooseTextview.setText(getResources().getString(R.string.choose_class));
             descriptionTextview.setText(getResources().getString(R.string
@@ -119,9 +118,9 @@ public class ChooseScheduleFragment extends Fragment {
                     .choose_subject_description));
             dataSearch.setHint(getResources().getString(R.string.choose_subject_hint));
         }
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        spinner = (ProgressBar) view.findViewById(R.id.progress_bar);
+        spinner = view.findViewById(R.id.progress_bar);
         dataSearch.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
                 if (adapter != null) {
@@ -132,7 +131,12 @@ public class ChooseScheduleFragment extends Fragment {
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
             }
 
-            public void afterTextChanged(Editable arg0) {
+            public void afterTextChanged(Editable s) {
+                for (int i = s.length(); i > 0; i--) {
+                    if (s.subSequence(i - 1, i).toString().equals("\n")) {
+                        s.replace(i - 1, i, "");
+                    }
+                }
             }
         });
 
@@ -221,8 +225,8 @@ public class ChooseScheduleFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                ArrayList<Component> componentList = buildClassArray
-                        (new JSONObject(ScheduleHandler.getListFromServer(type, new Date())).getJSONArray("elements"));
+                ArrayList<Component> componentList = buildClassArray(ScheduleHandler
+                        .getListFromServer(type).getJSONArray("elements"));
                 adapter = new ChooseScheduleAdapter(context, componentList) {
                     @Override
                     protected void onContentClick(int id, String name) {
@@ -236,8 +240,6 @@ public class ChooseScheduleFragment extends Fragment {
 
                             ApplicationLoader.scheduleDatabase.addSchedule(id, name, type);
                             ApplicationLoader.scheduleDatabase.clearFetched();
-                            ApplicationLoader.restartNotificationThread();
-                            ApplicationLoader.restartDailyScheduleFetcher();
 
                             ColorHandler.cachedColors.evictAll();
 
@@ -251,6 +253,9 @@ public class ChooseScheduleFragment extends Fragment {
                                 editor.remove("checkTime");
                             }
                             editor.apply();
+
+                            ApplicationLoader.restartNotificationThread();
+                            ApplicationLoader.restartDailyScheduleFetcher();
 
                             if (!hasSchedules) {
                                 Intent intent = new Intent(context, ScheduleActivity.class);
@@ -273,7 +278,7 @@ public class ChooseScheduleFragment extends Fragment {
             super.onPostExecute(param);
             spinner.setVisibility(View.GONE);
             recyclerView.setAdapter(adapter);
-            EditText dataSearch = (EditText) view.findViewById(R.id.filter_edittext);
+            EditText dataSearch = view.findViewById(R.id.filter_edittext);
             if (dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
                 adapter.filter(dataSearch.getText().toString());
             }

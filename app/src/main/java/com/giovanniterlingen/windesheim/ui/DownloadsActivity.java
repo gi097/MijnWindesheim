@@ -62,16 +62,16 @@ public class DownloadsActivity extends AppCompatActivity implements IDownloadsVi
 
     @Override
     public void showEmptyTextview() {
-        TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+        TextView empty = view.findViewById(R.id.empty_textview);
         empty.setVisibility(View.VISIBLE);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+        RecyclerView recyclerView = view.findViewById(R.id.downloads_recyclerview);
         recyclerView.setVisibility(View.GONE);
     }
 
     private void hideEmptyTextview() {
-        TextView empty = (TextView) view.findViewById(R.id.empty_textview);
+        TextView empty = view.findViewById(R.id.empty_textview);
         empty.setVisibility(View.GONE);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.downloads_recyclerview);
+        RecyclerView recyclerView = view.findViewById(R.id.downloads_recyclerview);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -129,7 +129,7 @@ public class DownloadsActivity extends AppCompatActivity implements IDownloadsVi
                 hideEmptyTextview();
             }
             if (recyclerView == null) {
-                recyclerView = (RecyclerView) findViewById(R.id.downloads_recyclerview);
+                recyclerView = findViewById(R.id.downloads_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
             }
             recyclerView.setAdapter(new ContentAdapter(this, contents) {

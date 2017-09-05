@@ -57,6 +57,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="32.0dip"
+                    android:contentDescription="@string/app_name"
                     android:scaleType="fitStart"
                     android:src="@drawable/windesheim_login" />
 
@@ -133,7 +134,7 @@
                 android:drawableRight="@drawable/ic_navigate_next"
                 android:minWidth="100dp"
                 android:paddingEnd="8dp"
-                android:paddingRight="8dp"
+                android:paddingStart="8dp"
                 android:text="@string/auth_login" />
 
         </FrameLayout>

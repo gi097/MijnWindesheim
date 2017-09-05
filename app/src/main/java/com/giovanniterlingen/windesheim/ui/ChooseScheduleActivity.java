@@ -52,16 +52,16 @@ public class ChooseScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_choose_type);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mPager = findViewById(R.id.pager);
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
                 getSupportFragmentManager());
         if (mPager != null) {
             mPager.setOffscreenPageLimit(2);
             mPager.setAdapter(mPagerAdapter);
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            TabLayout tabLayout = findViewById(R.id.tabs);
             if (tabLayout != null) {
                 tabLayout.setupWithViewPager(mPager);
             }

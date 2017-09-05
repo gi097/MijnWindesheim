@@ -24,7 +24,11 @@
  **/
 package com.giovanniterlingen.windesheim.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +37,7 @@ import android.view.View;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.PermissionHandler;
+import com.giovanniterlingen.windesheim.objects.IDownloadHandler;
 import com.giovanniterlingen.windesheim.ui.Fragments.ContentsFragment;
 
 /**
@@ -40,7 +45,7 @@ import com.giovanniterlingen.windesheim.ui.Fragments.ContentsFragment;
  *
  * @author Giovanni Terlingen
  */
-public class NatschoolActivity extends AppCompatActivity {
+public class NatschoolActivity extends AppCompatActivity implements IDownloadHandler {
 
     private View view;
 
@@ -74,7 +79,42 @@ public class NatschoolActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public View getView() {
-        return view;
+    @Override
+    public void downloadCanceled() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.canceled_downloading), Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    @Override
+    public void noSupportedApp() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.no_app_found), Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    @Override
+    public void noSpace() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.storage_full), Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    @Override
+    public void noPermission() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.no_permission), Snackbar.LENGTH_LONG);
+        snackbar.setAction(getResources().getString(R.string.fix),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                });
+        snackbar.show();
     }
 }

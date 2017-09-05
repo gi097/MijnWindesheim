@@ -8,8 +8,8 @@ android {
         applicationId "com.giovanniterlingen.windesheim"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 125
-        versionName "2.3.2"
+        versionCode 131
+        versionName "2.4.5"
     }
     buildTypes {
         release {
@@ -28,4 +28,5 @@ dependencies {
     compile 'io.requery:sqlite-android:3.20.0'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
     compile 'com.google.firebase:firebase-ads:11.2.0'
+    compile 'com.github.apl-devs:appintro:v4.2.2'
 }

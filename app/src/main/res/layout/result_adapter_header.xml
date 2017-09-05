@@ -21,7 +21,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingEnd="16.0dip"
-        android:paddingRight="16.0dip">
+        android:paddingStart="16.0dip">
 
         <TextView
             android:id="@+id/lesson_name"

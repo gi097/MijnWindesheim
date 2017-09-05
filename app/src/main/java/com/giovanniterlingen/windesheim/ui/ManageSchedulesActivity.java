@@ -106,7 +106,7 @@ public class ManageSchedulesActivity extends AppCompatActivity {
     private void setAdapter() {
         ManageSchedulesAdapter adapter = new ManageSchedulesAdapter(ManageSchedulesActivity.this,
                 ApplicationLoader.scheduleDatabase.getSchedules());
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);

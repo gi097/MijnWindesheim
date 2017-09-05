@@ -302,13 +302,13 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
 
         ViewHolder(View view) {
             super(view);
-            lessonName = (TextView) view.findViewById(R.id.schedule_list_row_name);
-            lessonTime = (TextView) view.findViewById(R.id.schedule_list_row_time);
-            lessonRoom = (TextView) view.findViewById(R.id.schedule_list_row_room);
-            lessonComponent = (TextView) view.findViewById(R.id.schedule_list_row_component);
-            menuButton = (RelativeLayout) view.findViewById(R.id.menu_button);
-            menuButtonImage = (ImageView) view.findViewById(R.id.menu_button_image);
-            cardView = (CardView) view.findViewById(R.id.card);
+            lessonName = view.findViewById(R.id.schedule_list_row_name);
+            lessonTime = view.findViewById(R.id.schedule_list_row_time);
+            lessonRoom = view.findViewById(R.id.schedule_list_row_room);
+            lessonComponent = view.findViewById(R.id.schedule_list_row_component);
+            menuButton = view.findViewById(R.id.menu_button);
+            menuButtonImage = view.findViewById(R.id.menu_button_image);
+            cardView = view.findViewById(R.id.card);
             scheduleIdentifier = view.findViewById(R.id.schedule_identifier);
         }
     }
