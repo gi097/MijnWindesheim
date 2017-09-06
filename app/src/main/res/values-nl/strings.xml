@@ -20,7 +20,7 @@
     <string name="auth_description">Voeg je account toe om toegang te krijgen tot de diensten van Windesheim.</string>
     <string name="auth_invalid_password">Ongeldig wachtwoord</string>
     <string name="auth_invalid_username">Ongeldige gebruikersnaam</string>
-    <string name="auth_loading">Informatie laden…</string>
+    <string name="auth_loading">Inloggen…</string>
     <string name="auth_login">INLOGGEN</string>
     <string name="auth_login_failed">Inloggen mislukt. Controleer je gebruikersnaam en wachtwoord.</string>
     <string name="auth_password">Wachtwoord</string>
