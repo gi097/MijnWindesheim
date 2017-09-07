@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Giovanni Terlingen
+ * Copyright (c) 2017 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,10 +32,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 
@@ -83,10 +81,8 @@ public class NotificationHandler extends Thread {
                 if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
                     ScheduleHandler.getAndSaveAllSchedules(date);
                 }
-                Cursor cursor = ApplicationLoader.scheduleDatabase
-                        .getLessons(simpleDateFormat.format(date));
-                Cursor cursor1 = ApplicationLoader.scheduleDatabase
-                        .getLessons(simpleDateFormat.format(date));
+                Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
+                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
                 if (cursor != null && cursor.getCount() == 0) {
                     clearNotification();
                     while (checkIfNeedsContinue()) {
@@ -100,100 +96,88 @@ public class NotificationHandler extends Thread {
                         subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
-                        if (cursor1.moveToFirst() && cursor.getPosition() + 1 < cursor1.getCount()
+                        boolean multiple = cursor1.moveToFirst()
+                                && cursor.getPosition() + 1 < cursor1.getCount()
                                 && cursor1.moveToPosition(cursor.getPosition() + 1)
                                 && cursor1.getString(3) != null
-                                && subjectTimeString.equals(cursor1.getString(3))) {
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime
-                                    && checkIfNeedsContinue()) {
-                                long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = (difference / 60000) % 60;
-                                long diffHours = (difference / 3600000) % 24;
-                                if (diffHours >= 1) {
-                                    if (diffMinutes != 0) {
-                                        if (diffHours == 1) {
-                                            if (diffMinutes == 1) {
+                                && subjectTimeString.equals(cursor1.getString(3));
+                        String lessonName = cursor.getString(5);
+                        String lessonLocation = cursor.getString(6);
+                        while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime
+                                && checkIfNeedsContinue()) {
+                            long difference = subjectTime - currentTimeMillis;
+                            long diffMinutes = (difference / 60000) % 60;
+                            long diffHours = (difference / 3600000) % 24;
+                            if (diffHours >= 1) {
+                                if (diffMinutes != 0) {
+                                    if (diffHours == 1) {
+                                        if (diffMinutes == 1) {
+                                            if (multiple) {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_one_minute);
                                             } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_multiple_minutes, diffMinutes);
-                                            }
-                                        } else {
-                                            if (diffMinutes == 1) {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_one_minute, diffHours);
-                                            } else {
-                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_multiple_minutes, diffHours, diffMinutes);
-                                            }
-                                        }
-                                    } else {
-                                        if (diffHours == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours, diffHours);
-                                        }
-                                    }
-                                } else {
-                                    if (diffMinutes >= 1) {
-                                        if (diffMinutes == 1) {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_minute);
-                                        } else {
-                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_minutes, diffMinutes);
-                                        }
-                                    }
-                                }
-                                if (notificationType == 5) {
-                                    createNotification(notificationText, true, false);
-                                }
-                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false, true);
-                                }
-                                sleep(1000);
-                            }
-                        } else {
-                            String lessonName = cursor.getString(5);
-                            String lessonLocation = cursor.getString(6);
-                            while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime && checkIfNeedsContinue()) {
-                                long difference = subjectTime - currentTimeMillis;
-                                long diffMinutes = (difference / 60000) % 60;
-                                long diffHours = (difference / 3600000) % 24;
-                                if (diffHours >= 1) {
-                                    if (diffMinutes != 0) {
-                                        if (diffHours == 1) {
-                                            if (diffMinutes == 1) {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_one_minute, lessonName, lessonLocation);
+                                            }
+                                        } else {
+                                            if (multiple) {
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour_multiple_minutes, diffMinutes);
                                             } else {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour_multiple_minutes, lessonName, diffMinutes, lessonLocation);
                                             }
-                                        } else {
-                                            if (diffMinutes == 1) {
+                                        }
+                                    } else {
+                                        if (diffMinutes == 1) {
+                                            if (multiple) {
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_one_minute, diffHours);
+                                            } else {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_one_minute, lessonName, diffHours, lessonLocation);
+                                            }
+                                        } else {
+                                            if (multiple) {
+                                                notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours_multiple_minutes, diffHours, diffMinutes);
                                             } else {
                                                 notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours_multiple_minutes, lessonName, diffHours, diffMinutes, lessonLocation);
                                             }
                                         }
-                                    } else {
-                                        if (diffHours == 1) {
+                                    }
+                                } else {
+                                    if (diffHours == 1) {
+                                        if (multiple) {
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_hour);
+                                        } else {
                                             notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_hour, lessonName, lessonLocation);
+                                        }
+                                    } else {
+                                        if (multiple) {
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_hours, diffHours);
                                         } else {
                                             notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_hours, lessonName, diffHours, lessonLocation);
                                         }
                                     }
-                                } else {
-                                    if (diffMinutes >= 1) {
-                                        if (diffMinutes == 1) {
+                                }
+                            } else {
+                                if (diffMinutes >= 1) {
+                                    if (diffMinutes == 1) {
+                                        if (multiple) {
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_one_minute);
+                                        } else {
                                             notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_one_minute, lessonName, lessonLocation);
+                                        }
+                                    } else {
+                                        if (multiple) {
+                                            notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.multiple_lessons_multiple_minutes, diffMinutes);
                                         } else {
                                             notificationText = ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_multiple_minutes, lessonName, diffMinutes, lessonLocation);
                                         }
                                     }
                                 }
-                                if (notificationType == 5) {
-                                    createNotification(notificationText, true, false);
-                                }
-                                if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
-                                    createNotification(notificationText, false, true);
-                                }
-                                sleep(1000);
                             }
+                            if (notificationType == 5) {
+                                createNotification(notificationText, true, false);
+                            }
+                            if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
+                                createNotification(notificationText, false, true);
+                            }
+                            sleep(1000);
                         }
                     }
                 }
@@ -249,14 +233,13 @@ public class NotificationHandler extends Thread {
                         NotificationManager.IMPORTANCE_HIGH);
                 normalChannel.enableLights(true);
                 normalChannel.enableVibration(true);
-                normalChannel.setLightColor(Color.YELLOW);
                 normalChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
                 // persistent notification, does not need headsup
                 NotificationChannel persistentChannel = new NotificationChannel(PERSISTENT_NOTIFICATION_ID,
                         ApplicationLoader.applicationContext.getResources()
                                 .getString(R.string.persistent_notification),
-                        NotificationManager.IMPORTANCE_LOW);
+                        NotificationManager.IMPORTANCE_MIN);
                 persistentChannel.enableLights(false);
                 persistentChannel.enableVibration(false);
                 persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -281,10 +264,10 @@ public class NotificationHandler extends Thread {
                     .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext,
                             R.color.colorPrimary));
             if (headsUp) {
-                if (android.os.Build.VERSION.SDK_INT >= 16) {
-                    mBuilder.setPriority(NotificationManagerCompat.IMPORTANCE_HIGH);
-                }
+                mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
                 mBuilder.setDefaults(Notification.DEFAULT_ALL);
+            } else if (onGoing) {
+                mBuilder.setPriority(NotificationCompat.PRIORITY_MIN);
             }
             mNotificationManager.notify(0, mBuilder.build());
         } else {

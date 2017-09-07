@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Giovanni Terlingen
+ * Copyright (c) 2017 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,6 +73,7 @@ public class ChooseScheduleFragment extends Fragment {
     private ProgressBar spinner;
     private View view;
     private ComponentFetcher componentFetcher;
+    private boolean isViewShown = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,12 +84,31 @@ public class ChooseScheduleFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (adapter == null) {
-            if (componentFetcher == null || componentFetcher.getStatus()
-                    == AsyncTask.Status.FINISHED) {
-                (componentFetcher = new ComponentFetcher()).execute();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getView() != null) {
+            isViewShown = true;
+            startTask();
+        } else {
+            isViewShown = false;
+        }
+    }
+
+    private void startTask() {
+        if (componentFetcher != null) {
+            if (componentFetcher.getStatus() == AsyncTask.Status.RUNNING
+                    || componentFetcher.getStatus() == AsyncTask.Status.PENDING) {
+                componentFetcher.cancel(true);
+            }
+        }
+        if (isMenuVisible()) {
+            (componentFetcher = new ComponentFetcher()).execute();
+        } else {
+            if (adapter != null) {
+                adapter = null;
+            }
+            if (recyclerView != null) {
+                recyclerView.setAdapter(null);
             }
         }
     }
@@ -139,15 +159,19 @@ public class ChooseScheduleFragment extends Fragment {
                 }
             }
         });
-
+        if (!isViewShown) {
+            startTask();
+        }
         return view;
     }
-
 
     private synchronized ArrayList<Component> buildClassArray(JSONArray jsonArray) {
         ArrayList<Component> componentList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
+                if (Thread.interrupted()) {
+                    return null;
+                }
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 componentList.add(new Component(jsonObject.getInt("id"),
                         jsonObject.getString("name") + " - " + jsonObject.getString("longName")));
@@ -172,10 +196,13 @@ public class ChooseScheduleFragment extends Fragment {
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        if (componentFetcher == null || componentFetcher
-                                                .getStatus() == AsyncTask.Status.FINISHED) {
-                                            (componentFetcher = new ComponentFetcher()).execute();
+                                        if (componentFetcher != null) {
+                                            if (componentFetcher.getStatus() == AsyncTask.Status.RUNNING
+                                                    || componentFetcher.getStatus() == AsyncTask.Status.PENDING) {
+                                                componentFetcher.cancel(true);
+                                            }
                                         }
+                                        (componentFetcher = new ComponentFetcher()).execute();
                                         dialog.cancel();
                                     }
                                 })
@@ -267,6 +294,8 @@ public class ChooseScheduleFragment extends Fragment {
                         }
                     }
                 };
+            } catch (InterruptedException e) {
+                //
             } catch (Exception e) {
                 alertConnectionProblem();
             }
@@ -279,7 +308,7 @@ public class ChooseScheduleFragment extends Fragment {
             spinner.setVisibility(View.GONE);
             recyclerView.setAdapter(adapter);
             EditText dataSearch = view.findViewById(R.id.filter_edittext);
-            if (dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
+            if (adapter != null && dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
                 adapter.filter(dataSearch.getText().toString());
             }
         }

@@ -190,8 +190,6 @@
     <string name="schedule_deleted">Schedule has been deleted</string>
     <string name="schedule_not_found">No schedule found for this day</string>
 
-    <string name="search_hint">Search…</string>
-
     <string name="september">September</string>
 
     <string name="settings">Settings</string>

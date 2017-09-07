@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Giovanni Terlingen
+ * Copyright (c) 2017 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,8 +37,8 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
-                intent.getAction().equals("com.giovanniterlingen.windesheim.start")) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
+                "com.giovanniterlingen.windesheim.start".equals(intent.getAction())) {
             ApplicationLoader.startPushService();
         }
     }
