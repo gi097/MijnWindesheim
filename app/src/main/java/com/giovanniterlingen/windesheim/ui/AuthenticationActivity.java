@@ -41,7 +41,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.NetworkReceiver;
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 
 /**
@@ -133,7 +133,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         if (isBusy) {
             return;
         }
-        if (!NetworkReceiver.isConnected()) {
+        if (!ApplicationLoader.isConnected()) {
             headerTextView.setText(getString(R.string.auth_add_account));
             progressBar.setVisibility(View.GONE);
             showConnectionError();

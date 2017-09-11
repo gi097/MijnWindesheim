@@ -90,8 +90,7 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                                 ApplicationLoader.scheduleDatabase
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
                                 ApplicationLoader.restartNotificationThread();
-                                ApplicationLoader.restartDailyScheduleFetcher();
-
+                                
                                 ColorHandler.cachedColors.evictAll();
                                 schedules = ApplicationLoader.scheduleDatabase.getSchedules();
                                 notifyDataSetChanged();

@@ -105,7 +105,7 @@ public class WebviewFragment extends Fragment {
     private class ChromeClient extends WebChromeClient {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
-            if (progressDialog != null && newProgress == 100) {
+            if (progressDialog != null && progressDialog.isShowing() && newProgress == 100) {
                 progressDialog.dismiss();
             }
             super.onProgressChanged(view, newProgress);

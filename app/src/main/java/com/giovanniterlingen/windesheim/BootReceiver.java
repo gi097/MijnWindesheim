@@ -39,7 +39,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
                 "com.giovanniterlingen.windesheim.start".equals(intent.getAction())) {
-            ApplicationLoader.startPushService();
+            ApplicationLoader.startServices();
         }
     }
 }

@@ -87,7 +87,18 @@
 
         <service
             android:name=".NotificationService"
-            android:enabled="true" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".FetchService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".BootReceiver"
@@ -95,14 +106,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.giovanniterlingen.windesheim.start" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".NetworkReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 

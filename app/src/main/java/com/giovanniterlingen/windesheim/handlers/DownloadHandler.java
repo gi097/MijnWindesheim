@@ -202,7 +202,9 @@ public class DownloadHandler extends AsyncTask<String, Integer, String> {
         if (wakeLock.isHeld()) {
             wakeLock.release();
         }
-        progressDialog.dismiss();
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
         if (result != null && result.equals("permission")) {
             ((NatschoolActivity) activity).noPermission();
             return;

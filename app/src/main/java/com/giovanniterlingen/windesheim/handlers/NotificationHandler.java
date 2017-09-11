@@ -209,6 +209,36 @@ public class NotificationHandler extends Thread {
         running = false;
     }
 
+    public static void initChannels() {
+        // create Android O channel
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            // normal notifications
+            NotificationChannel normalChannel = new NotificationChannel(NORMAL_NOTIFICATION_ID,
+                    ApplicationLoader.applicationContext.getResources()
+                            .getString(R.string.normal_notification),
+                    NotificationManager.IMPORTANCE_HIGH);
+            normalChannel.enableLights(true);
+            normalChannel.enableVibration(true);
+            normalChannel.setShowBadge(true);
+            normalChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            // persistent notification, does not need headsup
+            NotificationChannel persistentChannel = new NotificationChannel(PERSISTENT_NOTIFICATION_ID,
+                    ApplicationLoader.applicationContext.getResources()
+                            .getString(R.string.persistent_notification),
+                    NotificationManager.IMPORTANCE_MIN);
+            persistentChannel.enableLights(false);
+            persistentChannel.enableVibration(false);
+            persistentChannel.setShowBadge(false);
+            persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            NotificationManager mManager = (NotificationManager) ApplicationLoader
+                    .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            mManager.createNotificationChannel(normalChannel);
+            mManager.createNotificationChannel(persistentChannel);
+        }
+    }
+
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
         if (notificationType != 0 && notificationType != 6 && mNotificationManager != null) {
             if (lastNotification.equals(notificationText)) {
@@ -223,32 +253,6 @@ public class NotificationHandler extends Thread {
                     .getActivity(ApplicationLoader.applicationContext,
                             (int) System.currentTimeMillis(),
                             intent, 0);
-
-            // create Android O channel
-            if (android.os.Build.VERSION.SDK_INT >= 26) {
-                // normal notifications
-                NotificationChannel normalChannel = new NotificationChannel(NORMAL_NOTIFICATION_ID,
-                        ApplicationLoader.applicationContext.getResources()
-                                .getString(R.string.normal_notification),
-                        NotificationManager.IMPORTANCE_HIGH);
-                normalChannel.enableLights(true);
-                normalChannel.enableVibration(true);
-                normalChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-                // persistent notification, does not need headsup
-                NotificationChannel persistentChannel = new NotificationChannel(PERSISTENT_NOTIFICATION_ID,
-                        ApplicationLoader.applicationContext.getResources()
-                                .getString(R.string.persistent_notification),
-                        NotificationManager.IMPORTANCE_MIN);
-                persistentChannel.enableLights(false);
-                persistentChannel.enableVibration(false);
-                persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-                NotificationManager mManager = (NotificationManager) ApplicationLoader
-                        .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
-                mManager.createNotificationChannel(normalChannel);
-                mManager.createNotificationChannel(persistentChannel);
-            }
 
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                     ApplicationLoader.applicationContext, headsUp ? NORMAL_NOTIFICATION_ID : PERSISTENT_NOTIFICATION_ID)

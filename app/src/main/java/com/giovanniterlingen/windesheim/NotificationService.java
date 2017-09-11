@@ -24,35 +24,24 @@
  **/
 package com.giovanniterlingen.windesheim;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class NotificationService extends Service {
+public class NotificationService extends JobService {
 
     @Override
-    public void onCreate() {
-        ApplicationLoader.postInitApplication();
+    public boolean onStartJob(JobParameters job) {
+        ApplicationLoader.initNotificationThread();
+        return false;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        Intent intent = new Intent("com.giovanniterlingen.windesheim.start");
-        sendBroadcast(intent);
+    public boolean onStopJob(JobParameters job) {
+        return false;
     }
 }

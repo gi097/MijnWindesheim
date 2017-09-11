@@ -24,43 +24,41 @@
  **/
 package com.giovanniterlingen.windesheim;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
+import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
+
+import java.util.Calendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class NetworkReceiver extends BroadcastReceiver {
+public class FetchService extends JobService {
 
-    private static void checkThreadsState() {
-        if (isConnected()) {
-            if (ApplicationLoader.notificationHandler != null &&
-                    !ApplicationLoader.notificationHandler.isRunning()) {
-                ApplicationLoader.restartNotificationThread();
+    @Override
+    public boolean onStartJob(final JobParameters job) {
+        new Thread() {
+            @Override
+            public void run() {
+                if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
+                    try {
+                        Calendar calendar = Calendar.getInstance();
+                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                        calendar.add(Calendar.DATE, 7);
+                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                    } catch (Exception e) {
+                        jobFinished(job, true);
+                    }
+                }
             }
-            if (ApplicationLoader.dailyScheduleHandler != null &&
-                    !ApplicationLoader.dailyScheduleHandler.isRunning()) {
-                ApplicationLoader.restartDailyScheduleFetcher();
-            }
-        }
-    }
-
-    public static boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) ApplicationLoader
-                .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        }.start();
+        return false;
     }
 
     @Override
-    public void onReceive(final Context context, final Intent intent) {
-        if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
-            checkThreadsState();
-        }
+    public boolean onStopJob(JobParameters job) {
+        return false;
     }
 }

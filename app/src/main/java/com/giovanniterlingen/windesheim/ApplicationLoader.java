@@ -24,17 +24,24 @@
  **/
 package com.giovanniterlingen.windesheim;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 import com.giovanniterlingen.windesheim.SQLite.ScheduleDatabase;
-import com.giovanniterlingen.windesheim.handlers.DailyScheduleHandler;
 import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -45,37 +52,76 @@ public class ApplicationLoader extends Application {
 
     public static ScheduleDatabase scheduleDatabase;
     public static NotificationHandler notificationHandler;
-    public static DailyScheduleHandler dailyScheduleHandler;
 
     public static volatile Context applicationContext;
     private static volatile Handler applicationHandler;
-    private static volatile boolean applicationInited = false;
+    private static volatile boolean notificationThreadInited = false;
 
-    public static void startPushService() {
-        applicationContext.startService(new Intent(applicationContext,
-                NotificationService.class));
-        if (android.os.Build.VERSION.SDK_INT >= 19) {
-            PendingIntent pintent = PendingIntent.getService(
-                    applicationContext, 0, new Intent(applicationContext,
-                            NotificationService.class), 0);
-            AlarmManager alarm = (AlarmManager) applicationContext
-                    .getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pintent);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        applicationContext = getApplicationContext();
+        applicationHandler = new Handler(applicationContext.getMainLooper());
+        scheduleDatabase = new ScheduleDatabase(applicationContext);
+        scheduleDatabase.open();
+
+        restartNotificationThread();
+        startServices();
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
+
+        NotificationHandler.initChannels();
+    }
+
+    public static void startServices() {
+        if (scheduleDatabase.hasSchedules()) {
+            startBackground(true);
+            startBackground(false);
+            startFetcher();
         }
     }
 
-    public static void postInitApplication() {
-        if (applicationInited) {
+    public static void startBackground(boolean immediately) {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher
+                (new GooglePlayDriver(applicationContext));
+
+        Job notificationJob = dispatcher.newJobBuilder()
+                .setService(NotificationService.class)
+                .setTag("backgroundJob")
+                .setRecurring(!immediately)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                .setTrigger(immediately ? Trigger.NOW :
+                        Trigger.executionWindow(30, 60))
+                .setReplaceCurrent(false)
+                .build();
+        dispatcher.mustSchedule(notificationJob);
+    }
+
+    public static void startFetcher() {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher
+                (new GooglePlayDriver(applicationContext));
+
+        Job fetcherJob = dispatcher.newJobBuilder()
+                .setService(FetchService.class)
+                .setTag("fetchJob")
+                .setRecurring(true)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                .setTrigger(Trigger.executionWindow((int) TimeUnit.DAYS.toSeconds(1),
+                        (int) TimeUnit.DAYS.toSeconds(1) + (int) TimeUnit.HOURS.toSeconds(1)))
+                .setConstraints(Constraint.ON_UNMETERED_NETWORK)
+                .setReplaceCurrent(true)
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
+                .build();
+        dispatcher.mustSchedule(fetcherJob);
+    }
+
+    public static void initNotificationThread() {
+        if (notificationThreadInited) {
             return;
         }
-        applicationInited = true;
-
-        if (scheduleDatabase.hasSchedules()) {
-            notificationHandler = new NotificationHandler();
-            notificationHandler.start();
-            dailyScheduleHandler = new DailyScheduleHandler();
-            dailyScheduleHandler.start();
-        }
+        notificationThreadInited = true;
+        restartNotificationThread();
     }
 
     public static void runOnUIThread(Runnable runnable) {
@@ -93,26 +139,10 @@ public class ApplicationLoader extends Application {
         notificationHandler.start();
     }
 
-    public static void restartDailyScheduleFetcher() {
-        if (dailyScheduleHandler != null) {
-            dailyScheduleHandler.stopRunning();
-            dailyScheduleHandler = null;
-        }
-        dailyScheduleHandler = new DailyScheduleHandler();
-        dailyScheduleHandler.start();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        applicationContext = getApplicationContext();
-        applicationHandler = new Handler(applicationContext.getMainLooper());
-        scheduleDatabase = new ScheduleDatabase(applicationContext);
-        scheduleDatabase.open();
-
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
-
-        startPushService();
+    public static boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) ApplicationLoader
+                .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

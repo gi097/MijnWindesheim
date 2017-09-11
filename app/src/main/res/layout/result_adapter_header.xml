@@ -2,9 +2,6 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:orientation="horizontal">
 
     <com.github.lzyzsd.circleprogress.DonutProgress
@@ -21,7 +18,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingEnd="16.0dip"
-        android:paddingStart="16.0dip">
+        android:paddingRight="16.0dip">
 
         <TextView
             android:id="@+id/lesson_name"

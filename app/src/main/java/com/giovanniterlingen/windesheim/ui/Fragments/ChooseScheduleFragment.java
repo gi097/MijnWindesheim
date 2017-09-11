@@ -282,7 +282,7 @@ public class ChooseScheduleFragment extends Fragment {
                             editor.apply();
 
                             ApplicationLoader.restartNotificationThread();
-                            ApplicationLoader.restartDailyScheduleFetcher();
+                            ApplicationLoader.startServices();
 
                             if (!hasSchedules) {
                                 Intent intent = new Intent(context, ScheduleActivity.class);

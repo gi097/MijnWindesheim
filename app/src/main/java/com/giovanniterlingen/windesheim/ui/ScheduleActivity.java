@@ -70,7 +70,7 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
     private ViewPager mPager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
-    private int today;
+    private int today = -1;
 
     @Override
     public void showSnackbar(final String text) {
@@ -97,25 +97,13 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             super.onBackPressed();
             return;
         }
-        mPager.setCurrentItem(today);
+        if (today >= 0) {
+            mPager.setCurrentItem(today);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
-        String classId = sharedPreferences.getString("classId", "");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (classId.length() > 0) {
-            editor.putString("componentId", classId);
-            editor.putInt("type", 1);
-            editor.remove("classId");
-            editor.remove("schedule_change_service");
-            editor.remove("componentId");
-            editor.remove("type");
-            editor.apply();
-        }
-        editor.remove("notifications");
-
         if (!ApplicationLoader.scheduleDatabase.hasSchedules()) {
             Intent intent = new Intent(ScheduleActivity.this, ChooseScheduleActivity.class);
             startActivity(intent);
@@ -123,11 +111,12 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             finish();
             return;
         }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (sharedPreferences.getInt("notifications_type", 0) == 0) {
             editor.putInt("notifications_type", 5);
             editor.apply();
         }
-        ApplicationLoader.postInitApplication();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_schedule);
@@ -227,6 +216,8 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             today = 3;
         } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
             today = 4;
+        } else {
+            today = -1;
         }
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
                 getSupportFragmentManager());
@@ -235,7 +226,9 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
-        mPager.setCurrentItem(today);
+        if (today >= 0) {
+            mPager.setCurrentItem(today);
+        }
     }
 
     @Override
