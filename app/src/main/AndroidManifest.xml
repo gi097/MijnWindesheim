@@ -32,6 +32,7 @@
         <activity
             android:name=".ui.IntroActivity"
             android:label="@string/intro"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.ScheduleActivity"
@@ -41,6 +42,7 @@
         <activity
             android:name=".ui.ChooseScheduleActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -62,22 +64,26 @@
             android:name=".ui.AuthenticationActivity"
             android:label="@string/login"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.NatschoolActivity"
             android:label="@string/courses"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.EducatorActivity"
             android:label="@string/progress"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.DownloadsActivity"
             android:label="@string/downloads"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.SettingsActivity"
