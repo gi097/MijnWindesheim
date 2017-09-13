@@ -88,7 +88,7 @@ public class ApplicationLoader extends Application {
 
         Job notificationJob = dispatcher.newJobBuilder()
                 .setService(NotificationService.class)
-                .setTag("backgroundJob")
+                .setTag("backgroundJob-" + System.currentTimeMillis())
                 .setRecurring(!immediately)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setTrigger(immediately ? Trigger.NOW :

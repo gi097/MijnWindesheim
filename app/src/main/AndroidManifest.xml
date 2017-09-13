@@ -111,7 +111,6 @@
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.giovanniterlingen.windesheim.start" />
             </intent-filter>
         </receiver>
 

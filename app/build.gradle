@@ -8,14 +8,13 @@ android {
         applicationId "com.giovanniterlingen.windesheim"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 141
-        versionName "2.5.5"
+        versionCode 142
+        versionName "2.5.6"
     }
     buildTypes {
         release {
             minifyEnabled true
             useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
