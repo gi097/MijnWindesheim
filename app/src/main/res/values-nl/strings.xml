@@ -3,7 +3,7 @@
     <string name="about">Over</string>
     <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
-    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Ik en Windesheim kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nDeze app bevat advertenties van Google AdSense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden. Wanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
+    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Windesheim en ik kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is, loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nDeze app bevat advertenties van Google AdSense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden. Wanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
 
     <string name="add">Toevoegen</string>
 
@@ -31,13 +31,13 @@
     <string name="canceled_downloading">Download geannuleerd</string>
 
     <string name="choose_class">Kies je klas</string>
-    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
+    <string name="choose_class_description">Je kunt hier je klas zoeken en daar vervolgens op klikken om deze aan je overzicht toe te voegen.</string>
     <string name="choose_class_hint">Typ hier je klas</string>
     <string name="choose_subject">Kies je vak</string>
-    <string name="choose_subject_description">Je kunt hier je gewenste vak zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
+    <string name="choose_subject_description">Je kunt hier je gewenste vak zoeken en daar vervolgens op klikken om deze aan je overzicht toe te voegen.</string>
     <string name="choose_subject_hint">Typ hier je vak</string>
     <string name="choose_teacher">Kies je naam of docentcode</string>
-    <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze als je rooster in te stellen.</string>
+    <string name="choose_teacher_description">Je kunt hier je naam of docentcode zoeken en daar vervolgens op klikken om deze aan je overzicht toe te voegen.</string>
     <string name="choose_teacher_hint">Typ hier je naam of docentcode</string>
 
     <string name="confirmation">Weet je het zeker?</string>
@@ -51,7 +51,7 @@
     <string name="december">december</string>
 
     <string name="delete">Verwijderen</string>
-    <string name="delete_file_description">Het bestand zal permanent verwijdert worden.</string>
+    <string name="delete_file_description">Het bestand zal permanent verwijderd worden.</string>
     <string name="delete_schedule_description">Dit zal het rooster van je apparaat verwijderen.</string>
 
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
@@ -74,7 +74,7 @@
     <string name="elo">ELO</string>
 
     <string name="exceed_limit_description">Je kan maximaal 5 roosters tegelijk gebruiken. Verwijder eerst een rooster en probeer het dan opnieuw.</string>
-    <string name="exceed_limit_title">Teveel roosters</string>
+    <string name="exceed_limit_title">Te veel roosters</string>
 
     <string name="february">februari</string>
 
@@ -109,7 +109,7 @@
     <string name="intro_3_title">Beheren</string>
     <string name="intro_4_description">Download alle bestanden van de ELO, gemakkelijk en snel.</string>
     <string name="intro_4_title">ELO</string>
-    <string name="intro_5_description">Bekijk je resultaten en weet waar je aantoe bent.</string>
+    <string name="intro_5_description">Bekijk je resultaten en weet waar je aan toe bent.</string>
     <string name="intro_5_title">Voortgang</string>
     <string name="intro_6_description">Weet precies wanneer je les begint.</string>
     <string name="intro_6_title">Meldingen</string>
@@ -162,7 +162,7 @@
     <string name="no_app_found">Er is geen app gevonden om dit bestand te openen</string>
     <string name="no_calendar_found">Er is geen agenda gevonden</string>
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
-    <string name="no_permission">Geen toegang tot de sdkaart</string>
+    <string name="no_permission">Geen toegang tot de SD kaart</string>
 
     <string name="normal_notification">Normale meldingen</string>
 
@@ -201,7 +201,7 @@
     <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
     <string name="settings_notification_description">Meldingen</string>
 
-    <string name="storage_full">Onvoldoende ruimte op de sdkaart!</string>
+    <string name="storage_full">Onvoldoende ruimte op de SD kaart!</string>
 
     <string name="thursday">donderdag</string>
 
