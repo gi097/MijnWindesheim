@@ -164,8 +164,6 @@
     <string name="no_content_found">Er zijn geen bestanden gevonden</string>
     <string name="no_permission">Geen toegang tot de SD kaart</string>
 
-    <string name="normal_notification">Normale meldingen</string>
-
     <string name="november">november</string>
 
     <string name="october">oktober</string>
@@ -179,14 +177,19 @@
     <string name="pager_item_teachers">Docenten</string>
 
     <string name="persistent_notification">Permanente melding</string>
+    <string name="persistent_notification_description">Permanente melding die laat zien hoe laat een les start</string>
 
     <string name="progress">Voortgang</string>
     <string name="progress_results">Resultaten</string>
+
+    <string name="push_notification">Push meldingen</string>
+    <string name="push_notification_description">Meldingen voor lessen en roosterwijzigingen</string>
 
     <string name="restore">Herstellen</string>
 
     <string name="save_lesson">Les opslaan in agenda</string>
 
+    <string name="schedule_changed">Je rooster is gewijzigd!</string>
     <string name="schedule_deleted">Rooster is verwijderd</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
 

@@ -43,7 +43,6 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.PermissionHandler;
 import com.giovanniterlingen.windesheim.objects.Content;
-import com.giovanniterlingen.windesheim.objects.IDownloadsView;
 import com.giovanniterlingen.windesheim.ui.Adapters.ContentAdapter;
 
 import java.io.File;
@@ -55,12 +54,11 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class DownloadsActivity extends AppCompatActivity implements IDownloadsView {
+public class DownloadsActivity extends AppCompatActivity {
 
     private View view;
     private RecyclerView recyclerView;
 
-    @Override
     public void showEmptyTextview() {
         TextView empty = view.findViewById(R.id.empty_textview);
         empty.setVisibility(View.VISIBLE);

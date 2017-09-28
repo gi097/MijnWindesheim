@@ -45,6 +45,8 @@
                 android:id="@+id/filter_edittext"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
+                android:lines="1"
                 android:maxLines="1"
                 android:textColor="@color/colorSecondaryText"
                 android:textSize="@dimen/text_size" />

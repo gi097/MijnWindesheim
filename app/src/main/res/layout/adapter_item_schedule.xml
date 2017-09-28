@@ -49,6 +49,7 @@
                 android:id="@+id/schedule_list_row_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLines="3"
                 android:paddingBottom="@dimen/material_card_margin_half"
                 android:paddingEnd="48.0dip"
                 android:paddingLeft="@dimen/card_text_margin"
@@ -62,10 +63,16 @@
                 android:id="@+id/schedule_list_row_component"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:paddingBottom="@dimen/card_text_margin"
                 android:paddingLeft="@dimen/card_text_margin"
                 android:paddingRight="@dimen/card_text_margin"
                 android:paddingTop="@dimen/material_card_margin_half"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
                 android:textColor="@color/colorSecondaryText"
                 android:textSize="@dimen/text_size" />
 
@@ -93,6 +100,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_toLeftOf="@+id/schedule_list_row_room"
                     android:layout_toStartOf="@+id/schedule_list_row_room"
+                    android:maxLines="1"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="@dimen/text_size" />
 
@@ -102,6 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:maxLines="1"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="@dimen/text_size" />
             </RelativeLayout>

@@ -39,26 +39,28 @@ public class FetchService extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters job) {
-        new Thread() {
-            @Override
-            public void run() {
-                if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
+        if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
+            new Thread() {
+                @Override
+                public void run() {
                     try {
                         Calendar calendar = Calendar.getInstance();
-                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime(), true);
                         calendar.add(Calendar.DATE, 7);
-                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime());
+                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime(), true);
+                        jobFinished(job, false);
                     } catch (Exception e) {
                         jobFinished(job, true);
                     }
                 }
-            }
-        }.start();
+            }.start();
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean onStopJob(JobParameters job) {
-        return false;
+        return true;
     }
 }

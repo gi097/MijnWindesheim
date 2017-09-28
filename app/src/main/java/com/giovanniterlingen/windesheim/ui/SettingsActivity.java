@@ -42,6 +42,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.CookieHandler;
+import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -80,9 +81,9 @@ public class SettingsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     SharedPreferences.Editor editor = preferences.edit();
                     if (lessonStart.isChecked()) {
-                        editor.putInt("notifications_type", 5);
+                        editor.putInt("notifications_type", NotificationHandler.NOTIFICATION_ALWAYS_ON);
                     } else {
-                        editor.putInt("notifications_type", 6);
+                        editor.putInt("notifications_type", NotificationHandler.NOTIFICATION_OFF);
                     }
                     editor.apply();
                     if (ApplicationLoader.notificationHandler != null) {
@@ -92,11 +93,8 @@ public class SettingsActivity extends AppCompatActivity {
                     updateIntervalTextView();
                 }
             });
-            if (preferences.getInt("notifications_type", -1) == 6) {
-                lessonStart.setChecked(false);
-            } else {
-                lessonStart.setChecked(true);
-            }
+            int pref = preferences.getInt("notifications_type", -1);
+            lessonStart.setChecked(pref != -1 && pref != NotificationHandler.NOTIFICATION_OFF);
 
             Button deleteAccountButton = findViewById(R.id.logout_button);
             deleteAccountButton.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +131,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void updateIntervalTextView() {
         if (intervalTextview != null) {
             int interval = preferences.getInt("notifications_type", -1);
-            if (interval == 6) {
+            if (interval == NotificationHandler.NOTIFICATION_OFF) {
                 intervalTextview.setText(getResources().getString(R.string.interval_off));
             } else if (interval > -1) {
                 intervalTextview.setText(items[interval - 2]);
@@ -144,7 +142,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void updateLessonSwitch() {
         if (lessonStart != null) {
             int interval = preferences.getInt("notifications_type", -1);
-            lessonStart.setChecked(interval > -1 && interval != 6);
+            lessonStart.setChecked(interval > -1 &&
+                    interval != NotificationHandler.NOTIFICATION_OFF);
         }
     }
 
@@ -163,35 +162,12 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 if (notificationId > -1) {
                     int id = notificationId + 2;
-                    switch (notificationId) {
-                        case 0:
-                        case 1:
-                        case 2:
-                            editor.putInt("notifications_type", id);
-                            editor.apply();
-                            if (ApplicationLoader.notificationHandler != null) {
-                                ApplicationLoader.notificationHandler.clearNotification();
-                            }
-                            ApplicationLoader.restartNotificationThread();
-                            break;
-                        case 3:
-                            editor.putInt("notifications_type", id);
-                            editor.apply();
-                            if (ApplicationLoader.notificationHandler != null) {
-                                ApplicationLoader.notificationHandler.clearNotification();
-                            }
-                            ApplicationLoader.restartNotificationThread();
-                            break;
-                        case 4:
-                            editor.putInt("notifications_type", id);
-                            editor.apply();
-                            if (ApplicationLoader.notificationHandler != null) {
-                                ApplicationLoader.notificationHandler.clearNotification();
-                            }
-                            ApplicationLoader.restartNotificationThread();
-                            break;
-
+                    editor.putInt("notifications_type", id);
+                    editor.apply();
+                    if (ApplicationLoader.notificationHandler != null) {
+                        ApplicationLoader.notificationHandler.clearNotification();
                     }
+                    ApplicationLoader.restartNotificationThread();
                     updateLessonSwitch();
                     updateIntervalTextView();
                     dialog.dismiss();
@@ -211,10 +187,5 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }

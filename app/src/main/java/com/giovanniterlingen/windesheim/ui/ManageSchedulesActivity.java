@@ -26,13 +26,12 @@ package com.giovanniterlingen.windesheim.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -61,14 +60,18 @@ public class ManageSchedulesActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
+        final FloatingActionButton fab = findViewById(R.id.fab);
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ManageSchedulesActivity.this,
+                            ChooseScheduleActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
         setAdapter();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_activity_manage_schedule, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -76,19 +79,10 @@ public class ManageSchedulesActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-                finish();
-                return true;
-            case R.id.action_add_schedule:
-                Intent intent = new Intent(ManageSchedulesActivity.this, ChooseScheduleActivity.class);
-                startActivity(intent);
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 
     public void showDeletionSnackbar() {
@@ -117,5 +111,12 @@ public class ManageSchedulesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setAdapter();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(ManageSchedulesActivity.this, ScheduleActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

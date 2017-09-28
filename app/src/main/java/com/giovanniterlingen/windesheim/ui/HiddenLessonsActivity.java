@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.ui;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -37,7 +36,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.objects.IHiddenLessonsView;
+import com.giovanniterlingen.windesheim.objects.Lesson;
 import com.giovanniterlingen.windesheim.ui.Adapters.HiddenLessonsAdapter;
 
 /**
@@ -45,25 +44,9 @@ import com.giovanniterlingen.windesheim.ui.Adapters.HiddenLessonsAdapter;
  *
  * @author Giovanni Terlingen
  */
-public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenLessonsView {
+public class HiddenLessonsActivity extends AppCompatActivity {
 
     private View view;
-
-    @Override
-    public void showSnackbar() {
-        Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources().getString(R.string.lesson_restored),
-                Snackbar.LENGTH_SHORT);
-        snackbar.show();
-    }
-
-    @Override
-    public void showEmptyTextView() {
-        if (view != null) {
-            TextView emptyTextView = view.findViewById(
-                    R.id.hidden_schedule_not_found);
-            emptyTextView.setVisibility(View.VISIBLE);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +60,8 @@ public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenL
         }
 
         view = findViewById(R.id.coordinator_layout);
-        Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter();
-        HiddenLessonsAdapter adapter = new HiddenLessonsAdapter(HiddenLessonsActivity.this, cursor);
+        Lesson[] lessons = ApplicationLoader.scheduleDatabase.getHiddenLessons();
+        HiddenLessonsAdapter adapter = new HiddenLessonsAdapter(HiddenLessonsActivity.this, lessons);
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -86,6 +69,20 @@ public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenL
             if (adapter.getItemCount() == 0) {
                 showEmptyTextView();
             }
+        }
+    }
+
+    public void showSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, ApplicationLoader
+                        .applicationContext.getResources().getString(R.string.lesson_restored),
+                Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    public void showEmptyTextView() {
+        if (view != null) {
+            TextView emptyTextView = view.findViewById(R.id.hidden_schedule_not_found);
+            emptyTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -98,10 +95,5 @@ public class HiddenLessonsActivity extends AppCompatActivity implements IHiddenL
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }

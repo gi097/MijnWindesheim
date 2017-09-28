@@ -38,6 +38,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -52,8 +53,8 @@ import com.giovanniterlingen.windesheim.R;
  */
 public class AuthenticationActivity extends AppCompatActivity {
 
-    private TextView usernameTextView;
-    private TextView passwordTextView;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
     private TextView headerTextView;
     private TextInputLayout usernameTextLayout;
     private TextInputLayout passwordTextLayout;
@@ -72,8 +73,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         isEducator = intent.getBooleanExtra("educator", false);
 
-        usernameTextView = findViewById(R.id.input_username);
-        passwordTextView = findViewById(R.id.input_password);
+        usernameEditText = findViewById(R.id.input_username);
+        passwordEditText = findViewById(R.id.input_password);
         progressBar = findViewById(R.id.login_progress);
         headerTextView = findViewById(R.id.login_header);
         usernameTextLayout = findViewById(R.id.input_username_layout);
@@ -85,23 +86,13 @@ public class AuthenticationActivity extends AppCompatActivity {
         String username;
         String password;
 
-        if ((username = preferences.getString("username", "")).length() > 0 &&
-                (password = preferences.getString("password", "")).length() > 0) {
-            isRedirected = true;
-            usernameTextView.setText(username);
-            passwordTextView.setText(password);
-            progressBar.setVisibility(View.VISIBLE);
-            authenticate(username, password);
-            return;
-        }
-
         Button button = findViewById(R.id.login_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 boolean isValid = true;
-                String username = usernameTextView.getText().toString();
-                String password = passwordTextView.getText().toString();
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
                 if (username.length() <= 1 || !username.toLowerCase().startsWith("s") &&
                         !username.toLowerCase().startsWith("p") ||
                         !username.toLowerCase().contains("@student.windesheim.nl") &&
@@ -122,11 +113,20 @@ public class AuthenticationActivity extends AppCompatActivity {
                     usernameTextLayout.setErrorEnabled(false);
                     passwordTextLayout.setErrorEnabled(false);
                     progressBar.setVisibility(View.VISIBLE);
-                    authenticate(usernameTextView.getText().toString(),
-                            passwordTextView.getText().toString());
+                    authenticate(usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString());
                 }
             }
         });
+        if ((username = preferences.getString("username", "")).length() > 0 &&
+                (password = preferences.getString("password", "")).length() > 0) {
+            isRedirected = true;
+            usernameEditText.setText(username);
+            usernameEditText.setSelection(username.length());
+            passwordEditText.setText(password);
+            progressBar.setVisibility(View.VISIBLE);
+            authenticate(username, password);
+        }
     }
 
     private void authenticate(final String username, final String password) {
@@ -249,10 +249,5 @@ public class AuthenticationActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }

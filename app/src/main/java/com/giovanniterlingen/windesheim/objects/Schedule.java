@@ -35,9 +35,9 @@ public class Schedule {
     private final String name;
     private final int id;
 
-    public Schedule(String name, int id, int type) {
-        this.name = name;
+    public Schedule(int id, String name, int type) {
         this.id = id;
+        this.name = name;
         this.type = type;
     }
 

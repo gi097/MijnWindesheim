@@ -29,9 +29,13 @@ package com.giovanniterlingen.windesheim.objects;
  *
  * @author Giovanni Terlingen
  */
-public interface IHiddenLessonsView {
+public class ScheduleItem {
 
-    void showSnackbar();
+    public final int id;
+    public final String name;
 
-    void showEmptyTextView();
+    public ScheduleItem(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

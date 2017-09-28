@@ -42,7 +42,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.objects.Content;
-import com.giovanniterlingen.windesheim.objects.IDownloadsView;
+import com.giovanniterlingen.windesheim.ui.DownloadsActivity;
 
 import java.io.File;
 import java.util.List;
@@ -63,7 +63,6 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
             R.drawable.ic_file_red,
             R.drawable.ic_file_yellow
     };
-
 
     protected ContentAdapter(Activity activity, List<Content> content) {
         this.activity = activity;
@@ -157,7 +156,7 @@ public abstract class ContentAdapter extends RecyclerView.Adapter<ContentAdapter
                                 content.remove(position);
                                 notifyItemRemoved(position);
                                 if (content.size() == 0) {
-                                    ((IDownloadsView) activity).showEmptyTextview();
+                                    ((DownloadsActivity) activity).showEmptyTextview();
                                 }
                                 Snackbar snackbar = Snackbar.make(activity
                                                 .findViewById(R.id.coordinator_layout),

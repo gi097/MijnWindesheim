@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -44,41 +45,32 @@ import java.util.ArrayList;
 public class WindesheimAPIHandler {
 
     public static String getStudyInfo(String studentNumber) throws Exception {
-        StringBuilder stringBuffer = new StringBuilder("");
-        URL urlLink = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
+        URL url = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
                 + studentNumber + "/Study?onlydata=true");
-        HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Cookie", CookieHandler.getEducatorCookie());
-        connection.setDoInput(true);
-        connection.connect();
-
-        InputStream inputStream = connection.getInputStream();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        while ((line = rd.readLine()) != null) {
-            stringBuffer.append(line);
-        }
-        return stringBuffer.toString();
+        return getDataFromUrl(url);
     }
 
     public static String getResults(String studentNumber, String isat) throws Exception {
-        StringBuilder stringBuffer = new StringBuilder("");
-        URL urlLink = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
+        URL url = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
                 + studentNumber + "/Study/" + isat
                 + "/CourseResults?onlydata=true&$orderby=lastmodified");
-        HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
+        return getDataFromUrl(url);
+    }
+
+    private static String getDataFromUrl(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Cookie", CookieHandler.getEducatorCookie());
         connection.setDoInput(true);
         connection.connect();
 
+        StringBuilder stringBuffer = new StringBuilder("");
+
         InputStream inputStream = connection.getInputStream();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
-        while ((line = rd.readLine()) != null) {
+        while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
         }
         return stringBuffer.toString();

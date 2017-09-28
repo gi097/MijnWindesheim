@@ -49,7 +49,6 @@ import android.widget.LinearLayout;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.CookieHandler;
-import com.giovanniterlingen.windesheim.objects.IScheduleView;
 import com.giovanniterlingen.windesheim.ui.Fragments.ScheduleFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -63,7 +62,7 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleActivity extends AppCompatActivity implements IScheduleView {
+public class ScheduleActivity extends AppCompatActivity {
 
     private View view;
     private FragmentManager fragmentManager;
@@ -71,36 +70,6 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
     private int today = -1;
-
-    @Override
-    public void showSnackbar(final String text) {
-        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
-        snackbar.show();
-    }
-
-    @Override
-    public void updateFragmentView() {
-        List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                if (fragment != null && fragment.isMenuVisible()) {
-                    ((ScheduleFragment) fragment).updateLayout();
-                    break;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mPager.getCurrentItem() == today) {
-            super.onBackPressed();
-            return;
-        }
-        if (today >= 0) {
-            mPager.setCurrentItem(today);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,40 +131,37 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
                                 Intent intent = new Intent(ScheduleActivity.this,
                                         ManageSchedulesActivity.class);
                                 startActivity(intent);
-                                menuItem.setChecked(false);
-                                return true;
+                                finish();
+                                break;
                             case R.id.natschool:
                                 CookieHandler.checkCookieAndIntent(ScheduleActivity.this, false);
-                                menuItem.setChecked(false);
-                                return true;
+                                break;
                             case R.id.educator:
                                 CookieHandler.checkCookieAndIntent(ScheduleActivity.this, true);
-                                menuItem.setChecked(false);
-                                return true;
+                                break;
                             case R.id.downloads:
                                 Intent intent1 = new Intent(ScheduleActivity.this,
                                         DownloadsActivity.class);
                                 startActivity(intent1);
-                                menuItem.setChecked(false);
-                                return true;
+                                break;
                             case R.id.restore_lessons:
                                 Intent intent4 = new Intent(ScheduleActivity.this,
                                         HiddenLessonsActivity.class);
                                 startActivity(intent4);
-                                menuItem.setChecked(false);
-                                return true;
+                                break;
                             case R.id.about:
                                 Intent intent3 = new Intent(ApplicationLoader.applicationContext,
                                         AboutActivity.class);
                                 startActivity(intent3);
-                                menuItem.setChecked(false);
-                                return true;
+                                break;
                             case R.id.settings:
                                 Intent intent5 = new Intent(ApplicationLoader.applicationContext,
                                         SettingsActivity.class);
                                 startActivity(intent5);
-                                menuItem.setChecked(false);
+                                break;
+
                         }
+                        menuItem.setChecked(false);
                         return true;
                     }
                 });
@@ -263,6 +229,34 @@ public class ScheduleActivity extends AppCompatActivity implements IScheduleView
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showSnackbar(final String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    public void updateFragmentView() {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment != null && fragment.isMenuVisible()) {
+                    ((ScheduleFragment) fragment).updateLayout();
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (today == -1 || mPager.getCurrentItem() == today) {
+            super.onBackPressed();
+            return;
+        }
+        if (today >= 0) {
+            mPager.setCurrentItem(today);
+        }
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

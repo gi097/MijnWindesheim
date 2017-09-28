@@ -83,11 +83,10 @@ public class ChooseScheduleActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
         if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
-            Intent intent = new Intent(ChooseScheduleActivity.this, ScheduleActivity.class);
+            Intent intent = new Intent(ChooseScheduleActivity.this, ManageSchedulesActivity.class);
             startActivity(intent);
         }
         finish();

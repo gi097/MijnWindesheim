@@ -37,7 +37,6 @@ import android.view.View;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.PermissionHandler;
-import com.giovanniterlingen.windesheim.objects.IDownloadHandler;
 import com.giovanniterlingen.windesheim.ui.Fragments.ContentsFragment;
 
 /**
@@ -45,7 +44,7 @@ import com.giovanniterlingen.windesheim.ui.Fragments.ContentsFragment;
  *
  * @author Giovanni Terlingen
  */
-public class NatschoolActivity extends AppCompatActivity implements IDownloadHandler {
+public class NatschoolActivity extends AppCompatActivity {
 
     private View view;
 
@@ -79,28 +78,24 @@ public class NatschoolActivity extends AppCompatActivity implements IDownloadHan
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
     public void downloadCanceled() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.canceled_downloading), Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
-    @Override
     public void noSupportedApp() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.no_app_found), Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
-    @Override
     public void noSpace() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.storage_full), Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
-    @Override
     public void noPermission() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.no_permission), Snackbar.LENGTH_LONG);

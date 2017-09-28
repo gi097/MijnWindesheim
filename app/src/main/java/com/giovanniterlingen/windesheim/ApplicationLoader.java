@@ -82,7 +82,7 @@ public class ApplicationLoader extends Application {
         }
     }
 
-    public static void startBackground(boolean immediately) {
+    private static void startBackground(boolean immediately) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher
                 (new GooglePlayDriver(applicationContext));
 
@@ -92,13 +92,13 @@ public class ApplicationLoader extends Application {
                 .setRecurring(!immediately)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setTrigger(immediately ? Trigger.NOW :
-                        Trigger.executionWindow(30, 60))
+                        Trigger.executionWindow(50, 60))
                 .setReplaceCurrent(false)
                 .build();
         dispatcher.mustSchedule(notificationJob);
     }
 
-    public static void startFetcher() {
+    private static void startFetcher() {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher
                 (new GooglePlayDriver(applicationContext));
 
@@ -110,7 +110,7 @@ public class ApplicationLoader extends Application {
                 .setTrigger(Trigger.executionWindow((int) TimeUnit.DAYS.toSeconds(1),
                         (int) TimeUnit.DAYS.toSeconds(1) + (int) TimeUnit.HOURS.toSeconds(1)))
                 .setConstraints(Constraint.ON_UNMETERED_NETWORK)
-                .setReplaceCurrent(true)
+                .setReplaceCurrent(false)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .build();
         dispatcher.mustSchedule(fetcherJob);

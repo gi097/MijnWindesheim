@@ -48,8 +48,9 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.ColorHandler;
+import com.giovanniterlingen.windesheim.handlers.NotificationHandler;
 import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
-import com.giovanniterlingen.windesheim.objects.Component;
+import com.giovanniterlingen.windesheim.objects.ScheduleItem;
 import com.giovanniterlingen.windesheim.ui.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
@@ -152,11 +153,6 @@ public class ChooseScheduleFragment extends Fragment {
             }
 
             public void afterTextChanged(Editable s) {
-                for (int i = s.length(); i > 0; i--) {
-                    if (s.subSequence(i - 1, i).toString().equals("\n")) {
-                        s.replace(i - 1, i, "");
-                    }
-                }
             }
         });
         if (!isViewShown) {
@@ -165,22 +161,22 @@ public class ChooseScheduleFragment extends Fragment {
         return view;
     }
 
-    private synchronized ArrayList<Component> buildClassArray(JSONArray jsonArray) {
-        ArrayList<Component> componentList = new ArrayList<>();
+    private synchronized ArrayList<ScheduleItem> buildClassArray(JSONArray jsonArray) {
+        ArrayList<ScheduleItem> scheduleItems = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 if (Thread.interrupted()) {
                     return null;
                 }
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                componentList.add(new Component(jsonObject.getInt("id"),
+                scheduleItems.add(new ScheduleItem(jsonObject.getInt("id"),
                         jsonObject.getString("name") + " - " + jsonObject.getString("longName")));
             } catch (JSONException e) {
                 alertConnectionProblem();
                 return null;
             }
         }
-        return componentList;
+        return scheduleItems;
     }
 
     private void alertConnectionProblem() {
@@ -252,9 +248,9 @@ public class ChooseScheduleFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                ArrayList<Component> componentList = buildClassArray(ScheduleHandler
+                ArrayList<ScheduleItem> scheduleItems = buildClassArray(ScheduleHandler
                         .getListFromServer(type).getJSONArray("elements"));
-                adapter = new ChooseScheduleAdapter(context, componentList) {
+                adapter = new ChooseScheduleAdapter(context, scheduleItems) {
                     @Override
                     protected void onContentClick(int id, String name) {
                         try {
@@ -274,10 +270,8 @@ public class ChooseScheduleFragment extends Fragment {
                                     .getDefaultSharedPreferences(context);
                             SharedPreferences.Editor editor = preferences.edit();
                             if (!hasSchedules) {
-                                editor.putInt("notifications_type", 5);
-                            }
-                            if (preferences.getLong("checkTime", 0) > 0) {
-                                editor.remove("checkTime");
+                                editor.putInt("notifications_type",
+                                        NotificationHandler.NOTIFICATION_ALWAYS_ON);
                             }
                             editor.apply();
 

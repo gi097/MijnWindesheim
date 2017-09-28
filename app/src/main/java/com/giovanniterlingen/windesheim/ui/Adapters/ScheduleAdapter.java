@@ -24,11 +24,9 @@
  **/
 package com.giovanniterlingen.windesheim.ui.Adapters;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -49,7 +47,8 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.ColorHandler;
-import com.giovanniterlingen.windesheim.objects.IScheduleView;
+import com.giovanniterlingen.windesheim.objects.Lesson;
+import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -61,46 +60,51 @@ import java.util.Locale;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.ViewHolder> {
+public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
 
-    private final Activity activity;
+    private final ScheduleActivity activity;
     private final String dateString;
     private final Date date;
+    private Lesson[] lessons;
 
-    public ScheduleAdapter(Activity activity, Cursor cursor, String dateString, Date date) {
-        super(cursor);
+    public ScheduleAdapter(ScheduleActivity activity, Lesson[] lessons, String dateString, Date date) {
         this.activity = activity;
+        this.lessons = lessons;
         this.dateString = dateString;
         this.date = date;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, Cursor cursor) {
-        final TextView lessonName = viewHolder.lessonName;
-        final TextView lessonTime = viewHolder.lessonTime;
-        final TextView lessonRoom = viewHolder.lessonRoom;
-        final TextView lessonComponent = viewHolder.lessonComponent;
-        final RelativeLayout menuButton = viewHolder.menuButton;
-        final ImageView menuButtonImage = viewHolder.menuButtonImage;
-        final View scheduleIdentifier = viewHolder.scheduleIdentifier;
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final TextView lessonName = holder.lessonName;
+        final TextView lessonTime = holder.lessonTime;
+        final TextView lessonRoom = holder.lessonRoom;
+        final TextView lessonComponent = holder.lessonComponent;
+        final RelativeLayout menuButton = holder.menuButton;
+        final ImageView menuButtonImage = holder.menuButtonImage;
+        final View scheduleIdentifier = holder.scheduleIdentifier;
 
+        Lesson lesson = this.lessons[position];
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
-        long databaseDateStart = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(3).replaceAll(":", ""));
-        long databaseDateEnd = Long.parseLong(cursor.getString(2).replaceAll("-", "") + cursor.getString(4).replaceAll(":", ""));
+        long databaseDateStart = Long.parseLong(lesson.getDate().replaceAll("-", "")
+                + lesson.getStartTime().replaceAll(":", ""));
+        long databaseDateEnd = Long.parseLong(lesson.getDate().replaceAll("-", "")
+                + lesson.getEndTime().replaceAll(":", ""));
         long currentDate = Long.parseLong(simpleDateFormat.format(new Date()));
 
-        lessonName.setText(cursor.getString(5));
-        lessonRoom.setText(cursor.getString(6));
-        lessonComponent.setText(cursor.getString(7));
+        lessonName.setText(lesson.getSubject());
+        lessonRoom.setText(lesson.getRoom());
+        lessonComponent.setText(lesson.getScheduleType() == 2 ? lesson.getClassName() : lesson.getTeacher());
+        lessonComponent.setSelected(true);
 
         if (databaseDateStart <= currentDate && databaseDateEnd >= currentDate) {
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.lesson_started));
-            viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getCursor().moveToPosition(viewHolder.getAdapterPosition());
+                    Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                     if (!lessonTime.getText().toString().equals(ApplicationLoader.applicationContext
                             .getResources().getString(R.string.lesson_started))) {
                         TranslateAnimation animation = new TranslateAnimation(
@@ -119,7 +123,7 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = getCursor().getString(3) + " - " + getCursor().getString(4);
+                        String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
@@ -129,11 +133,10 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.finished));
-            viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Cursor cursor = getCursor();
-                    cursor.moveToPosition(viewHolder.getAdapterPosition());
+                    Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                     if (!lessonTime.getText().toString().equals(ApplicationLoader.applicationContext
                             .getResources().getString(R.string.finished))) {
                         TranslateAnimation animation = new TranslateAnimation(
@@ -152,17 +155,17 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
+                        String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
                 }
             });
         } else {
-            String lessonTimes = cursor.getString(3) + " - " + cursor.getString(4);
+            String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
             lessonTime.setText(lessonTimes);
-            viewHolder.cardView.setOnClickListener(null);
+            holder.cardView.setOnClickListener(null);
         }
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,14 +176,13 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                 popupMenu.inflate(R.menu.menu_schedule);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        Cursor cursor = getCursor();
-                        cursor.moveToPosition(viewHolder.getAdapterPosition());
+                        Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                         if (item.getItemId() == R.id.hide_lesson) {
-                            showPromptDialog(cursor.getLong(0));
+                            showPromptDialog(lesson.getId());
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
-                            showCalendarDialog(cursor.getLong(0));
+                            showCalendarDialog(lesson.getRowId());
                         }
                         return true;
                     }
@@ -195,14 +197,14 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                 popupMenu.show();
             }
         });
-        scheduleIdentifier.setBackgroundColor(ColorHandler.getColorById(cursor.getInt(8)));
+        scheduleIdentifier.setBackgroundColor(ColorHandler.getColorById(lesson.getScheduleId()));
     }
 
-    private void showCalendarDialog(final long lessonId) {
-        Cursor cursor = ApplicationLoader.scheduleDatabase.getSingleLesson(dateString, lessonId);
-        if (cursor.moveToFirst()) {
-            String[] startTimeStrings = cursor.getString(0).split(":");
-            String[] endTimeStrings = cursor.getString(1).split(":");
+    private void showCalendarDialog(final long rowId) {
+        Lesson lesson = ApplicationLoader.scheduleDatabase.getSingleLesson(rowId);
+        if (lesson != null) {
+            String[] startTimeStrings = lesson.getStartTime().split(":");
+            String[] endTimeStrings = lesson.getEndTime().split(":");
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
@@ -219,20 +221,19 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
             calendar.set(Calendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
 
             intent.putExtra("endTime", calendar.getTimeInMillis());
-            intent.putExtra("title", cursor.getString(2));
-            intent.putExtra("eventLocation", cursor.getString(3));
+            intent.putExtra("title", lesson.getSubject());
+            intent.putExtra("eventLocation", lesson.getRoom());
 
             try {
                 activity.startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                ((IScheduleView) activity).showSnackbar(activity.getResources()
+                activity.showSnackbar(activity.getResources()
                         .getString(R.string.no_calendar_found));
             }
         }
-        cursor.close();
     }
 
-    private void showPromptDialog(final long lessonId) {
+    private void showPromptDialog(final int lessonId) {
         new AlertDialog.Builder(activity)
                 .setTitle(activity.getResources().getString(R.string.confirmation))
                 .setMessage(activity.getResources().getString(R.string.deletion_description))
@@ -240,11 +241,10 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 ApplicationLoader.scheduleDatabase.hideLesson(lessonId);
-                                changeCursor(ApplicationLoader.scheduleDatabase
-                                        .getLessons(dateString));
+                                updateLessons(ApplicationLoader.scheduleDatabase.getLessons(dateString));
                                 final boolean isEmpty = getItemCount() == 0;
                                 if (isEmpty) {
-                                    ((IScheduleView) activity).updateFragmentView();
+                                    activity.updateFragmentView();
                                 }
                                 Snackbar snackbar = Snackbar.make(activity
                                                 .findViewById(R.id.coordinator_layout),
@@ -254,12 +254,10 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
                                         .getString(R.string.undo), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        ApplicationLoader.scheduleDatabase.restoreLessons(lessonId);
-                                        changeCursor(ApplicationLoader.scheduleDatabase.getLessons(
-                                                dateString
-                                        ));
+                                        ApplicationLoader.scheduleDatabase.restoreLesson(lessonId);
+                                        updateLessons(ApplicationLoader.scheduleDatabase.getLessons(dateString));
                                         if (isEmpty) {
-                                            ((IScheduleView) activity).updateFragmentView();
+                                            activity.updateFragmentView();
                                         }
                                         Snackbar snackbar1 = Snackbar.make(activity
                                                         .findViewById(R.id.coordinator_layout),
@@ -287,6 +285,16 @@ public class ScheduleAdapter extends CursorRecyclerViewAdapter<ScheduleAdapter.V
         View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.adapter_item_schedule, parent, false);
         return new ViewHolder(itemView);
+    }
+
+    @Override
+    public int getItemCount() {
+        return lessons.length;
+    }
+
+    public void updateLessons(Lesson[] lessons) {
+        this.lessons = lessons;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

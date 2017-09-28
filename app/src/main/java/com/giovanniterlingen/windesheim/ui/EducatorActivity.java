@@ -133,8 +133,7 @@ public class EducatorActivity extends AppCompatActivity {
             }
             return null;
         }
-
-
+        
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);

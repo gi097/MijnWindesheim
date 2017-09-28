@@ -24,23 +24,22 @@
  **/
 package com.giovanniterlingen.windesheim.handlers;
 
-import android.database.Cursor;
-
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.objects.Lesson;
 import com.giovanniterlingen.windesheim.objects.Schedule;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -50,45 +49,31 @@ import java.util.Locale;
  */
 public class ScheduleHandler {
 
-    public static synchronized void getAndSaveAllSchedules(Date date) throws Exception {
+    public static synchronized void getAndSaveAllSchedules(Date date, boolean compare) throws Exception {
         ApplicationLoader.scheduleDatabase.deleteFetched(date);
         Schedule[] schedules = ApplicationLoader.scheduleDatabase.getSchedules();
         for (Schedule schedule : schedules) {
-            ScheduleHandler.saveSchedule(ScheduleHandler
-                    .getScheduleFromServer(schedule.getId(), date,
-                            schedule.getType()), date, schedule.getId());
+            JSONObject data = ScheduleHandler.getScheduleFromServer(schedule.getId(), date, schedule.getType());
+            ScheduleHandler.saveSchedule(data, date, schedule.getId(), schedule.getType(), compare);
         }
         ApplicationLoader.scheduleDatabase.addFetched(date);
     }
 
     public static JSONObject getListFromServer(int type) throws Exception {
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
                 "ajaxCommand=getPageConfig&type=" + type);
-        HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
-        connection.setDoInput(true);
-        connection.connect();
-
-        StringBuilder stringBuffer = new StringBuilder("");
-        InputStream inputStream = connection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            if (Thread.interrupted()) {
-                break;
-            }
-            stringBuffer.append(line);
-        }
-        return new JSONObject(stringBuffer.toString());
+        return getJsonFromUrl(url);
     }
 
     private static JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {
-        URL urlLink = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
                 "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
                 "&date=" + new SimpleDateFormat("yyyyMMdd", Locale.US).format(date));
-        HttpURLConnection connection = (HttpURLConnection) urlLink.openConnection();
+        return getJsonFromUrl(url);
+    }
+
+    private static JSONObject getJsonFromUrl(URL url) throws IOException, JSONException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
@@ -96,6 +81,7 @@ public class ScheduleHandler {
         connection.connect();
 
         StringBuilder stringBuffer = new StringBuilder("");
+
         InputStream inputStream = connection.getInputStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
@@ -105,65 +91,114 @@ public class ScheduleHandler {
         return new JSONObject(stringBuffer.toString());
     }
 
-    private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id)
+    private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id, int type, boolean compare)
             throws Exception {
-        List<String> list = new ArrayList<>();
-        Cursor cursor = ApplicationLoader.scheduleDatabase.getFilteredLessons();
-        while (cursor.moveToNext()) {
-            list.add(cursor.getString(0));
+        Lesson[] oldLessons = null;
+        if (compare) {
+            oldLessons = ApplicationLoader.scheduleDatabase.getLessonForCompare(date, id);
         }
-        cursor.close();
+        Lesson[] hiddenLessons = ApplicationLoader.scheduleDatabase.getHiddenLessons();
 
         ApplicationLoader.scheduleDatabase.clearScheduleData(date, id);
-
-        String component = "";
-        String classRoom = "";
-        String module = "";
 
         JSONObject resultData = jsonObject.getJSONObject("result").getJSONObject("data");
         JSONArray data = resultData.getJSONObject("elementPeriods")
                 .getJSONArray(Integer.toString(id));
+
+        Lesson lastLesson = null;
         for (int i = 0; i < data.length(); i++) {
+            String teachers = "";
+            String classNames = "";
+            String room = "";
+            String module = "";
             JSONObject lessonObject = data.getJSONObject(i);
             JSONArray lessonElements = lessonObject.getJSONArray("elements");
             for (int j = 0; j < lessonElements.length(); j++) {
                 JSONObject elementObject = lessonElements.getJSONObject(j);
-                String elementId = elementObject.getString("id");
-                String elementType = elementObject.getString("type");
+                int elementId = elementObject.getInt("id");
+                int elementType = elementObject.getInt("type");
                 JSONArray elements = resultData.getJSONArray("elements");
                 for (int k = 0; k < elements.length(); k++) {
                     JSONObject elementsObject = elements.getJSONObject(k);
-                    if (elementsObject.getString("id").equals(elementId) &&
-                            elementsObject.getString("type").equals(elementType)) {
-                        if (elementType.equals("1")) {
-                            component = elementsObject.getString("name");
-                        }
-                        if (elementType.equals("2")) {
-                            component = elementsObject.getString("longName");
-                        }
-                        if (elementType.equals("3")) {
+                    if (elementsObject.getInt("id") == elementId &&
+                            elementsObject.getInt("type") == elementType) {
+                        if (elementType == 1) {
+                            if (classNames.length() > 0) {
+                                classNames += ", ";
+                            }
+                            classNames += elementsObject.getString("name");
+                        } else if (elementType == 2) {
+                            if (teachers.length() > 0) {
+                                teachers += ", ";
+                            }
+                            teachers += elementsObject.getString("longName") +
+                                    " (" + elementsObject.getString("name") + ")";
+                        } else if (elementType == 3) {
                             module = elementsObject.getString("name");
-                        }
-                        if (elementType.equals("4")) {
-                            classRoom = elementsObject.getString("name");
+                        } else if (elementType == 4) {
+                            room = elementsObject.getString("name");
                         }
                     }
                 }
             }
             String subject = lessonObject.getString("lessonText");
-            if (module.equals("")) {
+            if (module.length() == 0) {
                 module = subject;
-            } else if (!subject.equals("")) {
+            } else if (subject.length() > 0) {
                 module += " - " + subject;
             }
-            ApplicationLoader.scheduleDatabase.saveScheduleData(lessonObject.getInt("lessonId"),
-                    lessonObject.getString("date"), parseTime(lessonObject.getString("startTime")),
-                    parseTime(lessonObject.getString("endTime")), module, classRoom, component,
-                    id, list.contains(lessonObject.getString
-                            ("lessonId")) ? 0 : 1);
-            component = "";
-            classRoom = "";
-            module = "";
+            boolean visible = true;
+            for (Lesson hiddenLesson : hiddenLessons) {
+                if (hiddenLesson.getId() == lessonObject.getInt("lessonId")) {
+                    visible = false;
+                    break;
+                }
+            }
+            Lesson currentLesson = new Lesson(lessonObject.getInt("lessonId"),
+                    module, lessonObject.getString("date"),
+                    parseTime(lessonObject.getString("startTime")),
+                    parseTime(lessonObject.getString("endTime")),
+                    room, teachers, classNames, id, type,
+                    visible ? 1 : 0);
+            if (data.length() == 1) {
+                ApplicationLoader.scheduleDatabase.saveScheduleData(currentLesson);
+                break;
+            }
+            if (lastLesson != null) {
+                if (lastLesson.getId() == currentLesson.getId() &&
+                        lastLesson.getEndTime().equals(currentLesson.getStartTime())) {
+                    lastLesson.setEndTime(currentLesson.getEndTime());
+                    if (i < data.length() - 1) {
+                        continue;
+                    }
+                } else if (i == data.length() - 1) {
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(currentLesson);
+                    break;
+                }
+                ApplicationLoader.scheduleDatabase.saveScheduleData(lastLesson);
+            }
+            lastLesson = currentLesson;
+        }
+        if (oldLessons != null && compare) {
+            Lesson[] newLessons = ApplicationLoader.scheduleDatabase.getLessonForCompare(date, id);
+            if (oldLessons.length != newLessons.length) {
+                NotificationHandler.createScheduleChangedNotification();
+                return;
+            }
+            for (int i = 0; i < oldLessons.length; i++) {
+                Lesson oldLesson = oldLessons[i];
+                Lesson newLesson = newLessons[i];
+                if (oldLesson.getId() != newLesson.getId() ||
+                        !oldLesson.getDate().equals(newLesson.getDate()) ||
+                        !oldLesson.getStartTime().equals(newLesson.getStartTime()) ||
+                        !oldLesson.getEndTime().equals(newLesson.getEndTime()) ||
+                        !oldLesson.getRoom().equals(newLesson.getRoom()) ||
+                        !oldLesson.getTeacher().equals(newLesson.getTeacher()) ||
+                        !oldLesson.getClassName().equals(newLesson.getClassName())) {
+                    NotificationHandler.createScheduleChangedNotification();
+                    return;
+                }
+            }
         }
     }
 

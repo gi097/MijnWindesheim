@@ -24,8 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.ui.Adapters;
 
-import android.app.Activity;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,20 +34,22 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.ColorHandler;
-import com.giovanniterlingen.windesheim.objects.IHiddenLessonsView;
+import com.giovanniterlingen.windesheim.objects.Lesson;
+import com.giovanniterlingen.windesheim.ui.HiddenLessonsActivity;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLessonsAdapter.ViewHolder> {
+public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdapter.ViewHolder> {
 
-    private final Activity activity;
+    private final HiddenLessonsActivity activity;
+    private Lesson[] lessons;
 
-    public HiddenLessonsAdapter(Activity activity, Cursor cursor) {
-        super(cursor);
+    public HiddenLessonsAdapter(HiddenLessonsActivity activity, Lesson[] lessons) {
         this.activity = activity;
+        this.lessons = lessons;
     }
 
     @Override
@@ -60,30 +60,42 @@ public class HiddenLessonsAdapter extends CursorRecyclerViewAdapter<HiddenLesson
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
-        TextView lessonName = viewHolder.lessonName;
-        TextView lessonComponent = viewHolder.lessonComponent;
-        View scheduleIdentifier = viewHolder.scheduleIdentifier;
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        TextView lessonName = holder.lessonName;
+        TextView lessonComponent = holder.lessonComponent;
+        View scheduleIdentifier = holder.scheduleIdentifier;
 
-        lessonName.setText(cursor.getString(1));
-        lessonComponent.setText(cursor.getString(2));
-        scheduleIdentifier.setBackgroundColor(ColorHandler.getColorById(cursor.getInt(3)));
+        Lesson lesson = lessons[position];
+        lessonName.setText(lesson.getSubject());
+        lessonComponent.setText(lesson.getScheduleType() == 2 ? lesson.getClassName() : lesson.getTeacher());
+        lessonComponent.setSelected(true);
 
-        final int position = cursor.getPosition();
+        scheduleIdentifier.setBackgroundColor(ColorHandler.getColorById(lesson.getScheduleId()));
 
-        Button button = viewHolder.itemView.findViewById(R.id.restore_button);
+        Button button = holder.itemView.findViewById(R.id.restore_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                getCursor().moveToPosition(position);
-                ApplicationLoader.scheduleDatabase.restoreLessons(getCursor().getLong(0));
-                ((IHiddenLessonsView) activity).showSnackbar();
+                Lesson lesson = lessons[holder.getAdapterPosition()];
+                ApplicationLoader.scheduleDatabase.restoreLesson(lesson.getId());
+                activity.showSnackbar();
                 ApplicationLoader.restartNotificationThread();
-                changeCursor(ApplicationLoader.scheduleDatabase.getFilteredLessonsForAdapter());
-                if (getCursor().getCount() == 0) {
-                    ((IHiddenLessonsView) activity).showEmptyTextView();
+
+                updateLessons(ApplicationLoader.scheduleDatabase.getHiddenLessons());
+                if (lessons.length == 0) {
+                    activity.showEmptyTextView();
                 }
             }
         });
+    }
+
+    @Override
+    public int getItemCount() {
+        return lessons.length;
+    }
+
+    private void updateLessons(Lesson[] lessons) {
+        this.lessons = lessons;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

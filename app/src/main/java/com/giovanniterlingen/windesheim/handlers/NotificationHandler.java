@@ -31,7 +31,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,6 +38,7 @@ import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.objects.Lesson;
 import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
 import java.text.DateFormat;
@@ -58,51 +58,56 @@ public class NotificationHandler extends Thread {
     private volatile boolean running = true;
     private NotificationManager mNotificationManager;
     private int notificationType;
-    private Calendar calendar;
+    private Date date;
 
     private static final String PERSISTENT_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.persistent";
-    private static final String NORMAL_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.normal";
+    private static final String PUSH_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.push";
+
+    private static final int NOTIFICATION_1_HOUR = 2;
+    private static final int NOTIFICATION_30_MIN = 3;
+    private static final int NOTIFICATION_15_MIN = 4;
+    public static final int NOTIFICATION_ALWAYS_ON = 5;
+    public static final int NOTIFICATION_OFF = 6;
 
     @Override
     public void run() {
         mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        calendar = Calendar.getInstance();
+        date = new Date();
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         notificationType = preferences.getInt("notifications_type", 0);
         DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
         String notificationText = "";
         long currentTimeMillis;
-        while (isRunning() && notificationType != 0 && notificationType != 6) {
+        while (isRunning() && notificationType != 0 && notificationType != NOTIFICATION_OFF) {
             try {
-                calendar = Calendar.getInstance();
-                Date date = calendar.getTime();
+                date = new Date();
                 if (!ApplicationLoader.scheduleDatabase.isFetched(date)) {
-                    ScheduleHandler.getAndSaveAllSchedules(date);
+                    ScheduleHandler.getAndSaveAllSchedules(date, false);
                 }
-                Cursor cursor = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
-                Cursor cursor1 = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
-                if (cursor != null && cursor.getCount() == 0) {
+                Lesson[] lessons = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
+                if (lessons == null || lessons.length == 0) {
                     clearNotification();
                     while (checkIfNeedsContinue()) {
                         sleep(1000);
                     }
                 } else {
-                    while (cursor != null && cursor.moveToNext() && checkIfNeedsContinue()) {
-                        String subjectTimeString = cursor.getString(3);
-                        String[] subjectTimes = cursor.getString(3).split(":");
+                    for (int i = 0; i < lessons.length; i++) {
+                        if (!checkIfNeedsContinue()) {
+                            break;
+                        }
+                        Lesson lesson = lessons[i];
+                        String subjectTimeString = lesson.getStartTime();
+                        String[] subjectTimes = subjectTimeString.split(":");
                         Calendar subjectCalendar = Calendar.getInstance();
                         subjectCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(subjectTimes[0]));
                         subjectCalendar.set(Calendar.MINUTE, Integer.parseInt(subjectTimes[1]));
                         long subjectTime = subjectCalendar.getTimeInMillis();
-                        boolean multiple = cursor1.moveToFirst()
-                                && cursor.getPosition() + 1 < cursor1.getCount()
-                                && cursor1.moveToPosition(cursor.getPosition() + 1)
-                                && cursor1.getString(3) != null
-                                && subjectTimeString.equals(cursor1.getString(3));
-                        String lessonName = cursor.getString(5);
-                        String lessonLocation = cursor.getString(6);
+                        boolean multiple = i + 1 < lessons.length
+                                && subjectTimeString.equals(lessons[i + 1].getStartTime());
+                        String lessonName = lesson.getSubject();
+                        String lessonLocation = lesson.getRoom();
                         while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime
                                 && checkIfNeedsContinue()) {
                             long difference = subjectTime - currentTimeMillis;
@@ -171,21 +176,17 @@ public class NotificationHandler extends Thread {
                                     }
                                 }
                             }
-                            if (notificationType == 5) {
+                            if (notificationType == NOTIFICATION_ALWAYS_ON) {
                                 createNotification(notificationText, true, false);
                             }
-                            if (diffHours == 1 && diffMinutes == 0 && notificationType == 2 || diffHours == 0 && diffMinutes == 30 && notificationType == 3 || diffHours == 0 && diffMinutes == 15 && notificationType == 4) {
+                            if (diffHours == 1 && diffMinutes == 0 && notificationType == NOTIFICATION_1_HOUR ||
+                                    diffHours == 0 && diffMinutes == 30 && notificationType == NOTIFICATION_30_MIN ||
+                                    diffHours == 0 && diffMinutes == 15 && notificationType == NOTIFICATION_15_MIN) {
                                 createNotification(notificationText, false, true);
                             }
                             sleep(1000);
                         }
                     }
-                }
-                if (cursor != null) {
-                    cursor.close();
-                }
-                if (cursor1 != null) {
-                    cursor1.close();
                 }
                 clearNotification();
                 while (checkIfNeedsContinue()) {
@@ -201,7 +202,7 @@ public class NotificationHandler extends Thread {
         }
     }
 
-    public boolean isRunning() {
+    private boolean isRunning() {
         return running;
     }
 
@@ -210,23 +211,24 @@ public class NotificationHandler extends Thread {
     }
 
     public static void initChannels() {
-        // create Android O channel
         if (android.os.Build.VERSION.SDK_INT >= 26) {
-            // normal notifications
-            NotificationChannel normalChannel = new NotificationChannel(NORMAL_NOTIFICATION_ID,
+            NotificationChannel pushChannel = new NotificationChannel(PUSH_NOTIFICATION_ID,
                     ApplicationLoader.applicationContext.getResources()
-                            .getString(R.string.normal_notification),
+                            .getString(R.string.push_notification),
                     NotificationManager.IMPORTANCE_HIGH);
-            normalChannel.enableLights(true);
-            normalChannel.enableVibration(true);
-            normalChannel.setShowBadge(true);
-            normalChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            pushChannel.setDescription(ApplicationLoader.applicationContext.getResources()
+                    .getString(R.string.push_notification_description));
+            pushChannel.enableLights(true);
+            pushChannel.enableVibration(true);
+            pushChannel.setShowBadge(true);
+            pushChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
-            // persistent notification, does not need headsup
             NotificationChannel persistentChannel = new NotificationChannel(PERSISTENT_NOTIFICATION_ID,
                     ApplicationLoader.applicationContext.getResources()
                             .getString(R.string.persistent_notification),
                     NotificationManager.IMPORTANCE_MIN);
+            pushChannel.setDescription(ApplicationLoader.applicationContext.getResources()
+                    .getString(R.string.persistent_notification_description));
             persistentChannel.enableLights(false);
             persistentChannel.enableVibration(false);
             persistentChannel.setShowBadge(false);
@@ -234,9 +236,40 @@ public class NotificationHandler extends Thread {
 
             NotificationManager mManager = (NotificationManager) ApplicationLoader
                     .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mManager.createNotificationChannel(normalChannel);
+            mManager.createNotificationChannel(pushChannel);
             mManager.createNotificationChannel(persistentChannel);
         }
+    }
+
+    static void createScheduleChangedNotification() {
+        NotificationManager notificationManager = (NotificationManager) ApplicationLoader.applicationContext
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent intent = new Intent(ApplicationLoader.applicationContext,
+                ScheduleActivity.class);
+        intent.putExtra("notification", true);
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(ApplicationLoader.applicationContext,
+                        (int) System.currentTimeMillis(),
+                        intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                ApplicationLoader.applicationContext, PUSH_NOTIFICATION_ID)
+                .setContentTitle(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.app_name))
+                .setContentText(ApplicationLoader.applicationContext.getResources().getString(R.string.schedule_changed))
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.notifybar)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(ApplicationLoader.applicationContext.getResources().getString(R.string.schedule_changed)))
+                .setColor(ContextCompat.getColor(ApplicationLoader.applicationContext,
+                        R.color.colorPrimary))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        notificationManager.notify(1, mBuilder.build());
     }
 
     private void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
@@ -255,7 +288,7 @@ public class NotificationHandler extends Thread {
                             intent, 0);
 
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                    ApplicationLoader.applicationContext, headsUp ? NORMAL_NOTIFICATION_ID : PERSISTENT_NOTIFICATION_ID)
+                    ApplicationLoader.applicationContext, headsUp ? PUSH_NOTIFICATION_ID : PERSISTENT_NOTIFICATION_ID)
                     .setContentTitle(ApplicationLoader.applicationContext.getResources()
                             .getString(R.string.app_name))
                     .setContentText(notificationText)
@@ -287,7 +320,7 @@ public class NotificationHandler extends Thread {
     }
 
     private boolean checkIfNeedsContinue() {
-        return (isRunning() && System.currentTimeMillis() >= calendar.getTimeInMillis()
-                && DateUtils.isToday(calendar.getTimeInMillis()));
+        return (isRunning() && System.currentTimeMillis() >= date.getTime()
+                && DateUtils.isToday(date.getTime()));
     }
 }

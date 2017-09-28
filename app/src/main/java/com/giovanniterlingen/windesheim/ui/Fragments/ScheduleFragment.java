@@ -25,7 +25,6 @@
 package com.giovanniterlingen.windesheim.ui.Fragments;
 
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -43,6 +42,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
+import com.giovanniterlingen.windesheim.objects.Lesson;
 import com.giovanniterlingen.windesheim.ui.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.ui.ScheduleActivity;
 
@@ -143,9 +143,10 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         spinner = viewGroup.findViewById(R.id.progress_bar);
         recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Cursor scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
-        if (scheduleDay.getCount() > 0) {
-            adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date), date);
+        Lesson[] lesssons = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
+        if (lesssons.length > 0) {
+            adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lesssons,
+                    simpleDateFormat.format(date), date);
             recyclerView.setAdapter(adapter);
         } else {
             emptyTextView.setVisibility(View.VISIBLE);
@@ -200,7 +201,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         private final boolean fetchData;
         private final boolean showSpinner;
         private final boolean showSwipeRefresh;
-        private Cursor scheduleDay;
+        private Lesson[] lessons;
 
         ScheduleFetcher(boolean fetchData, boolean showSpinner, boolean showSwipeRefresh) {
             this.fetchData = fetchData;
@@ -229,24 +230,24 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         protected Void doInBackground(Void... param) {
             if (fetchData) {
                 try {
-                    ScheduleHandler.getAndSaveAllSchedules(date);
+                    ScheduleHandler.getAndSaveAllSchedules(date, false);
                 } catch (Exception e) {
                     alertConnectionProblem();
                 }
             }
+            lessons = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
             return null;
         }
-
 
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            scheduleDay = ApplicationLoader.scheduleDatabase.getLessons(simpleDateFormat.format(date));
             if (adapter == null) {
-                adapter = new ScheduleAdapter(getActivity(), scheduleDay, simpleDateFormat.format(date), date);
+                adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons,
+                        simpleDateFormat.format(date), date);
                 recyclerView.setAdapter(adapter);
             } else {
-                adapter.changeCursor(scheduleDay);
+                adapter.updateLessons(lessons);
             }
             if (adapter.getItemCount() == 0) {
                 emptyTextView.setVisibility(View.VISIBLE);

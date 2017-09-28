@@ -164,8 +164,6 @@
     <string name="no_content_found">No files were found</string>
     <string name="no_permission">No access to the SD card</string>
 
-    <string name="normal_notification">Normal notifications</string>
-
     <string name="november">November</string>
 
     <string name="october">October</string>
@@ -179,14 +177,19 @@
     <string name="pager_item_teachers">Teachers</string>
 
     <string name="persistent_notification">Persistent notification</string>
+    <string name="persistent_notification_description">Persistent notification which shows the time when a lesson starts</string>
 
     <string name="progress">Progress</string>
     <string name="progress_results">Results</string>
+
+    <string name="push_notification">Push notifications</string>
+    <string name="push_notification_description">Notifications for lessons and schedule changes</string>
 
     <string name="restore">Restore</string>
 
     <string name="save_lesson">Save lesson to calendar</string>
 
+    <string name="schedule_changed">Your schedule has been changed!</string>
     <string name="schedule_deleted">Schedule has been deleted</string>
     <string name="schedule_not_found">No schedule was found for this day</string>
 

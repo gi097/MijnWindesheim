@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.objects.Component;
+import com.giovanniterlingen.windesheim.objects.ScheduleItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +44,14 @@ import java.util.List;
  */
 public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseScheduleAdapter.ViewHolder> {
 
-    private final List<Component> component;
-    private final List<Component> componentFilterable = new ArrayList<>();
+    private final List<ScheduleItem> scheduleItems;
+    private final List<ScheduleItem> scheduleItemsFilterable = new ArrayList<>();
     private final Context context;
 
-    protected ChooseScheduleAdapter(Context context, List<Component> component) {
+    protected ChooseScheduleAdapter(Context context, List<ScheduleItem> scheduleItems) {
         this.context = context;
-        this.component = component;
-        this.componentFilterable.addAll(component);
+        this.scheduleItems = scheduleItems;
+        this.scheduleItemsFilterable.addAll(scheduleItems);
     }
 
     protected abstract void onContentClick(int id, String name);
@@ -59,38 +59,38 @@ public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseS
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(context).
-                inflate(R.layout.adapter_item_component, parent, false);
+                inflate(R.layout.adapter_item_schedule_item, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         TextView name = holder.name;
-        name.setText(componentFilterable.get(position).name);
+        name.setText(scheduleItemsFilterable.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onContentClick(componentFilterable.get(holder.getAdapterPosition()).id,
-                        componentFilterable.get(holder.getAdapterPosition()).name);
+                onContentClick(scheduleItemsFilterable.get(holder.getAdapterPosition()).id,
+                        scheduleItemsFilterable.get(holder.getAdapterPosition()).name);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return componentFilterable.size();
+        return scheduleItemsFilterable.size();
     }
 
     public synchronized void filter(String text) {
         if (text.length() == 0) {
-            componentFilterable.clear();
-            componentFilterable.addAll(component);
+            scheduleItemsFilterable.clear();
+            scheduleItemsFilterable.addAll(scheduleItems);
         } else {
-            componentFilterable.clear();
+            scheduleItemsFilterable.clear();
             text = text.toLowerCase();
-            for (Component comp : component) {
-                if (comp.name.toLowerCase().contains(text)) {
-                    componentFilterable.add(comp);
+            for (ScheduleItem scheduleItem : scheduleItems) {
+                if (scheduleItem.name.toLowerCase().contains(text)) {
+                    scheduleItemsFilterable.add(scheduleItem);
                 }
             }
         }
@@ -103,7 +103,7 @@ public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseS
 
         ViewHolder(View view) {
             super(view);
-            name = view.findViewById(R.id.component_item);
+            name = view.findViewById(R.id.schedule_item);
         }
     }
 }

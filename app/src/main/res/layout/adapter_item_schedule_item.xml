@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/component_item"
+        android:id="@+id/schedule_item"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="5.0dp"
