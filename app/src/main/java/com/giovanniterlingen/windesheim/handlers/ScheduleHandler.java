@@ -160,10 +160,6 @@ public class ScheduleHandler {
                     parseTime(lessonObject.getString("endTime")),
                     room, teachers, classNames, id, type,
                     visible ? 1 : 0);
-            if (data.length() == 1) {
-                ApplicationLoader.scheduleDatabase.saveScheduleData(currentLesson);
-                break;
-            }
             if (lastLesson != null) {
                 if (lastLesson.getId() == currentLesson.getId() &&
                         lastLesson.getEndTime().equals(currentLesson.getStartTime())) {
@@ -171,15 +167,18 @@ public class ScheduleHandler {
                     if (i < data.length() - 1) {
                         continue;
                     }
-                } else if (i == data.length() - 1) {
-                    ApplicationLoader.scheduleDatabase.saveScheduleData(currentLesson);
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(lastLesson);
                     break;
+                } else {
+                    ApplicationLoader.scheduleDatabase.saveScheduleData(lastLesson);
                 }
-                ApplicationLoader.scheduleDatabase.saveScheduleData(lastLesson);
             }
             lastLesson = currentLesson;
+            if (data.length() == 1 || i == data.length() - 1) {
+                ApplicationLoader.scheduleDatabase.saveScheduleData(currentLesson);
+            }
         }
-        if (oldLessons != null && compare) {
+        if (compare) {
             Lesson[] newLessons = ApplicationLoader.scheduleDatabase.getLessonForCompare(date, id);
             if (oldLessons.length != newLessons.length) {
                 NotificationHandler.createScheduleChangedNotification();
