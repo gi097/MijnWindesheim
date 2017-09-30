@@ -452,12 +452,12 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     private String[] getWeekDates(Date date) {
-        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
+        Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         String lowestDate = parseDate(calendar.getTime());
-        calendar.add(Calendar.DATE, 6);
+        calendar.add(Calendar.DATE, 4);
         String highestDate = parseDate(calendar.getTime());
         return new String[]{lowestDate, highestDate};
     }
