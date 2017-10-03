@@ -33,9 +33,9 @@
                 android:layout_height="wrap_content"
                 android:maxLines="3"
                 android:paddingBottom="@dimen/material_card_margin_half"
-                android:paddingEnd="48.0dip"
+                android:paddingEnd="@dimen/card_text_margin_end"
                 android:paddingLeft="@dimen/card_text_margin"
-                android:paddingRight="48.0dip"
+                android:paddingRight="@dimen/card_text_margin_end"
                 android:paddingStart="@dimen/card_text_margin"
                 android:paddingTop="@dimen/card_text_margin"
                 android:textColor="@color/colorPrimaryText"
@@ -60,7 +60,7 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1.0dip"
+                android:layout_height="@dimen/divider_height"
                 android:layout_marginLeft="@dimen/schedule_identifier_padding"
                 android:layout_marginStart="@dimen/schedule_identifier_padding"
                 android:background="?android:listDivider" />

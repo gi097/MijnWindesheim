@@ -20,14 +20,14 @@
             <TextView
                 android:id="@+id/about_header"
                 android:layout_width="wrap_content"
-                android:layout_height="72.0dip"
+                android:layout_height="@dimen/about_header_size"
                 android:layout_gravity="center"
                 android:drawableLeft="@drawable/about_logo"
-                android:drawablePadding="16.0dip"
+                android:drawablePadding="@dimen/activity_margin"
                 android:drawableStart="@drawable/about_logo"
                 android:gravity="center"
                 android:maxLines="1"
-                android:padding="16.0dip"
+                android:padding="@dimen/activity_margin"
                 android:text="@string/app_name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -38,14 +38,14 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/disclaimer"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="@dimen/material_title_size" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/material_card_margin_half"
                 android:layout_marginTop="@dimen/material_card_margin_half"
-                card_view:cardCornerRadius="0.0dip">
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -64,14 +64,14 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/about_devs"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="@dimen/material_title_size" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/material_card_margin_half"
                 android:layout_marginTop="@dimen/material_card_margin_half"
-                card_view:cardCornerRadius="0.0dip">
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -89,8 +89,8 @@
                         android:paddingStart="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="48.0dip"
-                            android:layout_height="48.0dip"
+                            android:layout_width="@dimen/avatar_size"
+                            android:layout_height="@dimen/avatar_size"
                             android:layout_gravity="center"
                             android:src="@drawable/gi097" />
 
@@ -104,7 +104,7 @@
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/title_giovanni"
-                                android:textColor="@color/title"
+                                android:textColor="@color/colorTitle"
                                 android:textSize="@dimen/title_size" />
 
                             <TextView
@@ -119,7 +119,7 @@
 
                     <View
                         android:layout_width="fill_parent"
-                        android:layout_height="1.0dip"
+                        android:layout_height="@dimen/divider_height"
                         android:background="?android:listDivider" />
 
                     <LinearLayout
@@ -133,8 +133,8 @@
                         android:paddingStart="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="48.0dip"
-                            android:layout_height="48.0dip"
+                            android:layout_width="@dimen/avatar_size"
+                            android:layout_height="@dimen/avatar_size"
                             android:layout_gravity="center"
                             android:src="@drawable/thomas" />
 
@@ -148,7 +148,7 @@
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/title_thomas"
-                                android:textColor="@color/title"
+                                android:textColor="@color/colorTitle"
                                 android:textSize="@dimen/title_size" />
 
                             <TextView
@@ -170,14 +170,14 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/about_contributors"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="@dimen/material_title_size" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/material_card_margin_half"
                 android:layout_marginTop="@dimen/material_card_margin_half"
-                card_view:cardCornerRadius="0.0dip">
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -187,8 +187,8 @@
                     android:paddingStart="@dimen/activity_margin">
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="48.0dip"
-                        android:layout_height="48.0dip"
+                        android:layout_width="@dimen/avatar_size"
+                        android:layout_height="@dimen/avatar_size"
                         android:layout_gravity="center"
                         android:src="@drawable/coen" />
 
@@ -202,7 +202,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/title_coen"
-                            android:textColor="@color/title"
+                            android:textColor="@color/colorTitle"
                             android:textSize="@dimen/title_size" />
 
                         <TextView

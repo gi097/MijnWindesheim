@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
-    tools:context=".ui.NatschoolActivity">
+    tools:context=".view.NatschoolActivity">
 
     <FrameLayout
         android:id="@+id/contents_fragment"

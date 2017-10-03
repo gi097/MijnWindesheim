@@ -13,9 +13,9 @@
         android:layout_toLeftOf="@+id/result"
         android:layout_toStartOf="@+id/result"
         android:maxLines="1"
-        android:padding="16.0dip"
-        android:paddingBottom="5.0dip"
-        android:textColor="@color/title"
+        android:padding="@dimen/activity_margin"
+        android:paddingBottom="@dimen/adapter_item_margin"
+        android:textColor="@color/colorTitle"
         android:textSize="@dimen/title_size" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="16.0dip"
+        android:padding="@dimen/activity_margin"
         android:textColor="@color/colorSecondaryText"
         android:textSize="@dimen/text_size_title" />
 </RelativeLayout>

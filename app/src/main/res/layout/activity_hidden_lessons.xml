@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
-    tools:context=".ui.HiddenLessonsActivity">
+    tools:context=".view.HiddenLessonsActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,17 +1,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="36.0dip"
-    android:background="#f2f2f2"
+    android:layout_height="@dimen/result_divider_height"
+    android:background="@color/colorResultDivider"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:paddingLeft="16.0dip"
-        android:paddingRight="16.0dip"
+        android:paddingLeft="@dimen/activity_margin"
+        android:paddingRight="@dimen/activity_margin"
         android:text="@string/progress_results"
-        android:textColor="#8a8a8a"
-        android:textSize="13.0dip" />
+        android:textColor="@color/colorResultDividerText"
+        android:textSize="@dimen/result_divider_text_size" />
 
 </FrameLayout>

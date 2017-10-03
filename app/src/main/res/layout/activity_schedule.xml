@@ -32,7 +32,7 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabContentStart="72.0dip"
+                app:tabContentStart="@dimen/tab_layout_start"
                 app:tabGravity="fill"
                 app:tabMode="scrollable"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark" />

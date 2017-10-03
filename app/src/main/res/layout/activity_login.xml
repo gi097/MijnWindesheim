@@ -5,58 +5,56 @@
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".ui.AuthenticationActivity">
+    tools:context=".view.AuthenticationActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FCFCFC"
-        android:orientation="vertical">
+        android:background="@color/colorBackground">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="56.0dip"
-            android:background="@color/colorPrimary" />
-
-        <TextView
-            android:id="@+id/login_header"
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
-            android:paddingEnd="32.0dip"
-            android:paddingLeft="32.0dip"
-            android:paddingRight="32.0dip"
-            android:paddingStart="32.0dip"
-            android:text="@string/auth_add_account"
-            android:textColor="@color/white"
-            android:textSize="22sp" />
-
-        <ProgressBar
-            android:id="@+id/login_progress"
-            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-7.0dip"
-            android:indeterminate="true"
-            android:visibility="gone" />
+            android:orientation="vertical">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_header_size"
+                android:background="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/login_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_text_header_size"
+                android:background="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/login_padding"
+                android:paddingRight="@dimen/login_padding"
+                android:text="@string/auth_add_account"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/login_header_title_size" />
+
+            <ProgressBar
+                android:id="@+id/login_progress"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_header_progress_margin"
+                android:indeterminate="true"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="64.0dip"
-                android:paddingLeft="32.0dip"
-                android:paddingRight="32.0dip"
-                android:paddingTop="16.0dip">
+                android:paddingBottom="@dimen/login_bottom_size"
+                android:paddingLeft="@dimen/login_padding"
+                android:paddingRight="@dimen/login_padding"
+                android:paddingTop="@dimen/activity_margin">
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="32.0dip"
+                    android:layout_height="@dimen/login_padding"
                     android:contentDescription="@string/app_name"
                     android:scaleType="fitStart"
                     android:src="@drawable/windesheim_login" />
@@ -64,8 +62,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="32.0dip"
-                    android:paddingTop="16.0dip"
+                    android:paddingBottom="@dimen/login_padding"
+                    android:paddingTop="@dimen/activity_margin"
                     android:text="@string/auth_description"
                     android:textAppearance="@android:style/TextAppearance.Medium" />
 
@@ -73,8 +71,8 @@
                     android:id="@+id/input_username_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8.0dip"
-                    android:paddingTop="8.0dip">
+                    android:paddingBottom="@dimen/login_input_padding"
+                    android:paddingTop="@dimen/login_input_padding">
 
                     <EditText
                         android:id="@+id/input_username"
@@ -90,8 +88,8 @@
                     android:id="@+id/input_password_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8.0dip"
-                    android:paddingTop="8.0dip">
+                    android:paddingBottom="@dimen/login_input_padding"
+                    android:paddingTop="@dimen/login_input_padding">
 
                     <EditText
                         android:id="@+id/input_password"
@@ -104,21 +102,21 @@
                 </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64.0dip"
+        android:layout_height="@dimen/login_bottom_size"
         android:layout_alignParentBottom="true"
-        android:background="#E5E7E9"
+        android:background="@color/colorLoginBottom"
         android:gravity="bottom"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="fill_parent"
-            android:layout_height="1px"
-            android:background="#55000000" />
+            android:layout_height="@dimen/login_bottom_divider_size"
+            android:background="@color/colorLoginDivider" />
 
         <FrameLayout
             android:layout_width="fill_parent"
@@ -132,9 +130,9 @@
                 android:background="?selectableItemBackground"
                 android:drawableEnd="@drawable/ic_navigate_next"
                 android:drawableRight="@drawable/ic_navigate_next"
-                android:minWidth="100dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
+                android:minWidth="@dimen/login_button_width"
+                android:paddingEnd="@dimen/login_button_padding"
+                android:paddingStart="@dimen/login_button_padding"
                 android:text="@string/auth_login" />
 
         </FrameLayout>

@@ -1,14 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <dimen name="about_header_size">72.0dip</dimen>
+
     <dimen name="activity_margin">16.0dip</dimen>
-    <dimen name="text_size">14.0sp</dimen>
-    <dimen name="text_size_title">18.0sp</dimen>
+
+    <dimen name="adapter_item_margin">5.0dip</dimen>
+
+    <dimen name="avatar_size">48.0dip</dimen>
+
+    <dimen name="button_border_size">32.0sp</dimen>
+    <dimen name="button_size">24.0sp</dimen>
+
+    <dimen name="card_text_margin">16.0dip</dimen>
+    <dimen name="card_text_margin_end">48.0dip</dimen>
+    <dimen name="card_text_margin_half">8.0dip</dimen>
+
+    <dimen name="description_size">12.0sp</dimen>
+
+    <dimen name="divider_height">1.0dip</dimen>
+
+    <dimen name="icon_size">40.0dip</dimen>
+
+    <dimen name="login_bottom_divider_size">1.0px</dimen>
+    <dimen name="login_bottom_size">64.0dip</dimen>
+    <dimen name="login_button_padding">8.0dip</dimen>
+    <dimen name="login_button_width">100.0dip</dimen>
+    <dimen name="login_header_progress_margin">-7.0dip</dimen>
+    <dimen name="login_header_size">56.0dip</dimen>
+    <dimen name="login_header_title_size">22.0sp</dimen>
+    <dimen name="login_input_padding">8.0dip</dimen>
+    <dimen name="login_padding">32.0dip</dimen>
+    <dimen name="login_text_header_size">68.0dip</dimen>
+
     <dimen name="material_card_corner_radius">2.0dip</dimen>
     <dimen name="material_card_margin">8.0dip</dimen>
     <dimen name="material_card_margin_half">4.0dip</dimen>
-    <dimen name="card_text_margin">16.0dip</dimen>
-    <dimen name="card_text_margin_half">8.0dip</dimen>
-    <dimen name="statusbar_padding">24.0dip</dimen>
+    <dimen name="material_title_size">16.0sp</dimen>
+    <dimen name="material_zero_radius">0.0dip</dimen>
+
+    <dimen name="navigation_header_size">170.0dip</dimen>
+
+    <dimen name="result_divider_height">36.0dip</dimen>
+    <dimen name="result_divider_text_size">13.0dip</dimen>
+    <dimen name="result_header_subtitle_size">16.0dip</dimen>
+
     <dimen name="schedule_identifier_padding">5.0dip</dimen>
+
+    <dimen name="statusbar_padding">24.0dip</dimen>
+
+    <dimen name="tab_layout_start">72.0dip</dimen>
+
+    <dimen name="text_size">14.0sp</dimen>
+    <dimen name="text_size_title">18.0sp</dimen>
+
     <dimen name="title_size">14.0sp</dimen>
-    <dimen name="description_size">12.0sp</dimen>
 </resources>

@@ -10,7 +10,7 @@
         android:id="@+id/schedule_item"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="5.0dp"
+        android:padding="@dimen/adapter_item_margin"
         android:textColor="@color/colorSecondaryText"
         android:textSize="@dimen/text_size" />
 

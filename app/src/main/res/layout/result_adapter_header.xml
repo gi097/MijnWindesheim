@@ -8,7 +8,7 @@
         android:id="@+id/ec_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16.0dip"
+        android:layout_margin="@dimen/activity_margin"
         custom:donut_finished_color="@color/colorAccent"
         custom:donut_text_color="@color/colorAccent" />
 
@@ -17,8 +17,8 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingEnd="16.0dip"
-        android:paddingRight="16.0dip">
+        android:paddingEnd="@dimen/activity_margin"
+        android:paddingRight="@dimen/activity_margin">
 
         <TextView
             android:id="@+id/lesson_name"
@@ -27,7 +27,7 @@
             android:layout_gravity="center_vertical"
             android:maxLines="2"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="#000000" />
+            android:textColor="@color/colorBlack" />
 
         <TextView
             android:id="@+id/ec_description"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="16.0dip" />
+            android:textSize="@dimen/result_header_subtitle_size" />
 
     </LinearLayout>
 </LinearLayout>

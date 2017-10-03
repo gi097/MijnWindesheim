@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:paddingTop="@dimen/statusbar_padding"
-    tools:context=".ui.ChooseScheduleActivity">
+    tools:context=".view.ChooseScheduleActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

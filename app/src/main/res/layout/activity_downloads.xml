@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
-    tools:context=".ui.DownloadsActivity">
+    tools:context=".view.DownloadsActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

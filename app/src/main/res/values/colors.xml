@@ -1,11 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <color name="colorPrimary">#D8A500</color>
-    <color name="colorPrimaryDark">@color/colorPrimary</color>
     <color name="colorAccent">#E61569</color>
-    <color name="colorPrimaryText">#00418C</color>
-    <color name="colorSecondaryText">#616161</color>
     <color name="colorBackground">#FAFAFA</color>
     <color name="colorBackgroundTint">#EEEEEE</color>
-    <color name="white">#FFFFFF</color>
-    <color name="title">#DD000000</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorLoginBottom">#E5E7E9</color>
+    <color name="colorLoginDivider">#55000000</color>
+    <color name="colorPrimary">#D8A500</color>
+    <color name="colorPrimaryDark">@color/colorPrimary</color>
+    <color name="colorPrimaryText">#00418C</color>
+    <color name="colorResultDivider">#F2F2F2</color>
+    <color name="colorResultDividerText">#8A8A8A</color>
+    <color name="colorSecondaryText">#616161</color>
+    <color name="colorTitle">#DD000000</color>
+    <color name="colorWhite">#FFFFFF</color>
 </resources>

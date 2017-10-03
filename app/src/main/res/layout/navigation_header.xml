@@ -6,10 +6,10 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="170.0dip"
+        android:layout_height="@dimen/navigation_header_size"
         android:layout_centerInParent="true"
         android:contentDescription="@string/app_name"
-        android:padding="16.0dip"
+        android:padding="@dimen/activity_margin"
         android:scaleType="centerInside"
         android:src="@drawable/windesheim" />
 

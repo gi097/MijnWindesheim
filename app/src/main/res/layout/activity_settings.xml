@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:fitsSystemWindows="true"
-    tools:context=".ui.SettingsActivity">
+    tools:context=".view.SettingsActivity">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="fill_parent"
@@ -27,7 +27,7 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/settings_notification_description"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="@dimen/material_title_size" />
 
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 card_view:cardBackgroundColor="@android:color/white"
-                card_view:cardCornerRadius="0.0dip">
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                             android:paddingRight="@dimen/activity_margin"
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_lessons"
-                            android:textColor="@color/title"
+                            android:textColor="@color/colorTitle"
                             android:textSize="@dimen/title_size" />
 
                         <TextView
@@ -84,7 +84,7 @@
 
                     <View
                         android:layout_width="fill_parent"
-                        android:layout_height="1.0dip"
+                        android:layout_height="@dimen/divider_height"
                         android:background="?android:listDivider" />
 
                     <LinearLayout
@@ -102,7 +102,7 @@
                             android:paddingRight="@dimen/activity_margin"
                             android:paddingTop="@dimen/activity_margin"
                             android:text="@string/settings_interval"
-                            android:textColor="@color/title"
+                            android:textColor="@color/colorTitle"
                             android:textSize="@dimen/title_size" />
 
                         <TextView
@@ -126,7 +126,7 @@
                 android:padding="@dimen/activity_margin"
                 android:text="@string/settings_account"
                 android:textColor="@color/colorPrimary"
-                android:textSize="16.0sp" />
+                android:textSize="@dimen/material_title_size" />
 
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
@@ -135,11 +135,11 @@
                 android:clickable="true"
                 android:focusable="true"
                 card_view:cardBackgroundColor="@android:color/white"
-                card_view:cardCornerRadius="0.0dip">
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <View
                     android:layout_width="fill_parent"
-                    android:layout_height="1.0dip"
+                    android:layout_height="@dimen/divider_height"
                     android:background="?android:listDivider" />
 
                 <LinearLayout
@@ -151,8 +151,8 @@
                         android:id="@+id/logout_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="0.0dip"
-                        android:background="@color/white"
+                        android:layout_margin="@dimen/material_zero_radius"
+                        android:background="@color/colorWhite"
                         android:gravity="start|center"
                         android:paddingLeft="@dimen/activity_margin"
                         android:paddingRight="@dimen/activity_margin"
@@ -162,7 +162,7 @@
 
                 <View
                     android:layout_width="fill_parent"
-                    android:layout_height="1.0dip"
+                    android:layout_height="@dimen/divider_height"
                     android:layout_gravity="bottom"
                     android:background="?android:listDivider" />
 

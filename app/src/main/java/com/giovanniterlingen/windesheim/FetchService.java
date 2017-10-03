@@ -26,7 +26,7 @@ package com.giovanniterlingen.windesheim;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
-import com.giovanniterlingen.windesheim.handlers.ScheduleHandler;
+import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 
 import java.util.Calendar;
 
@@ -39,15 +39,16 @@ public class FetchService extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters job) {
-        if (ApplicationLoader.scheduleDatabase.hasSchedules()) {
+        if (ApplicationLoader.databaseController.hasSchedules()) {
             new Thread() {
                 @Override
                 public void run() {
                     try {
+                        WebUntisController webUntisController = new WebUntisController();
                         Calendar calendar = Calendar.getInstance();
-                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime(), true);
+                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
                         calendar.add(Calendar.DATE, 7);
-                        ScheduleHandler.getAndSaveAllSchedules(calendar.getTime(), true);
+                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
                         jobFinished(job, false);
                     } catch (Exception e) {
                         jobFinished(job, true);
