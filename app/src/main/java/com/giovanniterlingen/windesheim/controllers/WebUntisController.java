@@ -94,7 +94,7 @@ public class WebUntisController {
     private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id, int type, boolean compare)
             throws Exception {
         Lesson[] oldLessons = null;
-        if (compare) {
+        if (compare && ApplicationLoader.databaseController.isFetched(date)) {
             oldLessons = ApplicationLoader.databaseController.getLessonForCompare(date, id);
         }
         Lesson[] hiddenLessons = ApplicationLoader.databaseController.getHiddenLessons();
@@ -178,10 +178,9 @@ public class WebUntisController {
                 ApplicationLoader.databaseController.saveScheduleData(currentLesson);
             }
         }
-        if (compare) {
+        if (compare && oldLessons != null) {
             Lesson[] newLessons = ApplicationLoader.databaseController.getLessonForCompare(date, id);
             if (oldLessons.length != newLessons.length) {
-                // TODO: Fix always inproper condition in weekends
                 ApplicationLoader.notificationController.createScheduleChangedNotification();
                 return;
             }

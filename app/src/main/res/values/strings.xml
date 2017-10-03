@@ -22,6 +22,7 @@
     <string name="auth_login">LOGIN</string>
     <string name="auth_login_failed">Failed to log in. Check your username and password.</string>
     <string name="auth_password">Password</string>
+    <string name="auth_student_only">At the moment, only student accounts are supported.</string>
     <string name="auth_username">Username</string>
 
     <string name="cancel">Cancel</string>

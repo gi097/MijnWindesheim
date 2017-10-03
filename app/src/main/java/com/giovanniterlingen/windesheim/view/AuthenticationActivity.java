@@ -93,10 +93,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                 boolean isValid = true;
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                if (username.length() <= 1 || !username.toLowerCase().startsWith("s") &&
-                        !username.toLowerCase().startsWith("p") ||
-                        !username.toLowerCase().contains("@student.windesheim.nl") &&
-                                !username.toLowerCase().contains("windesheim.nl")) {
+                if (username.length() > 0 && username.endsWith("@windesheim.nl")) {
+                    passwordTextLayout.setErrorEnabled(false);
+                    usernameTextLayout.setError(getString(R.string.auth_student_only));
+                    isValid = false;
+                } else if (username.length() == 0 || !username.toLowerCase().startsWith("s") &&
+                        !username.toLowerCase().endsWith("@student.windesheim.nl")) {
                     passwordTextLayout.setErrorEnabled(false);
                     usernameTextLayout.setError(getString(R.string.auth_invalid_username));
                     isValid = false;
@@ -192,6 +194,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                         headerTextView.setText(getString(R.string.auth_add_account));
                         progressBar.setVisibility(View.GONE);
                         usernameTextLayout.setError(getString(R.string.auth_login_failed));
+                        passwordTextLayout.setError(getString(R.string.auth_login_failed));
                         loginUrl = null;
                         isBusy = false;
                         return;
@@ -215,11 +218,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         webView.loadUrl(isEducator ? "https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=windesheim.nl&wreply=https://liveadminwindesheim.sharepoint.com/sites/wip" : "https://elo.windesheim.nl/");
     }
 
-    /**
-     * Ugly workaround to get login working
-     *
-     * @return A javascript string to insert the values
-     */
     private String getJavascriptString(String username, String password) {
         return "javascript:document.getElementById('userNameInput').value='" +
                 username +

@@ -22,6 +22,7 @@
     <string name="auth_login">INLOGGEN</string>
     <string name="auth_login_failed">Inloggen mislukt. Controleer je gebruikersnaam en wachtwoord.</string>
     <string name="auth_password">Wachtwoord</string>
+    <string name="auth_student_only">Op dit moment worden alleen accounts van studenten ondersteund.</string>
     <string name="auth_username">Gebruikersnaam</string>
 
     <string name="cancel">Annuleren</string>

@@ -46,6 +46,11 @@ public class FetchService extends JobService {
                     try {
                         WebUntisController webUntisController = new WebUntisController();
                         Calendar calendar = Calendar.getInstance();
+                        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                            calendar.add(Calendar.DATE, 2);
+                        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                            calendar.add(Calendar.DATE, 1);
+                        }
                         webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
                         calendar.add(Calendar.DATE, 7);
                         webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
