@@ -175,7 +175,7 @@ public class WebUntisController {
             }
             lastLesson = currentLesson;
             if (data.length() == 1 || i == data.length() - 1) {
-                ApplicationLoader.databaseController.saveScheduleData(currentLesson);
+                ApplicationLoader.databaseController.saveScheduleData(lastLesson);
             }
         }
         if (compare && oldLessons != null) {
