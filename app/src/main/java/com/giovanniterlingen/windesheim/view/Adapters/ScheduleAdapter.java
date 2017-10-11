@@ -46,14 +46,16 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -85,12 +87,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final View scheduleIdentifier = holder.scheduleIdentifier;
 
         Lesson lesson = this.lessons[position];
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
         long databaseDateStart = Long.parseLong(lesson.getDate().replaceAll("-", "")
                 + lesson.getStartTime().replaceAll(":", ""));
         long databaseDateEnd = Long.parseLong(lesson.getDate().replaceAll("-", "")
                 + lesson.getEndTime().replaceAll(":", ""));
-        long currentDate = Long.parseLong(simpleDateFormat.format(new Date()));
+
+        SimpleDateFormat yearMonthDayDateFormat = CalendarController.getInstance()
+                .getYearMonthDayDateFormat();
+        long currentDate = Long.parseLong(yearMonthDayDateFormat.format(new Date()));
 
         lessonName.setText(lesson.getSubject());
         lessonRoom.setText(lesson.getRoom());
@@ -178,7 +182,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     public boolean onMenuItemClick(MenuItem item) {
                         Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                         if (item.getItemId() == R.id.hide_lesson) {
-                            showPromptDialog(lesson.getId());
+                            showPromptDialog(lesson.getSubject());
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
@@ -202,24 +206,24 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     }
 
     private void showCalendarDialog(final long rowId) {
-        Lesson lesson = ApplicationLoader.databaseController.getSingleLesson(rowId);
+        Lesson lesson = DatabaseController.getInstance().getSingleLesson(rowId);
         if (lesson != null) {
             String[] startTimeStrings = lesson.getStartTime().split(":");
             String[] endTimeStrings = lesson.getEndTime().split(":");
 
-            Calendar calendar = Calendar.getInstance();
+            Calendar calendar = CalendarController.getInstance().getCalendar();
             calendar.setTime(date);
 
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
+            calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
+            calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
 
             Intent intent = new Intent(Intent.ACTION_EDIT);
             intent.setType("vnd.android.cursor.item/event");
             intent.putExtra("beginTime", calendar.getTimeInMillis());
             intent.putExtra("allDay", false);
 
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
+            calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
+            calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
 
             intent.putExtra("endTime", calendar.getTimeInMillis());
             intent.putExtra("title", lesson.getSubject());
@@ -234,15 +238,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
     }
 
-    private void showPromptDialog(final int lessonId) {
+    private void showPromptDialog(final String lessonName) {
         new AlertDialog.Builder(activity)
                 .setTitle(activity.getResources().getString(R.string.confirmation))
                 .setMessage(activity.getResources().getString(R.string.deletion_description))
                 .setPositiveButton(activity.getResources().getString(R.string.hide),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                ApplicationLoader.databaseController.hideLesson(lessonId);
-                                updateLessons(ApplicationLoader.databaseController.getLessons(dateString));
+                                DatabaseController.getInstance().hideLesson(lessonName);
+                                updateLessons(DatabaseController.getInstance().getLessons(dateString));
                                 final boolean isEmpty = getItemCount() == 0;
                                 if (isEmpty) {
                                     activity.updateFragmentView();
@@ -255,8 +259,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                         .getString(R.string.undo), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        ApplicationLoader.databaseController.restoreLesson(lessonId);
-                                        updateLessons(ApplicationLoader.databaseController.getLessons(dateString));
+                                        DatabaseController.getInstance().restoreLesson(lessonName);
+                                        updateLessons(DatabaseController.getInstance().getLessons(dateString));
                                         if (isEmpty) {
                                             activity.updateFragmentView();
                                         }

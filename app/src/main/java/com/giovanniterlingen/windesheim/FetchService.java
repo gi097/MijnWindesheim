@@ -26,9 +26,12 @@ package com.giovanniterlingen.windesheim;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+import com.giovanniterlingen.windesheim.controllers.CalendarController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -39,20 +42,22 @@ public class FetchService extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters job) {
-        if (ApplicationLoader.databaseController.hasSchedules()) {
+        if (DatabaseController.getInstance().hasSchedules()) {
             new Thread() {
                 @Override
                 public void run() {
                     try {
                         WebUntisController webUntisController = new WebUntisController();
-                        Calendar calendar = Calendar.getInstance();
-                        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                            calendar.add(Calendar.DATE, 2);
-                        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                            calendar.add(Calendar.DATE, 1);
+                        Calendar calendar = CalendarController.getInstance().getCalendar();
+                        if (calendar.get(GregorianCalendar.DAY_OF_WEEK) ==
+                                GregorianCalendar.SATURDAY) {
+                            calendar.add(GregorianCalendar.DATE, 2);
+                        } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) ==
+                                GregorianCalendar.SUNDAY) {
+                            calendar.add(GregorianCalendar.DATE, 1);
                         }
                         webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
-                        calendar.add(Calendar.DATE, 7);
+                        calendar.add(GregorianCalendar.DATE, 7);
                         webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
                         jobFinished(job, false);
                     } catch (Exception e) {

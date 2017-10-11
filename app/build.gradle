@@ -8,25 +8,28 @@ android {
         applicationId "com.giovanniterlingen.windesheim"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 151
-        versionName "2.6.7"
+        versionCode 154
+        versionName "2.6.10"
     }
     buildTypes {
         release {
             minifyEnabled true
-            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:26.0.2'
-    compile 'com.android.support:design:26.0.2'
-    compile 'com.android.support:cardview-v7:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:cardview-v7:26.1.0'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
-    compile 'com.google.firebase:firebase-ads:11.4.0'
-    compile 'com.firebase:firebase-jobdispatcher:0.8.2'
+    compile 'com.google.firebase:firebase-ads:11.4.2'
+    compile 'com.firebase:firebase-jobdispatcher:0.8.3'
     compile 'com.github.apl-devs:appintro:v4.2.2'
 }

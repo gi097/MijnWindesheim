@@ -48,13 +48,17 @@ import android.widget.LinearLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.CookieController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -69,11 +73,11 @@ public class ScheduleActivity extends AppCompatActivity {
     private ViewPager mPager;
     private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
-    private int today = -1;
+    private int currentDayIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (!ApplicationLoader.databaseController.hasSchedules()) {
+        if (!DatabaseController.getInstance().hasSchedules()) {
             Intent intent = new Intent(ScheduleActivity.this, ChooseScheduleActivity.class);
             startActivity(intent);
             super.onCreate(savedInstanceState);
@@ -82,8 +86,9 @@ public class ScheduleActivity extends AppCompatActivity {
         }
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (sharedPreferences.getInt("notifications_type", 0) == 0) {
-            editor.putInt("notifications_type", 5);
+        if (sharedPreferences.getInt("notifications_type", NotificationController
+                .NOTIFICATION_NOT_SET) == NotificationController.NOTIFICATION_NOT_SET) {
+            editor.putInt("notifications_type", NotificationController.NOTIFICATION_ALWAYS_ON);
             editor.apply();
         }
         super.onCreate(savedInstanceState);
@@ -170,23 +175,16 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void setViewPager() {
-        Calendar calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
         mPager = findViewById(R.id.pager);
 
-        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
-            today = 0;
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
-            today = 1;
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
-            today = 2;
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
-            today = 3;
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
-            today = 4;
-        } else {
-            today = -1;
+        Calendar calendar = CalendarController.getInstance().getCalendar();
+        int calendarDayIndex = calendar.get(GregorianCalendar.DAY_OF_WEEK);
+
+        if (calendarDayIndex <= GregorianCalendar.FRIDAY) {
+            currentDayIndex = calendar.get(GregorianCalendar.DAY_OF_WEEK) - 2;
         }
+
         ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
                 getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -194,8 +192,8 @@ public class ScheduleActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
-        if (today >= 0) {
-            mPager.setCurrentItem(today);
+        if (currentDayIndex >= 0) {
+            mPager.setCurrentItem(currentDayIndex);
         }
     }
 
@@ -252,13 +250,11 @@ public class ScheduleActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (today == -1 || mPager.getCurrentItem() == today) {
+        if (currentDayIndex == -1 || mPager.getCurrentItem() == currentDayIndex) {
             super.onBackPressed();
             return;
         }
-        if (today >= 0) {
-            mPager.setCurrentItem(today);
-        }
+        mPager.setCurrentItem(currentDayIndex);
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
@@ -269,21 +265,21 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Calendar calendar = Calendar.getInstance();
-            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                ApplicationLoader.databaseController.clearOldScheduleData(calendar.getTime());
-                calendar.add(Calendar.DATE, 2);
-            } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                ApplicationLoader.databaseController.clearOldScheduleData(calendar.getTime());
-                calendar.add(Calendar.DATE, 1);
+            Calendar calendar = CalendarController.getInstance().getCalendar();
+            if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
+                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
+                calendar.add(GregorianCalendar.DATE, 2);
+            } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SUNDAY) {
+                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
+                calendar.add(GregorianCalendar.DATE, 1);
             } else {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                ApplicationLoader.databaseController.clearOldScheduleData(calendar.getTime());
+                calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
+                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
             }
             if (position <= 4) {
-                calendar.add(Calendar.DATE, position);
+                calendar.add(GregorianCalendar.DATE, position);
             } else {
-                calendar.add(Calendar.DATE, position + 2);
+                calendar.add(GregorianCalendar.DATE, position + 2);
             }
 
             Fragment fragment = new ScheduleFragment();
@@ -301,7 +297,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if (position == today) {
+            if (position == currentDayIndex) {
                 return getResources().getString(R.string.today);
             }
             switch (position) {

@@ -55,7 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView intervalTextview;
     private SwitchCompat lessonStart;
     private CharSequence[] items;
-    private int notificationId = -1;
+    private int notificationId = NotificationController.NOTIFICATION_NOT_SET;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
                         editor.putInt("notifications_type", NotificationController.NOTIFICATION_OFF);
                     }
                     editor.apply();
-                    if (ApplicationLoader.notificationController != null) {
-                        ApplicationLoader.notificationController.clearNotification();
-                    }
+
                     ApplicationLoader.restartNotificationThread();
                     updateIntervalTextView();
                 }
@@ -130,10 +128,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void updateIntervalTextView() {
         if (intervalTextview != null) {
-            int interval = preferences.getInt("notifications_type", -1);
+            int interval = preferences.getInt("notifications_type",
+                    NotificationController.NOTIFICATION_NOT_SET);
             if (interval == NotificationController.NOTIFICATION_OFF) {
                 intervalTextview.setText(getResources().getString(R.string.interval_off));
-            } else if (interval > -1) {
+            } else if (interval != NotificationController.NOTIFICATION_NOT_SET) {
                 intervalTextview.setText(items[interval - 2]);
             }
         }
@@ -141,8 +140,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void updateLessonSwitch() {
         if (lessonStart != null) {
-            int interval = preferences.getInt("notifications_type", -1);
-            lessonStart.setChecked(interval > -1 &&
+            int interval = preferences.getInt("notifications_type",
+                    NotificationController.NOTIFICATION_NOT_SET);
+            lessonStart.setChecked(interval != -NotificationController.NOTIFICATION_NOT_SET &&
                     interval != NotificationController.NOTIFICATION_OFF);
         }
     }
@@ -150,7 +150,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void createNotificationPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.settings_interval))
-                .setSingleChoiceItems(items, preferences.getInt("notifications_type", 0) - 2,
+                .setSingleChoiceItems(items, preferences.getInt("notifications_type",
+                        NotificationController.NOTIFICATION_OFF) - 2,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 notificationId = item;
@@ -164,9 +165,7 @@ public class SettingsActivity extends AppCompatActivity {
                     int id = notificationId + 2;
                     editor.putInt("notifications_type", id);
                     editor.apply();
-                    if (ApplicationLoader.notificationController != null) {
-                        ApplicationLoader.notificationController.clearNotification();
-                    }
+
                     ApplicationLoader.restartNotificationThread();
                     updateLessonSwitch();
                     updateIntervalTextView();

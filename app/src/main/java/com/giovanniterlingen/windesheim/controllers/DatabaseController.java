@@ -25,21 +25,17 @@
 package com.giovanniterlingen.windesheim.controllers;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Schedule;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -48,7 +44,7 @@ import java.util.Locale;
  */
 public class DatabaseController extends SQLiteOpenHelper {
 
-    private SQLiteDatabase database;
+    private final SQLiteDatabase database;
 
     private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "schedulestore.db";
@@ -77,11 +73,23 @@ public class DatabaseController extends SQLiteOpenHelper {
             "CREATE TABLE " + FetchedDateEntry.TABLE_NAME + " (" +
                     FetchedDateEntry.COLUMN_NAME_DATE + " TEXT UNIQUE)";
 
-    public DatabaseController(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    private static volatile DatabaseController Instance = null;
+
+    public static DatabaseController getInstance() {
+        DatabaseController localInstance = Instance;
+        if (localInstance == null) {
+            synchronized (DatabaseController.class) {
+                localInstance = Instance;
+                if (localInstance == null) {
+                    Instance = localInstance = new DatabaseController();
+                }
+            }
+        }
+        return localInstance;
     }
 
-    public void open() {
+    private DatabaseController() {
+        super(ApplicationLoader.applicationContext, DATABASE_NAME, null, DATABASE_VERSION);
         database = this.getWritableDatabase();
     }
 
@@ -109,37 +117,37 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     void clearScheduleData(Date date, int id) {
-        String[] weekDates = getWeekDates(date);
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
         String selection = LessonEntry.COLUMN_NAME_DATE + " >= ? AND " +
                 LessonEntry.COLUMN_NAME_DATE + " <= ? AND " +
-                LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ? AND " +
-                LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
-        String[] selectionArgs = {weekDates[0], weekDates[1], Integer.toString(id),
-                Integer.toString(1)};
+                LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
+        String[] selectionArgs = {weekDates[0], weekDates[1], Integer.toString(id)};
         database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
     }
 
     public void clearOldScheduleData(Date date) {
         String selection = LessonEntry.COLUMN_NAME_DATE + " < ? AND " +
                 LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
-        String[] selectionArgs = {parseDate(date), Integer.toString(1)};
+        String[] selectionArgs = {
+                CalendarController.getInstance().getYearMonthDayDateFormat().format(date),
+                Integer.toString(1)};
         database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
         deleteOldFetched(date);
     }
 
-    public void hideLesson(int lessonId) {
+    public void hideLesson(String lessonName) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 0);
-        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
-        String[] selectionArgs = {Integer.toString(lessonId)};
+        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ?";
+        String[] selectionArgs = {lessonName};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public void restoreLesson(int lessonId) {
+    public void restoreLesson(String lessonName) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 1);
-        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
-        String[] selectionArgs = {Integer.toString(lessonId)};
+        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ?";
+        String[] selectionArgs = {lessonName};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
@@ -187,8 +195,8 @@ public class DatabaseController extends SQLiteOpenHelper {
         return lessons;
     }
 
-    Lesson[] getLessonForCompare(Date date, int scheduleId) {
-        String[] weekDates = getWeekDates(date);
+    Lesson[] getLessonsForCompare(Date date, int scheduleId) {
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
         String[] projection = {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
@@ -232,12 +240,12 @@ public class DatabaseController extends SQLiteOpenHelper {
         return lessons;
     }
 
-    public void addSchedule(int id, String name, int type) {
+    public void addSchedule(int id, String name, int type) throws SQLiteConstraintException {
         ContentValues values = new ContentValues();
         values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_ID, id);
         values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME, name);
         values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE, type);
-        database.insert(ScheduleEntry.TABLE_NAME, null, values);
+        database.insertOrThrow(ScheduleEntry.TABLE_NAME, null, values);
     }
 
     public void deleteSchedule(int id) {
@@ -351,6 +359,7 @@ public class DatabaseController extends SQLiteOpenHelper {
 
         String selection = LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
         String[] selectionArgs = {Integer.toString(0)};
+        String group = LessonEntry.COLUMN_NAME_SUBJECT;
         String sortOrder = LessonEntry.COLUMN_NAME_SUBJECT;
 
         Cursor cursor = database.query(
@@ -358,7 +367,7 @@ public class DatabaseController extends SQLiteOpenHelper {
                 projection,
                 selection,
                 selectionArgs,
-                null,
+                group,
                 null,
                 sortOrder
         );
@@ -399,7 +408,7 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     public boolean isFetched(Date date) {
-        String[] weekDates = getWeekDates(date);
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
         String[] projection = {FetchedDateEntry.COLUMN_NAME_DATE};
         String selection = FetchedDateEntry.COLUMN_NAME_DATE + " >= ? AND " +
                 FetchedDateEntry.COLUMN_NAME_DATE + " <= ?";
@@ -419,17 +428,17 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     void addFetched(Date date) {
-        String[] weekdates = getWeekDates(date);
-        for (String weekdate : weekdates) {
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
+        for (String weekDate : weekDates) {
             ContentValues values = new ContentValues();
-            values.put(FetchedDateEntry.COLUMN_NAME_DATE, weekdate);
+            values.put(FetchedDateEntry.COLUMN_NAME_DATE, weekDate);
             database.insertWithOnConflict(FetchedDateEntry.TABLE_NAME, null, values,
                     SQLiteDatabase.CONFLICT_IGNORE);
         }
     }
 
     private void deleteOldFetched(Date date) {
-        String[] weekDates = getWeekDates(date);
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
         String selection = FetchedDateEntry.COLUMN_NAME_DATE + "< ?";
         String[] selectionArgs = {weekDates[1]};
         database.delete(FetchedDateEntry.TABLE_NAME, selection, selectionArgs);
@@ -440,27 +449,11 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     void deleteFetched(Date date) {
-        String[] weekDates = getWeekDates(date);
+        String[] weekDates = CalendarController.getInstance().getWeekDates(date);
         String selection = FetchedDateEntry.COLUMN_NAME_DATE + " >= ? AND "
                 + FetchedDateEntry.COLUMN_NAME_DATE + " <= ?";
         String[] selectionArgs = {weekDates[0], weekDates[1]};
         database.delete(FetchedDateEntry.TABLE_NAME, selection, selectionArgs);
-    }
-
-    private String parseDate(Date date) {
-        DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
-        return simpleDateFormat.format(date);
-    }
-
-    private String[] getWeekDates(Date date) {
-        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
-        calendar.setTime(date);
-        calendar.setFirstDayOfWeek(Calendar.MONDAY);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        String lowestDate = parseDate(calendar.getTime());
-        calendar.add(Calendar.DATE, 6);
-        String highestDate = parseDate(calendar.getTime());
-        return new String[]{lowestDate, highestDate};
     }
 
     @Override

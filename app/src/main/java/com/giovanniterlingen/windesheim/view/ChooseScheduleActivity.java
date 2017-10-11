@@ -36,8 +36,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.view.Fragments.ChooseScheduleFragment;
 
 /**
@@ -65,7 +65,7 @@ public class ChooseScheduleActivity extends AppCompatActivity {
                 tabLayout.setupWithViewPager(mPager);
             }
         }
-        if (ApplicationLoader.databaseController.hasSchedules()) {
+        if (DatabaseController.getInstance().hasSchedules()) {
             final ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
@@ -85,7 +85,7 @@ public class ChooseScheduleActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (ApplicationLoader.databaseController.hasSchedules()) {
+        if (DatabaseController.getInstance().hasSchedules()) {
             Intent intent = new Intent(ChooseScheduleActivity.this, ManageSchedulesActivity.class);
             startActivity(intent);
         }

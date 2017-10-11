@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.HiddenLessonsActivity;
 
@@ -77,11 +78,12 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Lesson lesson = lessons[holder.getAdapterPosition()];
-                ApplicationLoader.databaseController.restoreLesson(lesson.getId());
+                DatabaseController.getInstance().restoreLesson(lesson.getSubject());
                 activity.showSnackbar();
+
                 ApplicationLoader.restartNotificationThread();
 
-                updateLessons(ApplicationLoader.databaseController.getHiddenLessons());
+                updateLessons(DatabaseController.getInstance().getHiddenLessons());
                 if (lessons.length == 0) {
                     activity.showEmptyTextView();
                 }

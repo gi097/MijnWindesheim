@@ -24,11 +24,13 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +39,7 @@ import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.view.Adapters.ManageSchedulesAdapter;
 
 /**
@@ -65,6 +68,11 @@ public class ManageSchedulesActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int count = DatabaseController.getInstance().countSchedules();
+                    if (count >= 5) {
+                        alertTooMuchSchedules();
+                        return;
+                    }
                     Intent intent = new Intent(ManageSchedulesActivity.this,
                             ChooseScheduleActivity.class);
                     startActivity(intent);
@@ -87,7 +95,7 @@ public class ManageSchedulesActivity extends AppCompatActivity {
 
     public void showDeletionSnackbar() {
         Snackbar snackbar = Snackbar.make(view, ApplicationLoader.applicationContext.getResources()
-                .getString(R.string.schedule_deleted),
+                        .getString(R.string.schedule_deleted),
                 Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
@@ -100,7 +108,7 @@ public class ManageSchedulesActivity extends AppCompatActivity {
 
     private void setAdapter() {
         ManageSchedulesAdapter adapter = new ManageSchedulesAdapter(ManageSchedulesActivity.this,
-                ApplicationLoader.databaseController.getSchedules());
+                DatabaseController.getInstance().getSchedules());
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -119,5 +127,17 @@ public class ManageSchedulesActivity extends AppCompatActivity {
         Intent intent = new Intent(ManageSchedulesActivity.this, ScheduleActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void alertTooMuchSchedules() {
+        new AlertDialog.Builder(ManageSchedulesActivity.this)
+                .setTitle(getResources().getString(R.string.exceed_limit_title))
+                .setMessage(getResources().getString(R.string.exceed_limit_description))
+                .setNegativeButton(getResources().getString(R.string.cancel), new
+                        DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
     }
 }

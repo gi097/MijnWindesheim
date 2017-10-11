@@ -167,7 +167,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);
-                    editor.commit();
+                    editor.apply();
 
                     isBusy = false;
 
@@ -189,7 +189,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.remove("username");
                             editor.remove("password");
-                            editor.commit();
+                            editor.apply();
                         }
                         headerTextView.setText(getString(R.string.auth_add_account));
                         progressBar.setVisibility(View.GONE);
@@ -205,7 +205,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);
-                    editor.commit();
+                    editor.apply();
 
                     isBusy = false;
 

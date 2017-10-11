@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.view.ManageSchedulesActivity;
 
@@ -87,12 +88,12 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                 .setPositiveButton(activity.getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                ApplicationLoader.databaseController
+                                DatabaseController.getInstance()
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
                                 ApplicationLoader.restartNotificationThread();
                                 
                                 ColorController.getInstance().cachedColors.evictAll();
-                                schedules = ApplicationLoader.databaseController.getSchedules();
+                                schedules = DatabaseController.getInstance().getSchedules();
                                 notifyDataSetChanged();
 
                                 ((ManageSchedulesActivity) activity).showDeletionSnackbar();

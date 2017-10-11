@@ -112,7 +112,7 @@ public class IntroActivity extends AppIntro {
                 .getDefaultSharedPreferences(IntroActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("intro_finished", true);
-        editor.commit();
+        editor.apply();
 
         Intent intent = new Intent(IntroActivity.this, LaunchActivity.class);
         startActivity(intent);

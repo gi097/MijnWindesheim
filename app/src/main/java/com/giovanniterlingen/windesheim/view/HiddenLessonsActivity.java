@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.Adapters.HiddenLessonsAdapter;
 
@@ -60,7 +61,7 @@ public class HiddenLessonsActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
-        Lesson[] lessons = ApplicationLoader.databaseController.getHiddenLessons();
+        Lesson[] lessons = DatabaseController.getInstance().getHiddenLessons();
         HiddenLessonsAdapter adapter = new HiddenLessonsAdapter(HiddenLessonsActivity.this, lessons);
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         if (recyclerView != null) {

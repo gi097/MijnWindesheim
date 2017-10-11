@@ -48,6 +48,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
@@ -224,18 +225,6 @@ public class ChooseScheduleFragment extends Fragment {
                         }).show();
     }
 
-    private void alertTooMuchSchedules() {
-        new AlertDialog.Builder(context)
-                .setTitle(getResources().getString(R.string.exceed_limit_title))
-                .setMessage(getResources().getString(R.string.exceed_limit_description))
-                .setNegativeButton(getResources().getString(R.string.cancel), new
-                        DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        }).show();
-    }
-
     private class ComponentFetcher extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -254,15 +243,10 @@ public class ChooseScheduleFragment extends Fragment {
                     @Override
                     protected void onContentClick(int id, String name) {
                         try {
-                            int count = ApplicationLoader.databaseController.countSchedules();
-                            if (count >= 5) {
-                                alertTooMuchSchedules();
-                                return;
-                            }
-                            boolean hasSchedules = ApplicationLoader.databaseController.hasSchedules();
+                            boolean hasSchedules = DatabaseController.getInstance().hasSchedules();
 
-                            ApplicationLoader.databaseController.addSchedule(id, name, type);
-                            ApplicationLoader.databaseController.clearFetched();
+                            DatabaseController.getInstance().addSchedule(id, name, type);
+                            DatabaseController.getInstance().clearFetched();
 
                             ColorController.getInstance().invalidateColorCache();
 

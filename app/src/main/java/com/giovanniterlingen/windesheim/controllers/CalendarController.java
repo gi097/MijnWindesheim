@@ -24,53 +24,56 @@
  **/
 package com.giovanniterlingen.windesheim.controllers;
 
-import android.support.v4.util.LruCache;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class ColorController {
+public class CalendarController {
 
-    private static final int[] colors = new int[]{
-            0xff008dd7,
-            0xff82189e,
-            0xffe64310,
-            0xff23a669,
-            0xff545454
-    };
-    public final LruCache<Integer, Integer> cachedColors = new LruCache<>(colors.length);
+    private final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
+    private final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
 
-    private static volatile ColorController Instance = null;
+    private static volatile CalendarController Instance = null;
 
-    public static ColorController getInstance() {
-        ColorController localInstance = Instance;
+    public static CalendarController getInstance() {
+        CalendarController localInstance = Instance;
         if (localInstance == null) {
-            synchronized (ColorController.class) {
+            synchronized (CalendarController.class) {
                 localInstance = Instance;
                 if (localInstance == null) {
-                    Instance = localInstance = new ColorController();
+                    Instance = localInstance = new CalendarController();
                 }
             }
         }
         return localInstance;
     }
 
-    private int getColorByPosition(int position) {
-        return colors[position];
+    public SimpleDateFormat getYearMonthDayDateFormat() {
+        return yearMonthDayDateFormat;
     }
 
-    public int getColorById(int id) {
-        if (cachedColors.get(id) == null) {
-            int position = DatabaseController.getInstance().getPositionByScheduleId(id);
-            int color = getColorByPosition(position);
-            cachedColors.put(id, color);
-        }
-        return cachedColors.get(id);
+    public SimpleDateFormat getDayDateFormat() {
+        return dayDateFormat;
     }
 
-    public void invalidateColorCache() {
-        this.cachedColors.evictAll();
+    public Calendar getCalendar() {
+        return GregorianCalendar.getInstance(Locale.FRANCE);
+    }
+
+    String[] getWeekDates(Date date) {
+        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
+        calendar.setTime(date);
+        calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
+        String lowestDate = yearMonthDayDateFormat.format(calendar.getTime());
+        calendar.add(GregorianCalendar.DATE, 6);
+        String highestDate = yearMonthDayDateFormat.format(calendar.getTime());
+        return new String[]{lowestDate, highestDate};
     }
 }

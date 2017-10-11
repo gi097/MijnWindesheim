@@ -39,18 +39,18 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.CalendarController;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -73,23 +73,24 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             R.string.november,
             R.string.december
     };
+    private Calendar calendar;
     private Date date;
+    private SimpleDateFormat yearMonthDayDateFormat;
+    private SimpleDateFormat dayDateFormat;
+
     private ScheduleAdapter adapter;
-    private DateFormat simpleDateFormat;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView emptyTextView;
     private ProgressBar spinner;
     private RecyclerView recyclerView;
-    private SimpleDateFormat dayFormat;
-    private Calendar calendar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        calendar = CalendarController.getInstance().getCalendar();
         date = (Date) getArguments().getSerializable("date");
-        simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
-        dayFormat = new SimpleDateFormat("dd", Locale.US);
-        calendar = Calendar.getInstance();
+        yearMonthDayDateFormat = CalendarController.getInstance().getYearMonthDayDateFormat();
+        dayDateFormat = CalendarController.getInstance().getDayDateFormat();
     }
 
     @Override
@@ -105,13 +106,14 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void updateToolbar() {
-        if (isMenuVisible() && dayFormat != null && calendar != null) {
+        if (isMenuVisible()) {
             calendar.setTime(date);
-            int month = calendar.get(Calendar.MONTH);
+            int month = calendar.get(GregorianCalendar.MONTH);
+            int year = calendar.get(GregorianCalendar.YEAR);
             String monthString = getResources().getString(dateStrings[month]);
             ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
             if (toolbar != null) {
-                String title = dayFormat.format(date) + " " + monthString;
+                String title = dayDateFormat.format(date) + " " + monthString + " " + year;
                 if (!title.equals(toolbar.getTitle())) {
                     toolbar.setTitle(title);
                     toolbar.setDisplayHomeAsUpEnabled(false);
@@ -124,7 +126,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
-            if (!ApplicationLoader.databaseController.isFetched(date)) {
+            if (!DatabaseController.getInstance().isFetched(date)) {
                 new ScheduleFetcher(true, true, false).execute();
             } else {
                 new ScheduleFetcher(false, false, false).execute();
@@ -143,10 +145,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         spinner = viewGroup.findViewById(R.id.progress_bar);
         recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Lesson[] lesssons = ApplicationLoader.databaseController.getLessons(simpleDateFormat.format(date));
-        if (lesssons.length > 0) {
-            adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lesssons,
-                    simpleDateFormat.format(date), date);
+
+        Lesson[] lessons = DatabaseController.getInstance()
+                .getLessons(yearMonthDayDateFormat.format(date));
+        if (lessons.length > 0) {
+            adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons,
+                    yearMonthDayDateFormat.format(date), date);
             recyclerView.setAdapter(adapter);
         } else {
             emptyTextView.setVisibility(View.VISIBLE);
@@ -187,16 +191,14 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void updateLayout() {
-        if (emptyTextView != null) {
-            if (adapter == null || adapter.getItemCount() == 0) {
-                emptyTextView.setVisibility(View.VISIBLE);
-            } else {
-                emptyTextView.setVisibility(View.GONE);
-            }
+        if (adapter == null || adapter.getItemCount() == 0) {
+            emptyTextView.setVisibility(View.VISIBLE);
+        } else {
+            emptyTextView.setVisibility(View.GONE);
         }
     }
 
-    public class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
+    private class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         private final boolean fetchData;
         private final boolean showSpinner;
@@ -235,7 +237,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                     alertConnectionProblem();
                 }
             }
-            lessons = ApplicationLoader.databaseController.getLessons(simpleDateFormat.format(date));
+            lessons = DatabaseController.getInstance()
+                    .getLessons(yearMonthDayDateFormat.format(date));
             return null;
         }
 
@@ -244,7 +247,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             super.onPostExecute(param);
             if (adapter == null) {
                 adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons,
-                        simpleDateFormat.format(date), date);
+                        dayDateFormat.format(date), date);
                 recyclerView.setAdapter(adapter);
             } else {
                 adapter.updateLessons(lessons);

@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.controllers;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Schedule;
 
@@ -38,9 +37,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -50,13 +47,13 @@ import java.util.Locale;
 public class WebUntisController {
 
     public synchronized void getAndSaveAllSchedules(Date date, boolean compare) throws Exception {
-        ApplicationLoader.databaseController.deleteFetched(date);
-        Schedule[] schedules = ApplicationLoader.databaseController.getSchedules();
+        DatabaseController.getInstance().deleteFetched(date);
+        Schedule[] schedules = DatabaseController.getInstance().getSchedules();
         for (Schedule schedule : schedules) {
             JSONObject data = getScheduleFromServer(schedule.getId(), date, schedule.getType());
             saveSchedule(data, date, schedule.getId(), schedule.getType(), compare);
         }
-        ApplicationLoader.databaseController.addFetched(date);
+        DatabaseController.getInstance().addFetched(date);
     }
 
     public JSONObject getListFromServer(int type) throws Exception {
@@ -68,7 +65,8 @@ public class WebUntisController {
     private JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {
         URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
                 "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
-                "&date=" + new SimpleDateFormat("yyyyMMdd", Locale.US).format(date));
+                "&date=" + CalendarController.getInstance()
+                .getYearMonthDayDateFormat().format(date));
         return getJsonFromUrl(url);
     }
 
@@ -94,12 +92,12 @@ public class WebUntisController {
     private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id, int type, boolean compare)
             throws Exception {
         Lesson[] oldLessons = null;
-        if (compare && ApplicationLoader.databaseController.isFetched(date)) {
-            oldLessons = ApplicationLoader.databaseController.getLessonForCompare(date, id);
+        if (compare && DatabaseController.getInstance().isFetched(date)) {
+            oldLessons = DatabaseController.getInstance().getLessonsForCompare(date, id);
         }
-        Lesson[] hiddenLessons = ApplicationLoader.databaseController.getHiddenLessons();
+        Lesson[] hiddenLessons = DatabaseController.getInstance().getHiddenLessons();
 
-        ApplicationLoader.databaseController.clearScheduleData(date, id);
+        DatabaseController.getInstance().clearScheduleData(date, id);
 
         JSONObject resultData = jsonObject.getJSONObject("result").getJSONObject("data");
         JSONArray data = resultData.getJSONObject("elementPeriods")
@@ -149,7 +147,7 @@ public class WebUntisController {
             }
             boolean visible = true;
             for (Lesson hiddenLesson : hiddenLessons) {
-                if (hiddenLesson.getId() == lessonObject.getInt("lessonId")) {
+                if (hiddenLesson.getSubject().equals(module)) {
                     visible = false;
                     break;
                 }
@@ -167,21 +165,22 @@ public class WebUntisController {
                     if (i < data.length() - 1) {
                         continue;
                     }
-                    ApplicationLoader.databaseController.saveScheduleData(lastLesson);
+                    DatabaseController.getInstance().saveScheduleData(lastLesson);
                     break;
                 } else {
-                    ApplicationLoader.databaseController.saveScheduleData(lastLesson);
+                    DatabaseController.getInstance().saveScheduleData(lastLesson);
                 }
             }
             lastLesson = currentLesson;
             if (data.length() == 1 || i == data.length() - 1) {
-                ApplicationLoader.databaseController.saveScheduleData(lastLesson);
+                DatabaseController.getInstance().saveScheduleData(lastLesson);
             }
         }
         if (compare && oldLessons != null) {
-            Lesson[] newLessons = ApplicationLoader.databaseController.getLessonForCompare(date, id);
+            Lesson[] newLessons = DatabaseController.getInstance()
+                    .getLessonsForCompare(date, id);
             if (oldLessons.length != newLessons.length) {
-                ApplicationLoader.notificationController.createScheduleChangedNotification();
+                NotificationController.getInstance().createScheduleChangedNotification();
                 return;
             }
             for (int i = 0; i < oldLessons.length; i++) {
@@ -194,7 +193,7 @@ public class WebUntisController {
                         !oldLesson.getRoom().equals(newLesson.getRoom()) ||
                         !oldLesson.getTeacher().equals(newLesson.getTeacher()) ||
                         !oldLesson.getClassName().equals(newLesson.getClassName())) {
-                    ApplicationLoader.notificationController.createScheduleChangedNotification();
+                    NotificationController.getInstance().createScheduleChangedNotification();
                     return;
                 }
             }

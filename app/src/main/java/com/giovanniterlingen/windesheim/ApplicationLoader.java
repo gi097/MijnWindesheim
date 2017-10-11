@@ -25,9 +25,6 @@
 package com.giovanniterlingen.windesheim;
 
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -52,30 +49,27 @@ import java.util.concurrent.TimeUnit;
  */
 public class ApplicationLoader extends Application {
 
-    public static DatabaseController databaseController;
-    public static NotificationController notificationController;
-
     public static volatile Context applicationContext;
-    private static volatile boolean notificationThreadInited = false;
+
+    private static NotificationThread notificationThread;
+    private static volatile boolean notificationThreadInitialized = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         applicationContext = getApplicationContext();
-        databaseController = new DatabaseController(applicationContext);
-        databaseController.open();
 
+        NotificationController.getInstance().initNotificationChannels();
         restartNotificationThread();
+
         startServices();
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
-
-        initNotificationChannels();
     }
 
     public static void startServices() {
-        if (databaseController.hasSchedules()) {
+        if (DatabaseController.getInstance().hasSchedules()) {
             startBackground(true);
             startBackground(false);
             startFetcher();
@@ -117,21 +111,21 @@ public class ApplicationLoader extends Application {
     }
 
     public static void initNotificationThread() {
-        if (notificationThreadInited) {
+        if (notificationThreadInitialized) {
             return;
         }
-        notificationThreadInited = true;
+        notificationThreadInitialized = true;
         restartNotificationThread();
     }
 
     public static void restartNotificationThread() {
-        if (notificationController != null) {
-            notificationController.clearNotification();
-            notificationController.interrupt();
-            notificationController.stopRunning();
+        if (notificationThread != null) {
+            notificationThread.interrupt();
+            notificationThread.stopRunning();
+            NotificationController.getInstance().clearNotification();
         }
-        notificationController = new NotificationController();
-        notificationController.start();
+        notificationThread = new NotificationThread();
+        notificationThread.start();
     }
 
     public static boolean isConnected() {
@@ -139,36 +133,5 @@ public class ApplicationLoader extends Application {
                 .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
-    }
-
-    private static void initNotificationChannels() {
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel pushChannel = new NotificationChannel(NotificationController
-                    .PUSH_NOTIFICATION_ID, applicationContext.getResources()
-                    .getString(R.string.push_notification),
-                    NotificationManager.IMPORTANCE_HIGH);
-            pushChannel.setDescription(applicationContext.getResources()
-                    .getString(R.string.push_notification_description));
-            pushChannel.enableLights(true);
-            pushChannel.enableVibration(true);
-            pushChannel.setShowBadge(true);
-            pushChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-            NotificationChannel persistentChannel = new NotificationChannel(NotificationController
-                    .PERSISTENT_NOTIFICATION_ID, applicationContext.getResources()
-                    .getString(R.string.persistent_notification),
-                    NotificationManager.IMPORTANCE_MIN);
-            pushChannel.setDescription(applicationContext.getResources()
-                    .getString(R.string.persistent_notification_description));
-            persistentChannel.enableLights(false);
-            persistentChannel.enableVibration(false);
-            persistentChannel.setShowBadge(false);
-            persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-            NotificationManager mManager = (NotificationManager) applicationContext.
-                    getSystemService(Context.NOTIFICATION_SERVICE);
-            mManager.createNotificationChannel(pushChannel);
-            mManager.createNotificationChannel(persistentChannel);
-        }
     }
 }
