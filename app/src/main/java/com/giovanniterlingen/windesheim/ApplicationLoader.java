@@ -26,8 +26,11 @@ package com.giovanniterlingen.windesheim;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -39,6 +42,7 @@ import com.firebase.jobdispatcher.Trigger;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.google.android.gms.ads.MobileAds;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,15 +54,33 @@ import java.util.concurrent.TimeUnit;
 public class ApplicationLoader extends Application {
 
     public static volatile Context applicationContext;
+    public static volatile Handler applicationHandler;
 
     private static NotificationThread notificationThread;
     private static volatile boolean notificationThreadInitialized = false;
+    private static final IntentFilter intentFilter;
+
+    static {
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_TIME_TICK);
+        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
 
         applicationContext = getApplicationContext();
+        applicationHandler = new Handler(applicationContext.getMainLooper());
+
+        registerReceiver(new TimeReceiver(), intentFilter);
 
         NotificationController.getInstance().initNotificationChannels();
         restartNotificationThread();
@@ -121,11 +143,18 @@ public class ApplicationLoader extends Application {
     public static void restartNotificationThread() {
         if (notificationThread != null) {
             notificationThread.interrupt();
-            notificationThread.stopRunning();
             NotificationController.getInstance().clearNotification();
         }
         notificationThread = new NotificationThread();
         notificationThread.start();
+    }
+
+    public static void notifyTimeChanged() {
+        NotificationCenter.getInstance()
+                .postNotificationName(NotificationCenter.scheduleNeedsReload);
+        if (notificationThread != null) {
+            notificationThread.continueThread();
+        }
     }
 
     public static boolean isConnected() {
@@ -133,5 +162,9 @@ public class ApplicationLoader extends Application {
                 .applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public static void runOnUIThread(Runnable runnable) {
+        applicationHandler.post(runnable);
     }
 }

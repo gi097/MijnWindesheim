@@ -37,6 +37,7 @@ import java.util.Locale;
  */
 public class CalendarController {
 
+    private final SimpleDateFormat yearMonthDayDateTimeFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.FRANCE);
     private final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
     private final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
 
@@ -53,6 +54,10 @@ public class CalendarController {
             }
         }
         return localInstance;
+    }
+
+    public SimpleDateFormat getYearMonthDayDateTimeFormat() {
+        return yearMonthDayDateTimeFormat;
     }
 
     public SimpleDateFormat getYearMonthDayDateFormat() {

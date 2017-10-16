@@ -37,6 +37,7 @@ import android.os.PowerManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
@@ -140,7 +141,7 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
                 if (e.getMessage().contains("ENOSPC")) {
                     ((NatschoolActivity) activity).noSpace();
                 } else {
-                    activity.runOnUiThread(new Runnable() {
+                    ApplicationLoader.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
                             new AlertDialog.Builder(activity)

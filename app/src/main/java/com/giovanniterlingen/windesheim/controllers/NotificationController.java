@@ -57,7 +57,6 @@ public class NotificationController {
     public static final int NOTIFICATION_NOT_SET = -1;
 
     private final NotificationManager mNotificationManager;
-    private String lastNotificationText = "";
 
     private static volatile NotificationController Instance = null;
 
@@ -108,11 +107,6 @@ public class NotificationController {
     }
 
     public void createNotification(String notificationText, boolean onGoing, boolean headsUp) {
-        if (lastNotificationText.equals(notificationText)) {
-            return;
-        }
-        lastNotificationText = notificationText;
-
         Intent intent = new Intent(ApplicationLoader.applicationContext,
                 ScheduleActivity.class);
         intent.putExtra("notification", true);
@@ -146,7 +140,6 @@ public class NotificationController {
 
     public void clearNotification() {
         mNotificationManager.cancel(LESSON_NOTIFICATION_ID);
-        lastNotificationText = "";
     }
 
     public void initNotificationChannels() {

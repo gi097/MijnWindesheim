@@ -93,11 +93,11 @@ public class AuthenticationActivity extends AppCompatActivity {
                 boolean isValid = true;
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                if (username.length() > 0 && username.endsWith("@windesheim.nl")) {
+                if (username.endsWith("@windesheim.nl")) {
                     passwordTextLayout.setErrorEnabled(false);
                     usernameTextLayout.setError(getString(R.string.auth_student_only));
                     isValid = false;
-                } else if (username.length() == 0 || !username.toLowerCase().startsWith("s") &&
+                } else if (!username.toLowerCase().startsWith("s") ||
                         !username.toLowerCase().endsWith("@student.windesheim.nl")) {
                     passwordTextLayout.setErrorEnabled(false);
                     usernameTextLayout.setError(getString(R.string.auth_invalid_username));
@@ -141,19 +141,16 @@ public class AuthenticationActivity extends AppCompatActivity {
             showConnectionError();
             return;
         }
-
         isBusy = true;
 
         if (webView != null) {
             webView.destroy();
         }
-
         webView = new WebView(AuthenticationActivity.this);
         webView.getSettings().setJavaScriptEnabled(true);
         if (android.os.Build.VERSION.SDK_INT < 26) {
             webView.getSettings().setSaveFormData(false);
         }
-
         webView.setWebViewClient(new WebViewClient() {
 
             String loginUrl;

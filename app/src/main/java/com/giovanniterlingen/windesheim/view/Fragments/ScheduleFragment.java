@@ -39,6 +39,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
@@ -123,6 +124,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
+    public void updateAdapter() {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
@@ -162,7 +169,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         if (!isMenuVisible()) {
             return;
         }
-        getActivity().runOnUiThread(new Runnable() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())

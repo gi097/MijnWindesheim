@@ -47,6 +47,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.CookieController;
@@ -66,7 +67,8 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends AppCompatActivity
+        implements NotificationCenter.NotificationCenterDelegate {
 
     private View view;
     private FragmentManager fragmentManager;
@@ -199,16 +201,20 @@ public class ScheduleActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        super.onPause();
+        NotificationCenter.getInstance()
+                .removeObserver(this, NotificationCenter.scheduleNeedsReload);
         onPauseMillis = System.currentTimeMillis();
+        super.onPause();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
+        NotificationCenter.getInstance()
+                .addObserver(this, NotificationCenter.scheduleNeedsReload);
         if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
         }
+        super.onResume();
     }
 
     @Override
@@ -242,7 +248,7 @@ public class ScheduleActivity extends AppCompatActivity {
             for (Fragment fragment : fragments) {
                 if (fragment != null && fragment.isMenuVisible()) {
                     ((ScheduleFragment) fragment).updateLayout();
-                    break;
+                    return;
                 }
             }
         }
@@ -255,6 +261,21 @@ public class ScheduleActivity extends AppCompatActivity {
             return;
         }
         mPager.setCurrentItem(currentDayIndex);
+    }
+
+    @Override
+    public void didReceivedNotification(int id, Object... args) {
+        if (id == NotificationCenter.scheduleNeedsReload) {
+            List<Fragment> fragments = fragmentManager.getFragments();
+            if (fragments != null) {
+                for (Fragment fragment : fragments) {
+                    if (fragment != null && fragment.isMenuVisible()) {
+                        ((ScheduleFragment) fragment).updateAdapter();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

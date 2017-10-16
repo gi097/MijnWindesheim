@@ -26,7 +26,6 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
@@ -45,8 +44,8 @@ import java.util.GregorianCalendar;
  */
 class NotificationThread extends Thread {
 
-    private volatile boolean running = true;
     private final Date date;
+    private final Object syncObject = new Object();
 
     NotificationThread() {
         date = new Date();
@@ -60,8 +59,7 @@ class NotificationThread extends Thread {
                 NotificationController.NOTIFICATION_NOT_SET);
         String notificationText = "";
         long currentTimeMillis;
-        while (isRunning() && notificationType != 0 && notificationType !=
-                NotificationController.NOTIFICATION_OFF) {
+        while (notificationType != 0 && notificationType != NotificationController.NOTIFICATION_OFF) {
             try {
                 if (!DatabaseController.getInstance().isFetched(date)) {
                     new WebUntisController().getAndSaveAllSchedules(date, false);
@@ -71,14 +69,11 @@ class NotificationThread extends Thread {
                                 .getYearMonthDayDateFormat().format(date));
                 if (lessons == null || lessons.length == 0) {
                     NotificationController.getInstance().clearNotification();
-                    while (isTodayAndRunning()) {
-                        sleep(1000);
+                    synchronized (syncObject) {
+                        syncObject.wait();
                     }
                 } else {
                     for (int i = 0; i < lessons.length; i++) {
-                        if (!isTodayAndRunning()) {
-                            break;
-                        }
                         Lesson lesson = lessons[i];
                         String subjectTimeString = lesson.getStartTime();
                         String[] subjectTimes = subjectTimeString.split(":");
@@ -92,8 +87,7 @@ class NotificationThread extends Thread {
                                 && subjectTimeString.equals(lessons[i + 1].getStartTime());
                         String lessonName = lesson.getSubject();
                         String lessonLocation = lesson.getRoom();
-                        while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime
-                                && isTodayAndRunning()) {
+                        while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime) {
                             long difference = subjectTime - currentTimeMillis;
                             long diffMinutes = (difference / 60000) % 60;
                             long diffHours = (difference / 3600000) % 24;
@@ -172,13 +166,15 @@ class NotificationThread extends Thread {
                                 NotificationController.getInstance()
                                         .createNotification(notificationText, false, true);
                             }
-                            sleep(1000);
+                            synchronized (syncObject) {
+                                syncObject.wait();
+                            }
                         }
                     }
                 }
                 NotificationController.getInstance().clearNotification();
-                while (isTodayAndRunning()) {
-                    sleep(1000);
+                synchronized (syncObject) {
+                    syncObject.wait();
                 }
             } catch (InterruptedException e) {
                 break;
@@ -186,23 +182,15 @@ class NotificationThread extends Thread {
                 NotificationController.getInstance()
                         .createNotification(ApplicationLoader.applicationContext.getResources()
                                 .getString(R.string.connection_problem), false, false);
-                stopRunning();
                 break;
             }
         }
     }
 
-    private boolean isRunning() {
-        return running;
-    }
-
-    void stopRunning() {
-        running = false;
-    }
-
-    private boolean isTodayAndRunning() {
-        return (isRunning() && System.currentTimeMillis() >= date.getTime()
-                && DateUtils.isToday(date.getTime()));
+    void continueThread() {
+        synchronized (syncObject) {
+            syncObject.notify();
+        }
     }
 
     private String getString(int resId, Object... formatArgs) {

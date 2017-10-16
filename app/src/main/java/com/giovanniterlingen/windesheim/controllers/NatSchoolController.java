@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.AuthenticationActivity;
@@ -155,7 +156,7 @@ public abstract class NatSchoolController extends AsyncTask<Void, Void, Void> {
                 activity.finish();
                 return;
             }
-            activity.runOnUiThread(new Runnable() {
+            ApplicationLoader.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     new AlertDialog.Builder(activity)

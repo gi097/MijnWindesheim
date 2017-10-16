@@ -184,7 +184,7 @@ public class ChooseScheduleFragment extends Fragment {
         if (!getUserVisibleHint()) {
             return;
         }
-        getActivity().runOnUiThread(new Runnable() {
+        ApplicationLoader.runOnUIThread(new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(context)

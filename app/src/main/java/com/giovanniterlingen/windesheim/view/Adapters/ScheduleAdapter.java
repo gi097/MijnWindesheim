@@ -93,7 +93,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 + lesson.getEndTime().replaceAll(":", ""));
 
         SimpleDateFormat yearMonthDayDateFormat = CalendarController.getInstance()
-                .getYearMonthDayDateFormat();
+                .getYearMonthDayDateTimeFormat();
         long currentDate = Long.parseLong(yearMonthDayDateFormat.format(new Date()));
 
         lessonName.setText(lesson.getSubject());
