@@ -37,10 +37,12 @@ public class TimeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Intent.ACTION_TIME_TICK.equals(intent.getAction()) ||
-                Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction()) ||
-                Intent.ACTION_TIME_CHANGED.equals(intent.getAction())) {
-            ApplicationLoader.notifyTimeChanged();
+        if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+            ApplicationLoader.notifyMinuteChanged();
+        } else if (Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction()) ||
+                Intent.ACTION_TIME_CHANGED.equals(intent.getAction()) ||
+                Intent.ACTION_DATE_CHANGED.equals(intent.getAction())) {
+            ApplicationLoader.notifyDateChanged();
         }
     }
 }

@@ -202,6 +202,8 @@
     <string name="settings_logout">UITLOGGEN</string>
     <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
     <string name="settings_notification_description">Meldingen</string>
+    <string name="settings_schedule_change">Roosterwijzigingen</string>
+    <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
 
     <string name="storage_full">Onvoldoende ruimte op de SD kaart!</string>
 

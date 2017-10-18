@@ -24,6 +24,9 @@
  **/
 package com.giovanniterlingen.windesheim;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
@@ -56,9 +59,15 @@ public class FetchService extends JobService {
                                 GregorianCalendar.SUNDAY) {
                             calendar.add(GregorianCalendar.DATE, 1);
                         }
-                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
+
+                        SharedPreferences preferences = PreferenceManager
+                                .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+                        boolean notify = preferences
+                                .getBoolean("schedule_change_notification", true);
+
+                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), notify);
                         calendar.add(GregorianCalendar.DATE, 7);
-                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), true);
+                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), notify);
                         jobFinished(job, false);
                     } catch (Exception e) {
                         jobFinished(job, true);

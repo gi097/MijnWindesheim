@@ -65,6 +65,7 @@ public class ApplicationLoader extends Application {
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
         intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+        intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
     }
 
     @Override
@@ -149,11 +150,17 @@ public class ApplicationLoader extends Application {
         notificationThread.start();
     }
 
-    public static void notifyTimeChanged() {
+    public static void notifyDateChanged() {
+        if (notificationThread != null) {
+            notificationThread.notifyDateChanged();
+        }
+    }
+
+    public static void notifyMinuteChanged() {
         NotificationCenter.getInstance()
                 .postNotificationName(NotificationCenter.scheduleNeedsReload);
         if (notificationThread != null) {
-            notificationThread.continueThread();
+            notificationThread.notifyMinuteChanged();
         }
     }
 

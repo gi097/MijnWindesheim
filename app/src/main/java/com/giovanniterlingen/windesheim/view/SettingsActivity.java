@@ -75,76 +75,80 @@ public class SettingsActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
 
         lessonStart = findViewById(R.id.lesson_notification_switch);
-        if (lessonStart != null) {
-            lessonStart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SharedPreferences.Editor editor = preferences.edit();
-                    if (lessonStart.isChecked()) {
-                        editor.putInt("notifications_type", NotificationController.NOTIFICATION_ALWAYS_ON);
-                    } else {
-                        editor.putInt("notifications_type", NotificationController.NOTIFICATION_OFF);
-                    }
-                    editor.apply();
 
-                    ApplicationLoader.restartNotificationThread();
-                    updateIntervalTextView();
+        lessonStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = preferences.edit();
+                if (lessonStart.isChecked()) {
+                    editor.putInt("notifications_type", NotificationController.NOTIFICATION_ALWAYS_ON);
+                } else {
+                    editor.putInt("notifications_type", NotificationController.NOTIFICATION_OFF);
                 }
-            });
-            int pref = preferences.getInt("notifications_type", 0);
-            lessonStart.setChecked(pref != 0 && pref != NotificationController.NOTIFICATION_OFF);
+                editor.apply();
 
-            Button deleteAccountButton = findViewById(R.id.logout_button);
-            deleteAccountButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new CookieController().deleteCookies();
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.remove("username");
-                    editor.remove("password");
-                    editor.apply();
+                ApplicationLoader.restartNotificationThread();
+                updateIntervalTextView();
+            }
+        });
+        int pref = preferences.getInt("notifications_type", 0);
+        lessonStart.setChecked(pref != 0 && pref != NotificationController.NOTIFICATION_OFF);
 
-                    CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
-                    Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                            getString(R.string.settings_logout_msg), Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-                }
-            });
-        }
+        Button deleteAccountButton = findViewById(R.id.logout_button);
+        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CookieController().deleteCookies();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.remove("username");
+                editor.remove("password");
+                editor.apply();
+
+                CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
+                Snackbar snackbar = Snackbar.make(coordinatorLayout,
+                        getString(R.string.settings_logout_msg), Snackbar.LENGTH_SHORT);
+                snackbar.show();
+            }
+        });
 
         intervalTextview = findViewById(R.id.settings_interval_textview);
         updateIntervalTextView();
 
         View intervalRow = findViewById(R.id.settings_interval_row);
-        if (intervalRow != null) {
-            intervalRow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createNotificationPrompt();
-                }
-            });
-        }
+        intervalRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNotificationPrompt();
+            }
+        });
+
+        final SwitchCompat scheduleChangeSwitch = findViewById(R.id.schedule_change_notification_switch);
+        scheduleChangeSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("schedule_change_notification", scheduleChangeSwitch.isChecked());
+                editor.apply();
+            }
+        });
+        scheduleChangeSwitch.setChecked(preferences.getBoolean("schedule_change_notification", true));
     }
 
     private void updateIntervalTextView() {
-        if (intervalTextview != null) {
-            int interval = preferences.getInt("notifications_type",
-                    NotificationController.NOTIFICATION_NOT_SET);
-            if (interval == NotificationController.NOTIFICATION_OFF) {
-                intervalTextview.setText(getResources().getString(R.string.interval_off));
-            } else if (interval != NotificationController.NOTIFICATION_NOT_SET) {
-                intervalTextview.setText(items[interval - 2]);
-            }
+        int interval = preferences.getInt("notifications_type",
+                NotificationController.NOTIFICATION_NOT_SET);
+        if (interval == NotificationController.NOTIFICATION_OFF) {
+            intervalTextview.setText(getResources().getString(R.string.interval_off));
+        } else if (interval != NotificationController.NOTIFICATION_NOT_SET) {
+            intervalTextview.setText(items[interval - 2]);
         }
     }
 
     private void updateLessonSwitch() {
-        if (lessonStart != null) {
-            int interval = preferences.getInt("notifications_type",
-                    NotificationController.NOTIFICATION_NOT_SET);
-            lessonStart.setChecked(interval != -NotificationController.NOTIFICATION_NOT_SET &&
-                    interval != NotificationController.NOTIFICATION_OFF);
-        }
+        int interval = preferences.getInt("notifications_type",
+                NotificationController.NOTIFICATION_NOT_SET);
+        lessonStart.setChecked(interval != -NotificationController.NOTIFICATION_NOT_SET &&
+                interval != NotificationController.NOTIFICATION_OFF);
     }
 
     private void createNotificationPrompt() {
