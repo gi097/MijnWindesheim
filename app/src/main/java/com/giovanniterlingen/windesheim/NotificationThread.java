@@ -26,6 +26,7 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
@@ -53,8 +54,7 @@ class NotificationThread extends Thread {
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         int notificationType = preferences.getInt("notifications_type",
                 NotificationController.NOTIFICATION_NOT_SET);
-        String notificationText = "";
-        long currentTimeMillis;
+        String notificationText;
         while (notificationType != 0 && notificationType != NotificationController.NOTIFICATION_OFF) {
             try {
                 Date date = new Date();
@@ -66,90 +66,42 @@ class NotificationThread extends Thread {
                                 .getYearMonthDayDateFormat().format(date));
                 for (int i = 0; i < lessons.length; i++) {
                     Lesson lesson = lessons[i];
-                    String subjectTimeString = lesson.getStartTime();
-                    String[] subjectTimes = subjectTimeString.split(":");
+                    String startTimeString = lesson.getStartTime();
+                    String[] startTime = startTimeString.split(":");
+
                     Calendar calendar = CalendarController.getInstance().getCalendar();
-                    calendar.set(GregorianCalendar.HOUR_OF_DAY,
-                            Integer.parseInt(subjectTimes[0]));
-                    calendar.set(GregorianCalendar.MINUTE,
-                            Integer.parseInt(subjectTimes[1]));
-                    long subjectTime = calendar.getTimeInMillis();
-                    boolean multiple = i + 1 < lessons.length
-                            && subjectTimeString.equals(lessons[i + 1].getStartTime());
+                    calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTime[0]));
+                    calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(startTime[1]));
+                    calendar.set(GregorianCalendar.SECOND, 0);
+                    calendar.set(GregorianCalendar.MILLISECOND, 0);
+
+                    long lessonStartTime = calendar.getTimeInMillis();
+                    boolean nextLessonSameTime = i + 1 < lessons.length
+                            && startTimeString.equals(lessons[i + 1].getStartTime());
                     String lessonName = lesson.getSubject();
                     String lessonLocation = lesson.getRoom();
-                    while ((currentTimeMillis = System.currentTimeMillis()) < subjectTime) {
-                        long difference = subjectTime - currentTimeMillis;
+
+                    while (System.currentTimeMillis() < lessonStartTime) {
+                        long difference = lessonStartTime - System.currentTimeMillis();
                         long diffMinutes = (difference / 60000) % 60;
                         long diffHours = (difference / 3600000) % 24;
-                        if (diffHours >= 1) {
-                            if (diffMinutes != 0) {
-                                if (diffHours == 1) {
-                                    if (diffMinutes == 1) {
-                                        if (multiple) {
-                                            notificationText = getString(R.string.multiple_lessons_one_hour_one_minute);
-                                        } else {
-                                            notificationText = getString(R.string.lesson_one_hour_one_minute, lessonName, lessonLocation);
-                                        }
-                                    } else {
-                                        if (multiple) {
-                                            notificationText = getString(R.string.multiple_lessons_one_hour_multiple_minutes, diffMinutes);
-                                        } else {
-                                            notificationText = getString(R.string.lesson_one_hour_multiple_minutes, lessonName, diffMinutes, lessonLocation);
-                                        }
-                                    }
-                                } else {
-                                    if (diffMinutes == 1) {
-                                        if (multiple) {
-                                            notificationText = getString(R.string.multiple_lessons_multiple_hours_one_minute, diffHours);
-                                        } else {
-                                            notificationText = getString(R.string.lesson_multiple_hours_one_minute, lessonName, diffHours, lessonLocation);
-                                        }
-                                    } else {
-                                        if (multiple) {
-                                            notificationText = getString(R.string.multiple_lessons_multiple_hours_multiple_minutes, diffHours, diffMinutes);
-                                        } else {
-                                            notificationText = getString(R.string.lesson_multiple_hours_multiple_minutes, lessonName, diffHours, diffMinutes, lessonLocation);
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (diffHours == 1) {
-                                    if (multiple) {
-                                        notificationText = getString(R.string.multiple_lessons_one_hour);
-                                    } else {
-                                        notificationText = getString(R.string.lesson_one_hour, lessonName, lessonLocation);
-                                    }
-                                } else {
-                                    if (multiple) {
-                                        notificationText = getString(R.string.multiple_lessons_multiple_hours, diffHours);
-                                    } else {
-                                        notificationText = getString(R.string.lesson_multiple_hours, lessonName, diffHours, lessonLocation);
-                                    }
-                                }
-                            }
+                        String timeReadable = DateUtils
+                                .getRelativeTimeSpanString(lessonStartTime).toString()
+                                .toLowerCase();
+                        if (nextLessonSameTime) {
+                            notificationText = ApplicationLoader.applicationContext.getResources()
+                                    .getString(R.string.multiple_lessons_notification,
+                                            timeReadable);
                         } else {
-                            if (diffMinutes >= 1) {
-                                if (diffMinutes == 1) {
-                                    if (multiple) {
-                                        notificationText = getString(R.string.multiple_lessons_one_minute);
-                                    } else {
-                                        notificationText = getString(R.string.lesson_one_minute, lessonName, lessonLocation);
-                                    }
-                                } else {
-                                    if (multiple) {
-                                        notificationText = getString(R.string.multiple_lessons_multiple_minutes, diffMinutes);
-                                    } else {
-                                        notificationText = getString(R.string.lesson_multiple_minutes, lessonName, diffMinutes, lessonLocation);
-                                    }
-                                }
-                            }
+                            notificationText = ApplicationLoader.applicationContext.getResources()
+                                    .getString(R.string.single_lesson_notification, lessonName,
+                                            timeReadable, lessonLocation);
                         }
                         if (notificationType == NotificationController.NOTIFICATION_ALWAYS_ON) {
                             NotificationController.getInstance()
                                     .createNotification(notificationText, true, false);
-                        } else if (diffHours == 1 && diffMinutes == 0 && notificationType ==
-                                NotificationController.NOTIFICATION_1_HOUR ||
+                        } else if (diffHours == 1 && diffMinutes == 0 &&
+                                notificationType == NotificationController.NOTIFICATION_1_HOUR ||
                                 diffHours == 0 && diffMinutes == 30 && notificationType ==
                                         NotificationController.NOTIFICATION_30_MIN ||
                                 diffHours == 0 && diffMinutes == 15 && notificationType ==
@@ -187,13 +139,5 @@ class NotificationThread extends Thread {
         synchronized (minuteLock) {
             minuteLock.notify();
         }
-    }
-
-    private String getString(int resId, Object... formatArgs) {
-        return ApplicationLoader.applicationContext.getResources().getString(resId, formatArgs);
-    }
-
-    private String getString(int resId) {
-        return ApplicationLoader.applicationContext.getResources().getString(resId);
     }
 }

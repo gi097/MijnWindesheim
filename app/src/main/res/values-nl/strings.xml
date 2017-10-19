@@ -122,14 +122,6 @@
     <string name="june">juni</string>
 
     <string name="lesson_hidden">Les is verborgen</string>
-    <string name="lesson_multiple_hours">Je hebt over %2$d uur %1$s in %3$s</string>
-    <string name="lesson_multiple_hours_multiple_minutes">Je hebt over %2$d uur en %3$d minuten %1$s in %4$s</string>
-    <string name="lesson_multiple_hours_one_minute">Je hebt over %2$d uur en 1 minuut %1$s in %3$s</string>
-    <string name="lesson_multiple_minutes">Je hebt over %2$d minuten %1$s in %3$s</string>
-    <string name="lesson_one_hour">Je hebt over 1 uur %1$s in %2$s</string>
-    <string name="lesson_one_hour_multiple_minutes">Je hebt over 1 uur en %2$d minuten %1$s in %3$s</string>
-    <string name="lesson_one_hour_one_minute">Je hebt over 1 uur en 1 minuut %1$s in %2$s</string>
-    <string name="lesson_one_minute">Je hebt over 1 minuut %1$s in %2$s</string>
     <string name="lesson_restored">Les is hersteld</string>
     <string name="lesson_started">BEGONNEN</string>
 
@@ -149,14 +141,7 @@
 
     <string name="monday">maandag</string>
 
-    <string name="multiple_lessons_multiple_hours">Je hebt over %1$d uur meerdere lessen</string>
-    <string name="multiple_lessons_multiple_hours_multiple_minutes">Je hebt over %1$d uur en %2$d minuten meerdere lessen</string>
-    <string name="multiple_lessons_multiple_hours_one_minute">Je hebt over %1$d uur en 1 minuut meerdere lessen</string>
-    <string name="multiple_lessons_multiple_minutes">Je hebt over %1$d minuten meerdere lessen</string>
-    <string name="multiple_lessons_one_hour">Je hebt over 1 uur meerdere lessen</string>
-    <string name="multiple_lessons_one_hour_multiple_minutes">Je hebt over 1 uur en %1$d minuten meerdere lessen</string>
-    <string name="multiple_lessons_one_hour_one_minute">Je hebt over 1 uur en 1 minuut meerdere lessen</string>
-    <string name="multiple_lessons_one_minute">Je hebt over 1 minuut meerdere lessen</string>
+    <string name="multiple_lessons_notification">Je hebt %1$s meerdere lessen</string>
 
     <string name="no_app_found">Er is geen app gevonden om dit bestand te openen</string>
     <string name="no_calendar_found">Er is geen agenda gevonden</string>
@@ -204,6 +189,8 @@
     <string name="settings_notification_description">Meldingen</string>
     <string name="settings_schedule_change">Roosterwijzigingen</string>
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
+
+    <string name="single_lesson_notification">Je hebt %2$s %1$s in %3$s</string>
 
     <string name="storage_full">Onvoldoende ruimte op de SD kaart!</string>
 

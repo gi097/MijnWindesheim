@@ -122,14 +122,6 @@
     <string name="june">June</string>
 
     <string name="lesson_hidden">Lesson has been hidden</string>
-    <string name="lesson_multiple_hours">You have %1$s in about %2$d hours in %3$s</string>
-    <string name="lesson_multiple_hours_multiple_minutes">You have %1$s in about %2$d hours and %3$d minutes in %4$s</string>
-    <string name="lesson_multiple_hours_one_minute">You have %1$s in about %2$d hours and 1 minute in %3$s</string>
-    <string name="lesson_multiple_minutes">You have %1$s in about %2$d minutes in %3$s</string>
-    <string name="lesson_one_hour">You have %1$s in about 1 hour in %2$s</string>
-    <string name="lesson_one_hour_multiple_minutes">You have %1$s in about 1 hour and %2$d minutes in %3$s</string>
-    <string name="lesson_one_hour_one_minute">You have %1$s in about 1 hour and 1 minute in %2$s</string>
-    <string name="lesson_one_minute">You have %1$s in about 1 minute in %2$s</string>
     <string name="lesson_restored">Lesson has been restored</string>
     <string name="lesson_started">STARTED</string>
 
@@ -149,14 +141,7 @@
 
     <string name="monday">Monday</string>
 
-    <string name="multiple_lessons_multiple_hours">You have multiple lessons in about %1$d hours</string>
-    <string name="multiple_lessons_multiple_hours_multiple_minutes">You have multiple lessons in about %1$d hours and %2$d minutes</string>
-    <string name="multiple_lessons_multiple_hours_one_minute">You have multiple lessons in about %1$d hours and 1 minute</string>
-    <string name="multiple_lessons_multiple_minutes">You have multiple lessons in about %1$d minutes</string>
-    <string name="multiple_lessons_one_hour">You have multiple lessons in about 1 hour</string>
-    <string name="multiple_lessons_one_hour_multiple_minutes">You have multiple lessons in about 1 hour and %1$d minutes</string>
-    <string name="multiple_lessons_one_hour_one_minute">You have multiple lessons in about 1 hour and 1 minute</string>
-    <string name="multiple_lessons_one_minute">You have multiple lessons in about 1 minute</string>
+    <string name="multiple_lessons_notification">You have multiple lessons %1$s</string>
 
     <string name="no_app_found">No app was found to open this file</string>
     <string name="no_calendar_found">No calendar was found</string>
@@ -204,6 +189,8 @@
     <string name="settings_notification_description">Notifications</string>
     <string name="settings_schedule_change">Schedule changes</string>
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
+
+    <string name="single_lesson_notification">You have %1$s %2$s in %3$s</string>
 
     <string name="storage_full">No space left on SD card!</string>
 
