@@ -25,11 +25,12 @@
 package com.giovanniterlingen.windesheim.view.Fragments;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,8 +67,21 @@ public class WebviewFragment extends Fragment {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(url)));
+                    Uri uri = Uri.parse(url);
+
+                    CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+                    intentBuilder.setToolbarColor(ContextCompat.getColor(getContext(),
+                            R.color.colorPrimary));
+                    intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getContext(),
+                            R.color.colorPrimary));
+                    intentBuilder.setStartAnimations(getContext(), R.anim.slide_in_right,
+                            R.anim.slide_out_left);
+                    intentBuilder.setExitAnimations(getContext(), R.anim.slide_in_left,
+                            R.anim.slide_out_right);
+
+                    CustomTabsIntent customTabsIntent = intentBuilder.build();
+                    customTabsIntent.launchUrl(getContext(), uri);
+
                     closeWebview();
                     getActivity().onBackPressed();
                 }
