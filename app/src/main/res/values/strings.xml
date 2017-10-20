@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="about">About</string>
     <string name="about_contributors">Contributors</string>
     <string name="about_devs">Developers</string>
@@ -91,6 +91,13 @@
     <string name="hide">Hide</string>
     <string name="hide_lesson">Hide lesson</string>
 
+    <plurals name="hours">
+        <!-- Duration for one hour -->
+        <item quantity="one">1 hour</item>
+        <!-- Duration for more than one hour -->
+        <item quantity="other"><xliff:g example="7" id="number">%s</xliff:g> hours</item>
+    </plurals>
+
     <string name="icon">icon</string>
 
     <string name="interval_always_on">Always on</string>
@@ -138,6 +145,13 @@
     <string name="menuitem_about">About this app</string>
     <string name="menuitem_manage_schedules">Manage schedules</string>
     <string name="menuitem_restore_lessons">Restore lessons</string>
+
+    <plurals name="minutes">
+        <!-- Duration for one minute -->
+        <item quantity="one">1 minute</item>
+        <!-- Duration for more than one minute -->
+        <item quantity="other"><xliff:g example="7" id="number">%s</xliff:g> minutes</item>
+    </plurals>
 
     <string name="monday">Monday</string>
 
@@ -195,6 +209,14 @@
     <string name="storage_full">No space left on SD card!</string>
 
     <string name="thursday">Thursday</string>
+
+    <!-- Lesson notifications: Describes how long from now a lesson starts -->
+    <string-array name="time_until">
+        <item>in less than 1 minute</item>
+        <item>in <xliff:g id="HOURS">%1$s</xliff:g></item>
+        <item>in <xliff:g id="MINUTES">%2$s</xliff:g></item>
+        <item>in <xliff:g id="HOURS">%1$s</xliff:g> and <xliff:g id="MINUTES">%2$s</xliff:g></item>
+    </string-array>
 
     <string name="title_coen">Coen van Dam</string>
     <string name="title_giovanni">Giovanni Terlingen</string>

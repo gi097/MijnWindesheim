@@ -24,8 +24,10 @@
  **/
 package com.giovanniterlingen.windesheim;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.VisibleForTesting;
 import android.text.format.DateUtils;
 
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
@@ -34,6 +36,7 @@ import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -82,12 +85,17 @@ class NotificationThread extends Thread {
                     String lessonLocation = lesson.getRoom();
 
                     while (System.currentTimeMillis() < lessonStartTime) {
-                        long difference = lessonStartTime - System.currentTimeMillis();
-                        long diffMinutes = (difference / 60000) % 60;
-                        long diffHours = (difference / 3600000) % 24;
-                        String timeReadable = DateUtils
-                                .getRelativeTimeSpanString(lessonStartTime).toString()
-                                .toLowerCase();
+                        long delta = lessonStartTime - System.currentTimeMillis();
+
+                        // Round delta upwards to the nearest whole minute. (e.g. 7m 58s -> 8m)
+                        final long remainder = delta % DateUtils.MINUTE_IN_MILLIS;
+                        delta += remainder == 0 ? 0 : (DateUtils.MINUTE_IN_MILLIS - remainder);
+
+                        final int minutes = (int) delta / (1000 * 60) % 60;
+                        final int hours = (int) delta / (1000 * 60 * 60) % 24;
+
+                        String timeReadable = getTimeUntilLessonString(delta, minutes, hours);
+
                         if (nextLessonSameTime) {
                             notificationText = ApplicationLoader.applicationContext.getResources()
                                     .getString(R.string.multiple_lessons_notification,
@@ -100,11 +108,11 @@ class NotificationThread extends Thread {
                         if (notificationType == NotificationController.NOTIFICATION_ALWAYS_ON) {
                             NotificationController.getInstance()
                                     .createNotification(notificationText, true, false);
-                        } else if (diffHours == 1 && diffMinutes == 0 &&
-                                notificationType == NotificationController.NOTIFICATION_1_HOUR ||
-                                diffHours == 0 && diffMinutes == 30 && notificationType ==
+                        } else if (hours == 1 && minutes == 0 && notificationType ==
+                                NotificationController.NOTIFICATION_1_HOUR ||
+                                hours == 0 && minutes == 30 && notificationType ==
                                         NotificationController.NOTIFICATION_30_MIN ||
-                                diffHours == 0 && diffMinutes == 15 && notificationType ==
+                                hours == 0 && minutes == 15 && notificationType ==
                                         NotificationController.NOTIFICATION_15_MIN) {
                             NotificationController.getInstance()
                                     .createNotification(notificationText, false, true);
@@ -139,5 +147,45 @@ class NotificationThread extends Thread {
         synchronized (minuteLock) {
             minuteLock.notify();
         }
+    }
+
+    /**
+     * format "in 7 hours and 53 minutes"
+     * <p>
+     * Source from Android Open Source Project Deskclock
+     */
+    @VisibleForTesting
+    private String getTimeUntilLessonString(long delta, int minutes, int hours) {
+        // If the delta is less then 60 seconds, just report "less than a minute."
+        final String[] formats = ApplicationLoader.applicationContext.getResources()
+                .getStringArray(R.array.time_until);
+        if (delta < DateUtils.MINUTE_IN_MILLIS) {
+            return formats[0];
+        }
+
+        // Otherwise, format the remaining time until the lesson starts.
+
+        String minSeq = getNumberFormattedQuantityString(ApplicationLoader.applicationContext,
+                R.plurals.minutes, minutes);
+        String hourSeq = getNumberFormattedQuantityString(ApplicationLoader.applicationContext,
+                R.plurals.hours, hours);
+
+        final boolean showHours = hours > 0;
+        final boolean showMinutes = minutes > 0;
+
+        // Compute the index of the most appropriate time format based on the time delta.
+        final int index = (showHours ? 1 : 0) | (showMinutes ? 2 : 0);
+
+        return String.format(formats[index], hourSeq, minSeq);
+    }
+
+    /**
+     * @param id       Resource id of the plural
+     * @param quantity integer value
+     * @return string with properly localized numbers
+     */
+    private String getNumberFormattedQuantityString(Context context, int id, int quantity) {
+        final String localizedQuantity = NumberFormat.getInstance().format(quantity);
+        return context.getResources().getQuantityString(id, quantity, localizedQuantity);
     }
 }

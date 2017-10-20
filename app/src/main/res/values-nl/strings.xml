@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="about">Over</string>
     <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
@@ -91,6 +91,11 @@
     <string name="hide">Verberg</string>
     <string name="hide_lesson">Les verbergen</string>
 
+    <plurals formatted="false" name="hours">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> uur</item>
+        <item quantity="one">1 uur</item>
+    </plurals>
+
     <string name="icon">icoon</string>
 
     <string name="interval_always_on">Altijd aan</string>
@@ -138,6 +143,11 @@
     <string name="menuitem_about">Over deze app</string>
     <string name="menuitem_manage_schedules">Roosters beheren</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
+
+    <plurals formatted="false" name="minutes">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> minuten</item>
+        <item quantity="one">1 minuut</item>
+    </plurals>
 
     <string name="monday">maandag</string>
 
@@ -195,6 +205,13 @@
     <string name="storage_full">Onvoldoende ruimte op de SD kaart!</string>
 
     <string name="thursday">donderdag</string>
+
+    <string-array name="time_until">
+        <item>over minder dan 1 minuut</item>
+        <item>over <xliff:g id="HOURS">%1$s</xliff:g></item>
+        <item>over <xliff:g id="MINUTES">%2$s</xliff:g></item>
+        <item>over <xliff:g id="HOURS">%1$s</xliff:g> en <xliff:g id="MINUTES">%2$s</xliff:g></item>
+    </string-array>
 
     <string name="title_coen">Coen van Dam</string>
     <string name="title_giovanni">Giovanni Terlingen</string>
