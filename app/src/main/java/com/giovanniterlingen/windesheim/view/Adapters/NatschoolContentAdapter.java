@@ -38,9 +38,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.DownloadController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.DownloadsActivity;
 
@@ -80,15 +82,24 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        TextView contentName = holder.contentName;
-        ImageView icon = holder.icon;
+        final TextView contentName = holder.contentName;
+        final ImageView icon = holder.icon;
         final FrameLayout menuButton = holder.menuButton;
         final ImageView menuButtonImage = holder.menuButtonImage;
         contentName.setText(content.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onContentClick(content.get(holder.getAdapterPosition()));
+                NatschoolContent natschoolContent = content.get(holder.getAdapterPosition());
+                if (natschoolContent.type == 10) {
+                    TextView progressTextView = holder.progressTextView;
+                    ProgressBar progressBar = holder.progressBar;
+                    FrameLayout cancelButton = holder.cancelButton;
+                    new DownloadController(activity, contentName, progressTextView,
+                            progressBar, cancelButton, natschoolContent.url).execute();
+                    return;
+                }
+                onContentClick(natschoolContent);
             }
         });
         if (content.get(position).type == -1) {
@@ -211,6 +222,9 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
         final ImageView icon;
         final FrameLayout menuButton;
         final ImageView menuButtonImage;
+        final TextView progressTextView;
+        final ProgressBar progressBar;
+        final FrameLayout cancelButton;
 
         ViewHolder(View view) {
             super(view);
@@ -218,6 +232,9 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
             icon = view.findViewById(R.id.content_icon);
             menuButton = view.findViewById(R.id.menu_button);
             menuButtonImage = view.findViewById(R.id.menu_button_image);
+            progressTextView = view.findViewById(R.id.progress_text);
+            progressBar = view.findViewById(R.id.progress_bar);
+            cancelButton = view.findViewById(R.id.cancel_button);
         }
     }
 }

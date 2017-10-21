@@ -44,6 +44,7 @@ public class NotificationCenter {
     private static int totalEvents = 1;
 
     public static final int scheduleNeedsReload = totalEvents++;
+    public static final int stopDownloadTasks = totalEvents++;
 
     private final SparseArray<ArrayList<Object>> observers = new SparseArray<>();
     private final SparseArray<ArrayList<Object>> removeAfterBroadcast = new SparseArray<>();
@@ -70,7 +71,7 @@ public class NotificationCenter {
         return localInstance;
     }
 
-    void postNotificationName(final int id, final Object... args) {
+    public void postNotificationName(final int id, final Object... args) {
         if (Thread.currentThread() == ApplicationLoader.applicationHandler.getLooper().getThread()) {
             postNotificationNameInternal(id, args);
         } else {

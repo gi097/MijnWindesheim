@@ -24,7 +24,6 @@
  **/
 package com.giovanniterlingen.windesheim.view.Fragments;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -36,9 +35,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.DownloadController;
 import com.giovanniterlingen.windesheim.controllers.NatSchoolController;
+import com.giovanniterlingen.windesheim.controllers.WebViewController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
@@ -62,11 +62,9 @@ public class ContentsFragment extends Fragment {
             savedInstanceState) {
         final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents,
                 container, false);
-        final RecyclerView recyclerView = viewGroup
-                .findViewById(R.id.contents_recyclerview);
+        final RecyclerView recyclerView = viewGroup.findViewById(R.id.contents_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final ProgressBar progressBar = viewGroup
-                .findViewById(R.id.progress_bar);
+        final ProgressBar progressBar = viewGroup.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
         Bundle bundle = this.getArguments();
         ActionBar toolbar = ((NatschoolActivity) getActivity()).getSupportActionBar();
@@ -81,7 +79,8 @@ public class ContentsFragment extends Fragment {
             toolbar.setDisplayHomeAsUpEnabled(false);
             toolbar.setDisplayHomeAsUpEnabled(true);
         }
-        new NatSchoolController((bundle == null ? -1 : (studyRouteId = bundle.getInt(STUDYROUTE_ID))),
+        new NatSchoolController((bundle == null ? -1 :
+                (studyRouteId = bundle.getInt(STUDYROUTE_ID))),
                 (bundle == null ? -1 : bundle.getInt(PARENT_ID, -1)), getActivity()) {
             @Override
             public void onFinished(final List<NatschoolContent> courses) {
@@ -108,24 +107,15 @@ public class ContentsFragment extends Fragment {
                             ContentsFragment contentsFragment = new ContentsFragment();
                             contentsFragment.setArguments(bundle);
 
+                            NotificationCenter.getInstance()
+                                    .postNotificationName(NotificationCenter.stopDownloadTasks);
+
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.contents_fragment, contentsFragment, "")
                                     .addToBackStack("")
                                     .commit();
-                        } else {
-                            if (content.type == 1 || content.type == 3) {
-                                createWebview(content.url);
-                                return;
-                            }
-                            if (content.type == 10) {
-                                ProgressDialog mProgressDialog = new ProgressDialog(getActivity());
-                                mProgressDialog.setMessage(getResources().getString(R.string.downloading));
-                                mProgressDialog.setIndeterminate(true);
-                                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                                mProgressDialog.setCancelable(true);
-                                new DownloadController(getActivity(), mProgressDialog)
-                                        .execute(content.url);
-                            }
+                        } else if (content.type == 1 || content.type == 3) {
+                            createWebView(content.url);
                         }
                     }
                 });
@@ -134,19 +124,26 @@ public class ContentsFragment extends Fragment {
         return viewGroup;
     }
 
-    private void createWebview(String url) {
-        if (!url.startsWith("http")) {
+    private void createWebView(String url) {
+        if (url.startsWith("/")) {
             url = "https://elo.windesheim.nl" + url;
+
+            Bundle bundle = new Bundle();
+            bundle.putString(WebViewFragment.KEY_URL, url);
+
+            WebViewFragment webViewFragment = new WebViewFragment();
+            webViewFragment.setArguments(bundle);
+
+            NotificationCenter.getInstance()
+                    .postNotificationName(NotificationCenter.stopDownloadTasks);
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.contents_fragment, webViewFragment, "")
+                    .addToBackStack("")
+                    .commit();
+            return;
         }
-        Bundle bundle = new Bundle();
-        bundle.putString(WebviewFragment.KEY_URL, url);
-
-        WebviewFragment webviewFragment = new WebviewFragment();
-        webviewFragment.setArguments(bundle);
-
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.contents_fragment, webviewFragment, "")
-                .addToBackStack("")
-                .commit();
+        WebViewController webViewController = new WebViewController(getContext());
+        webViewController.intentCustomTab(url);
     }
 }

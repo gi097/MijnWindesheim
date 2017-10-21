@@ -30,6 +30,55 @@
         android:textColor="@color/colorTitle"
         android:textSize="@dimen/title_size" />
 
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/content_icon"
+        android:layout_toEndOf="@+id/content_icon"
+        android:layout_toRightOf="@+id/content_icon"
+        android:maxLines="1"
+        android:text="@string/downloading"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="@dimen/description_size"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progress_text"
+        android:layout_toEndOf="@+id/content_icon"
+        android:layout_toLeftOf="@+id/cancel_button"
+        android:layout_toRightOf="@+id/content_icon"
+        android:layout_toStartOf="@+id/cancel_button"
+        android:maxLines="1"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/cancel_button"
+        android:layout_width="@dimen/button_border_size"
+        android:layout_height="@dimen/button_border_size"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/progress_text"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/cancel_button_image"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/overflow_description"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_cancel" />
+    </FrameLayout>
+
     <FrameLayout
         android:id="@+id/menu_button"
         android:layout_width="@dimen/button_border_size"
@@ -48,5 +97,4 @@
             android:scaleType="centerInside"
             android:src="@drawable/overflow_normal" />
     </FrameLayout>
-
 </RelativeLayout>

@@ -24,102 +24,68 @@
  **/
 package com.giovanniterlingen.windesheim.view.Fragments;
 
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.WebViewController;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class WebviewFragment extends Fragment {
+public class WebViewFragment extends Fragment {
 
     public final static String KEY_URL = "WEB_VIEW_URL";
     private WebView webView;
-    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_webview, container, false);
 
-        webView = new WebView(getActivity());
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setDisplayZoomControls(false);
-        webView.setWebViewClient(new WebViewClient() {
+        final WebViewController webViewController = new WebViewController(getContext());
+        this.webView = webViewController.createWebView();
+        this.webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
-                    Uri uri = Uri.parse(url);
-
-                    CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-                    intentBuilder.setToolbarColor(ContextCompat.getColor(getContext(),
-                            R.color.colorPrimary));
-                    intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getContext(),
-                            R.color.colorPrimary));
-                    intentBuilder.setStartAnimations(getContext(), R.anim.slide_in_right,
-                            R.anim.slide_out_left);
-                    intentBuilder.setExitAnimations(getContext(), R.anim.slide_in_left,
-                            R.anim.slide_out_right);
-
-                    CustomTabsIntent customTabsIntent = intentBuilder.build();
-                    customTabsIntent.launchUrl(getContext(), uri);
-
-                    closeWebview();
-                    getActivity().onBackPressed();
+                    webViewController.intentCustomTab(url);
                 }
             }
         });
-        webView.setWebChromeClient(new ChromeClient());
-        progressDialog = ProgressDialog.show(getActivity(), null, getContext().getString(R.string.loading));
 
         Bundle bundle = getArguments();
-        webView.loadUrl(bundle.getString(KEY_URL));
+        this.webView.loadUrl(bundle.getString(KEY_URL));
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        viewGroup.addView(webView, layoutParams);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout
+                .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        viewGroup.addView(this.webView, layoutParams);
+
         return viewGroup;
     }
 
     @Override
     public void onDestroy() {
-        closeWebview();
+        closeWebView();
         super.onDestroy();
     }
 
-    private void closeWebview() {
+    private void closeWebView() {
         if (webView != null) {
             webView.clearHistory();
             webView.clearCache(true);
             webView.loadUrl("about:blank");
             webView.pauseTimers();
-        }
-    }
-
-    private class ChromeClient extends WebChromeClient {
-        @Override
-        public void onProgressChanged(WebView view, int newProgress) {
-            if (progressDialog != null && progressDialog.isShowing() && newProgress == 100) {
-                progressDialog.dismiss();
-            }
-            super.onProgressChanged(view, newProgress);
+            webView = null;
         }
     }
 }

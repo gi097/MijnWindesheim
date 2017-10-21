@@ -25,7 +25,6 @@
 package com.giovanniterlingen.windesheim.controllers;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,8 +35,13 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.format.Formatter;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
@@ -56,31 +60,53 @@ import java.net.URL;
  * @author Giovanni Terlingen
  * @author Thomas Visch
  */
-public class DownloadController extends AsyncTask<String, Integer, String> {
+public class DownloadController extends AsyncTask<String, Object, String>
+        implements NotificationCenter.NotificationCenterDelegate {
 
     private final Activity activity;
-    private final ProgressDialog progressDialog;
+    private final TextView contentNameTextView;
+    private final TextView progressTextView;
+    private final ProgressBar progressBar;
+    private final FrameLayout cancelButton;
+    private final String url;
+
     private PowerManager.WakeLock wakeLock;
 
-    public DownloadController(Activity activity, ProgressDialog progressDialog) {
+    public DownloadController(Activity activity, TextView contentNameTextView,
+                              TextView progressTextView, ProgressBar progressBar,
+                              FrameLayout cancelButton, String url) {
         this.activity = activity;
-        this.progressDialog = progressDialog;
+        this.contentNameTextView = contentNameTextView;
+        this.progressTextView = progressTextView;
+        this.progressBar = progressBar;
+        this.cancelButton = cancelButton;
+        this.url = url;
     }
 
     @Override
     protected void onPreExecute() {
-        super.onPreExecute();
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.stopDownloadTasks);
         PowerManager powerManager = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         wakeLock.acquire();
-        progressDialog.show();
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+        contentNameTextView.setVisibility(View.GONE);
+        progressTextView.setVisibility(View.VISIBLE);
+        progressTextView.setText(activity.getResources().getString(R.string.downloading));
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setIndeterminate(true);
+        cancelButton.setVisibility(View.VISIBLE);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onClick(View v) {
                 if (wakeLock.isHeld()) {
                     wakeLock.release();
                 }
                 DownloadController.this.cancel(true);
+                contentNameTextView.setVisibility(View.VISIBLE);
+                progressTextView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
                 ((NatschoolActivity) activity).downloadCanceled();
             }
         });
@@ -91,8 +117,8 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
         InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
-        int lastSlash = strings[0].lastIndexOf('/');
-        String fileName = strings[0].substring(lastSlash + 1);
+        int lastSlash = url.lastIndexOf('/');
+        String fileName = url.substring(lastSlash + 1);
         File newFile = new File(Environment.getExternalStorageDirectory().toString(),
                 "MijnWindesheim" + File.separator + fileName);
         try {
@@ -102,7 +128,7 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
             newFile.getParentFile().mkdirs();
             newFile.createNewFile();
 
-            URI uri = new URI("https", "elo.windesheim.nl", strings[0], null);
+            URI uri = new URI("https", "elo.windesheim.nl", url, null);
             URL url = uri.toURL();
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Cookie", new CookieController().getNatSchoolCookie());
@@ -114,7 +140,8 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
             output = new FileOutputStream(newFile);
 
             byte data[] = new byte[32];
-            long total = 0;
+            int total = 0;
+            long previousMillis = 0;
             int count;
             while ((count = input.read(data)) != -1) {
                 if (isCancelled()) {
@@ -123,8 +150,11 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
                     return null;
                 }
                 total += count;
-                if (fileLength > 0) {
-                    publishProgress((int) (total * 100 / fileLength));
+                if (fileLength > 0 && previousMillis + 1000 < System.currentTimeMillis()) {
+                    String s = Formatter.formatFileSize(activity, total) + "/"
+                            + Formatter.formatFileSize(activity, fileLength);
+                    publishProgress(total, fileLength, s);
+                    previousMillis = System.currentTimeMillis();
                 }
                 output.write(data, 0, count);
             }
@@ -135,41 +165,10 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
             }
             if (e instanceof IOException) {
                 newFile.delete();
-                if (wakeLock.isHeld()) {
-                    wakeLock.release();
-                }
                 if (e.getMessage().contains("ENOSPC")) {
-                    ((NatschoolActivity) activity).noSpace();
-                } else {
-                    ApplicationLoader.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(activity)
-                                    .setTitle(activity.getResources()
-                                            .getString(R.string.alert_connection_title))
-                                    .setMessage(activity.getResources()
-                                            .getString(R.string.alert_connection_description))
-                                    .setPositiveButton(activity.getResources()
-                                                    .getString(R.string.connect),
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    DownloadController.this.cancel(true);
-                                                    new DownloadController(activity, progressDialog)
-                                                            .execute(strings);
-                                                    dialog.cancel();
-                                                }
-                                            })
-                                    .setNegativeButton(activity.getResources()
-                                                    .getString(R.string.cancel),
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            }).show();
-                        }
-                    });
+                    return "nospace";
                 }
-                return null;
+                return "exception";
             }
         } finally {
             try {
@@ -190,23 +189,54 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
     }
 
     @Override
-    protected void onProgressUpdate(Integer... progress) {
+    protected void onProgressUpdate(Object... progress) {
         super.onProgressUpdate(progress);
-        progressDialog.setIndeterminate(false);
-        progressDialog.setMax(100);
-        progressDialog.setProgress(progress[0]);
+        progressBar.setIndeterminate(false);
+        progressBar.setMax((int) progress[1]);
+        progressBar.setProgress((int) progress[0]);
+        progressTextView.setText((String) progress[2]);
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(final String result) {
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.stopDownloadTasks);
         if (wakeLock.isHeld()) {
             wakeLock.release();
         }
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        if (result != null && result.equals("permission")) {
+        contentNameTextView.setVisibility(View.VISIBLE);
+        progressTextView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+        if ("permission".equals(result)) {
             ((NatschoolActivity) activity).noPermission();
+            return;
+        }
+        if ("nospace".equals(result)) {
+            ((NatschoolActivity) activity).noSpace();
+            return;
+        }
+        if ("exception".equals(result)) {
+            new AlertDialog.Builder(activity)
+                    .setTitle(activity.getResources().getString(R.string.alert_connection_title))
+                    .setMessage(activity.getResources()
+                            .getString(R.string.alert_connection_description))
+                    .setPositiveButton(activity.getResources().getString(R.string.connect),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    DownloadController.this.cancel(true);
+                                    new DownloadController(activity, contentNameTextView,
+                                            progressTextView, progressBar, cancelButton, url)
+                                            .execute();
+                                    dialog.cancel();
+                                }
+                            })
+                    .setNegativeButton(activity.getResources()
+                                    .getString(R.string.cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            }).show();
             return;
         }
         if (result != null) {
@@ -214,8 +244,7 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
             Intent target = new Intent(Intent.ACTION_VIEW);
             if (android.os.Build.VERSION.SDK_INT >= 24) {
                 uri = FileProvider.getUriForFile(activity,
-                        "com.giovanniterlingen.windesheim.provider",
-                        new File(result));
+                        "com.giovanniterlingen.windesheim.provider", new File(result));
                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
                         Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
@@ -230,6 +259,15 @@ public class DownloadController extends AsyncTask<String, Integer, String> {
                 activity.startActivity(target);
             } catch (ActivityNotFoundException e) {
                 ((NatschoolActivity) activity).noSupportedApp();
+            }
+        }
+    }
+
+    @Override
+    public void didReceivedNotification(int id, Object... args) {
+        if (id == NotificationCenter.stopDownloadTasks) {
+            if (!isCancelled()) {
+                this.cancel(true);
             }
         }
     }
