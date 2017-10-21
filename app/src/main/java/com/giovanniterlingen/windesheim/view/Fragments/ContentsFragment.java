@@ -113,12 +113,8 @@ public class ContentsFragment extends Fragment {
                                     .addToBackStack("")
                                     .commit();
                         } else {
-                            if (content.type == 1) {
-                                createWebview(content.url, false);
-                                return;
-                            }
-                            if (content.type == 3) {
-                                createWebview(content.url, true);
+                            if (content.type == 1 || content.type == 3) {
+                                createWebview(content.url);
                                 return;
                             }
                             if (content.type == 10) {
@@ -138,10 +134,12 @@ public class ContentsFragment extends Fragment {
         return viewGroup;
     }
 
-    private void createWebview(String url, boolean externalView) {
+    private void createWebview(String url) {
+        if (!url.startsWith("http")) {
+            url = "https://elo.windesheim.nl" + url;
+        }
         Bundle bundle = new Bundle();
-        bundle.putString(WebviewFragment.KEY_URL, "https://elo.windesheim.nl" + url);
-        bundle.putBoolean(WebviewFragment.EXTERNAL, externalView);
+        bundle.putString(WebviewFragment.KEY_URL, url);
 
         WebviewFragment webviewFragment = new WebviewFragment();
         webviewFragment.setArguments(bundle);

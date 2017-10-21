@@ -49,7 +49,6 @@ import com.giovanniterlingen.windesheim.R;
 public class WebviewFragment extends Fragment {
 
     public final static String KEY_URL = "WEB_VIEW_URL";
-    public final static String EXTERNAL = "EXTERNAL";
     private WebView webView;
     private ProgressDialog progressDialog;
 

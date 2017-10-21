@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
     <string name="about">Over</string>
     <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
@@ -92,7 +92,7 @@
     <string name="hide_lesson">Les verbergen</string>
 
     <plurals formatted="false" name="hours">
-        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> uur</item>
+        <item quantity="other">%s uur</item>
         <item quantity="one">1 uur</item>
     </plurals>
 
@@ -145,7 +145,7 @@
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
 
     <plurals formatted="false" name="minutes">
-        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> minuten</item>
+        <item quantity="other">%s minuten</item>
         <item quantity="one">1 minuut</item>
     </plurals>
 
@@ -208,9 +208,9 @@
 
     <string-array name="time_until">
         <item>over minder dan 1 minuut</item>
-        <item>over <xliff:g id="HOURS">%1$s</xliff:g></item>
-        <item>over <xliff:g id="MINUTES">%2$s</xliff:g></item>
-        <item>over <xliff:g id="HOURS">%1$s</xliff:g> en <xliff:g id="MINUTES">%2$s</xliff:g></item>
+        <item>over %1$s</item>
+        <item>over %2$s</item>
+        <item>over %1$s en %2$s</item>
     </string-array>
 
     <string name="title_coen">Coen van Dam</string>
