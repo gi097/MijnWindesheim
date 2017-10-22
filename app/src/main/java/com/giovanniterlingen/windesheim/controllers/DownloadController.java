@@ -198,6 +198,12 @@ public class DownloadController extends AsyncTask<String, Object, String>
     }
 
     @Override
+    protected void onCancelled(String s) {
+        super.onCancelled(s);
+        onPostExecute(null);
+    }
+
+    @Override
     protected void onPostExecute(final String result) {
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.stopDownloadTasks);
         if (wakeLock.isHeld()) {

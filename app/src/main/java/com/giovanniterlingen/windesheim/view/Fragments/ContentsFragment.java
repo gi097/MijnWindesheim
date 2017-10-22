@@ -124,6 +124,13 @@ public class ContentsFragment extends Fragment {
         return viewGroup;
     }
 
+    @Override
+    public void onStop() {
+        NotificationCenter.getInstance()
+                .postNotificationName(NotificationCenter.stopDownloadTasks);
+        super.onStop();
+    }
+
     private void createWebView(String url) {
         if (url.startsWith("/")) {
             url = "https://elo.windesheim.nl" + url;
