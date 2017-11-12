@@ -90,12 +90,6 @@ public class NatschoolActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    public void noSpace() {
-        Snackbar snackbar = Snackbar.make(view, getResources()
-                .getString(R.string.storage_full), Snackbar.LENGTH_SHORT);
-        snackbar.show();
-    }
-
     public void noPermission() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.no_permission), Snackbar.LENGTH_LONG);

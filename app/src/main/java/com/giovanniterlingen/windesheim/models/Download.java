@@ -22,46 +22,31 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim;
-
-import android.app.Notification;
-import android.app.Service;
-import android.content.Intent;
-import android.os.Build;
-import android.os.IBinder;
-
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
+package com.giovanniterlingen.windesheim.models;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class NotificationService extends Service {
+public class Download {
 
-    @Override
-    public void onCreate() {
-        ApplicationLoader.postInitApplication();
+    private int progress;
+    private String progressString;
+
+    public int getProgress() {
+        return progress;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            Notification notification = NotificationController.getInstance()
-                    .getServiceNotification();
-            this.startForeground(NotificationController.SERVICE_NOTIFICATION_ID, notification);
-        }
-        return START_STICKY;
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public String getProgressString() {
+        return progressString;
     }
 
-    @Override
-    public void onDestroy() {
-        Intent intent = new Intent("com.giovanniterlingen.windesheim.start");
-        sendBroadcast(intent);
+    public void setProgressString(String progressString) {
+        this.progressString = progressString;
     }
 }

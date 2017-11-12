@@ -32,6 +32,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.AuthenticationActivity;
 
@@ -142,9 +143,18 @@ public abstract class NatSchoolController extends AsyncTask<Void, Void, Void> {
                     JSONObject jsonobj = jsonArray.getJSONObject(i);
                     int type = jsonobj.getInt("ITEMTYPE");
                     if (type == 0 || type == 1 || type == 3 || type == 10) {
-                        content.add(new NatschoolContent(jsonobj.getInt("ID"), jsonobj.getString("NAME"),
-                                jsonobj.getInt("STUDYROUTE_ITEM_ID"), type,
-                                (jsonobj.has("URL") ? jsonobj.getString("URL") : null)));
+                        NatschoolContent natschoolContent =
+                                new NatschoolContent(jsonobj.getInt("ID"), jsonobj.getString("NAME"),
+                                        jsonobj.getInt("STUDYROUTE_ITEM_ID"), type,
+                                        (jsonobj.has("URL") ? jsonobj.getString("URL") : null));
+                        Download currentDownload = DownloadController.activeDownloads
+                                .get(natschoolContent.id);
+                        if (currentDownload != null) {
+                            natschoolContent.downloading = true;
+                            natschoolContent.progress = currentDownload.getProgress();
+                            natschoolContent.progressString = currentDownload.getProgressString();
+                        }
+                        content.add(natschoolContent);
                     }
                 }
             }
@@ -173,7 +183,7 @@ public abstract class NatSchoolController extends AsyncTask<Void, Void, Void> {
                                                 public void onFinished(List<NatschoolContent> content) {
                                                     NatSchoolController.this.onFinished(content);
                                                 }
-                                            }.execute();
+                                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                             dialog.cancel();
                                         }
                                     })

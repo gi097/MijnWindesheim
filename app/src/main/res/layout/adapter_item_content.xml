@@ -65,12 +65,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/progress_text"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/button_padding_end"
+        android:layout_marginRight="@dimen/button_padding_end"
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/cancel_button_image"
             android:layout_width="@dimen/button_size"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -86,6 +85,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/button_padding_end"
+        android:layout_marginRight="@dimen/button_padding_end"
         android:visibility="gone">
 
         <ImageView

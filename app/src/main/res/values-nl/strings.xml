@@ -130,8 +130,6 @@
     <string name="lesson_restored">Les is hersteld</string>
     <string name="lesson_started">BEGONNEN</string>
 
-    <string name="loading">Laden…</string>
-
     <string name="login">Inloggen</string>
 
     <string name="manage_schedules">Roosters beheren</string>
@@ -201,8 +199,6 @@
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
 
     <string name="single_lesson_notification">Je hebt %2$s %1$s in %3$s</string>
-
-    <string name="storage_full">Onvoldoende ruimte op de SD kaart!</string>
 
     <string name="thursday">donderdag</string>
 

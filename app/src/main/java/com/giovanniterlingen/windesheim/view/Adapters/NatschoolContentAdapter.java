@@ -41,8 +41,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.DownloadController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.DownloadsActivity;
 
@@ -71,7 +71,7 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
         this.content = content;
     }
 
-    protected abstract void onContentClick(NatschoolContent content);
+    protected abstract void onContentClick(NatschoolContent content, int position);
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -90,16 +90,8 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NatschoolContent natschoolContent = content.get(holder.getAdapterPosition());
-                if (natschoolContent.type == 10) {
-                    TextView progressTextView = holder.progressTextView;
-                    ProgressBar progressBar = holder.progressBar;
-                    FrameLayout cancelButton = holder.cancelButton;
-                    new DownloadController(activity, contentName, progressTextView,
-                            progressBar, cancelButton, natschoolContent.url).execute();
-                    return;
-                }
-                onContentClick(natschoolContent);
+                onContentClick(content.get(holder.getAdapterPosition()),
+                        holder.getAdapterPosition());
             }
         });
         if (content.get(position).type == -1) {
@@ -147,6 +139,45 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
             } else if (content.get(position).type == 10) {
                 icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
                         getDrawableByName(content.get(position).url), null));
+
+                final TextView progressTextView = holder.progressTextView;
+                final ProgressBar progressBar = holder.progressBar;
+                final FrameLayout cancelButton = holder.cancelButton;
+
+                if (content.get(position).downloading) {
+                    contentName.setVisibility(View.GONE);
+                    progressTextView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (content.get(position).progress == -1 &&
+                            content.get(position).progressString == null) {
+                        progressTextView.setText(activity.getResources()
+                                .getString(R.string.downloading));
+                        progressBar.setIndeterminate(true);
+                    } else {
+                        progressTextView.setText(content.get(position).progressString);
+                        progressBar.setIndeterminate(false);
+                        progressBar.setMax(100);
+                        progressBar.setProgress(content.get(position).progress);
+                    }
+                    cancelButton.setVisibility(View.VISIBLE);
+                    cancelButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            NotificationCenter.getInstance()
+                                    .postNotificationName(NotificationCenter.downloadCancelled,
+                                            content.get(holder.getAdapterPosition()).id);
+                            contentName.setVisibility(View.VISIBLE);
+                            progressTextView.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE);
+                            cancelButton.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    contentName.setVisibility(View.VISIBLE);
+                    progressTextView.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
+                    cancelButton.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -214,6 +245,62 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
     @Override
     public int getItemCount() {
         return content.size();
+    }
+
+    public void updateItemStarted(int position, int itemId) {
+        if (content.size() > position && content.get(position).id == itemId) {
+            content.get(position).downloading = true;
+            content.get(position).progress = -1;
+            content.get(position).progressString = null;
+            notifyItemChanged(position);
+            return;
+        }
+        // item was not found on the original location
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i).id == itemId) {
+                content.get(i).downloading = true;
+                content.get(i).progress = -1;
+                content.get(i).progressString = null;
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
+    public void updateItemProgress(int position, int itemId, int progress, String progressString) {
+        if (content.size() > position && content.get(position).id == itemId) {
+            content.get(position).downloading = true;
+            content.get(position).progress = progress;
+            content.get(position).progressString = progressString;
+            notifyItemChanged(position);
+            return;
+        }
+        // item was not found on the original location
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i).id == itemId) {
+                content.get(i).downloading = true;
+                content.get(i).progress = progress;
+                content.get(i).progressString = progressString;
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
+    public void updateItemFinished(int position, int itemId) {
+        if (content.size() > position && content.get(position).id == itemId) {
+            content.get(position).downloading = false;
+            notifyItemChanged(position);
+            return;
+        }
+        // item was not found on the original location
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i).id == itemId) {
+                content.get(i).downloading = false;
+                notifyItemChanged(i);
+                return;
+            }
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

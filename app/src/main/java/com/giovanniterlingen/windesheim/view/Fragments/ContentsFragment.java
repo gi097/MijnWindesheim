@@ -24,11 +24,13 @@
  **/
 package com.giovanniterlingen.windesheim.view.Fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,7 @@ import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.controllers.DownloadController;
 import com.giovanniterlingen.windesheim.controllers.NatSchoolController;
 import com.giovanniterlingen.windesheim.controllers.WebViewController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
@@ -50,26 +53,39 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class ContentsFragment extends Fragment {
+public class ContentsFragment extends Fragment
+        implements NotificationCenter.NotificationCenterDelegate {
 
     private static final String STUDYROUTE_ID = "STUDYROUTE_ID";
     private static final String PARENT_ID = "PARENT_ID";
     private static final String STUDYROUTE_NAME = "STUDYROUTE_NAME";
-    private int studyRouteId;
+    private int studyRouteId = -1;
+    private RecyclerView recyclerView;
+    private NatschoolContentAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
+
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.downloadPending);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.downloadUpdated);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.downloadFinished);
+
         final ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_contents,
                 container, false);
-        final RecyclerView recyclerView = viewGroup.findViewById(R.id.contents_recyclerview);
+
+        recyclerView = viewGroup.findViewById(R.id.contents_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
         final ProgressBar progressBar = viewGroup.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
+
         Bundle bundle = this.getArguments();
+
         ActionBar toolbar = ((NatschoolActivity) getActivity()).getSupportActionBar();
-        String studyRouteName;
         if (toolbar != null) {
+            String studyRouteName;
             if (bundle != null && (studyRouteName = bundle.getString(STUDYROUTE_NAME)) != null &&
                     studyRouteName.length() != 0) {
                 toolbar.setTitle(bundle.getString(STUDYROUTE_NAME));
@@ -91,9 +107,9 @@ public class ContentsFragment extends Fragment {
                 } else {
                     emptyTextView.setVisibility(View.GONE);
                 }
-                recyclerView.setAdapter(new NatschoolContentAdapter(getActivity(), courses) {
+                adapter = new NatschoolContentAdapter(getActivity(), courses) {
                     @Override
-                    protected void onContentClick(NatschoolContent content) {
+                    protected void onContentClick(NatschoolContent content, int position) {
                         if (content.url == null || content.url.length() == 0) {
                             Bundle bundle = new Bundle();
                             if (content.id == -1) {
@@ -107,28 +123,27 @@ public class ContentsFragment extends Fragment {
                             ContentsFragment contentsFragment = new ContentsFragment();
                             contentsFragment.setArguments(bundle);
 
-                            NotificationCenter.getInstance()
-                                    .postNotificationName(NotificationCenter.stopDownloadTasks);
-
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.contents_fragment, contentsFragment, "")
                                     .addToBackStack("")
                                     .commit();
-                        } else if (content.type == 1 || content.type == 3) {
-                            createWebView(content.url);
+                        } else {
+                            if (content.type == 1 || content.type == 3) {
+                                createWebView(content.url);
+                            } else if (content.type == 10) {
+                                if (!content.downloading) {
+                                    new DownloadController(getActivity(), content.url, studyRouteId,
+                                            content.id, position)
+                                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                }
+                            }
                         }
                     }
-                });
+                };
+                recyclerView.setAdapter(adapter);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return viewGroup;
-    }
-
-    @Override
-    public void onStop() {
-        NotificationCenter.getInstance()
-                .postNotificationName(NotificationCenter.stopDownloadTasks);
-        super.onStop();
     }
 
     private void createWebView(String url) {
@@ -141,9 +156,6 @@ public class ContentsFragment extends Fragment {
             WebViewFragment webViewFragment = new WebViewFragment();
             webViewFragment.setArguments(bundle);
 
-            NotificationCenter.getInstance()
-                    .postNotificationName(NotificationCenter.stopDownloadTasks);
-
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.contents_fragment, webViewFragment, "")
                     .addToBackStack("")
@@ -152,5 +164,31 @@ public class ContentsFragment extends Fragment {
         }
         WebViewController webViewController = new WebViewController(getContext());
         webViewController.intentCustomTab(url);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.downloadPending);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.downloadUpdated);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.downloadFinished);
+    }
+
+    @Override
+    public void didReceivedNotification(int id, Object... args) {
+        if (id == NotificationCenter.downloadPending && (int) args[0] == studyRouteId) {
+            if (adapter != null) {
+                adapter.updateItemStarted((int) args[1], (int) args[2]);
+            }
+        }
+        if (id == NotificationCenter.downloadUpdated && (int) args[0] == studyRouteId) {
+            if (adapter != null) {
+                adapter.updateItemProgress((int) args[1], (int) args[2], (int) args[3], (String) args[4]);
+            }
+        } else if (id == NotificationCenter.downloadFinished && (int) args[0] == studyRouteId) {
+            if (adapter != null) {
+                adapter.updateItemFinished((int) args[1], (int) args[2]);
+            }
+        }
     }
 }

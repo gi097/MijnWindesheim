@@ -39,7 +39,7 @@ import com.giovanniterlingen.windesheim.R;
  */
 public class WebViewController {
 
-    private Context context;
+    private final Context context;
 
     public WebViewController(Context context) {
         this.context = context;

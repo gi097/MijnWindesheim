@@ -201,16 +201,14 @@ public class ScheduleActivity extends AppCompatActivity
 
     @Override
     public void onPause() {
-        NotificationCenter.getInstance()
-                .removeObserver(this, NotificationCenter.scheduleNeedsReload);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.scheduleReload);
         onPauseMillis = System.currentTimeMillis();
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        NotificationCenter.getInstance()
-                .addObserver(this, NotificationCenter.scheduleNeedsReload);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.scheduleReload);
         if (!DateUtils.isToday(onPauseMillis)) {
             setViewPager();
         }
@@ -265,7 +263,7 @@ public class ScheduleActivity extends AppCompatActivity
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == NotificationCenter.scheduleNeedsReload) {
+        if (id == NotificationCenter.scheduleReload) {
             List<Fragment> fragments = fragmentManager.getFragments();
             if (fragments != null) {
                 for (Fragment fragment : fragments) {

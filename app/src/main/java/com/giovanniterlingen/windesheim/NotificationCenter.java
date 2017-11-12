@@ -43,8 +43,11 @@ public class NotificationCenter {
 
     private static int totalEvents = 1;
 
-    public static final int scheduleNeedsReload = totalEvents++;
-    public static final int stopDownloadTasks = totalEvents++;
+    public static final int scheduleReload = totalEvents++;
+    public static final int downloadPending = totalEvents++;
+    public static final int downloadUpdated = totalEvents++;
+    public static final int downloadFinished = totalEvents++;
+    public static final int downloadCancelled = totalEvents++;
 
     private final SparseArray<ArrayList<Object>> observers = new SparseArray<>();
     private final SparseArray<ArrayList<Object>> removeAfterBroadcast = new SparseArray<>();

@@ -132,8 +132,6 @@
     <string name="lesson_restored">Lesson has been restored</string>
     <string name="lesson_started">STARTED</string>
 
-    <string name="loading">Loading…</string>
-
     <string name="login">Login</string>
 
     <string name="manage_schedules">Manage schedules</string>
@@ -205,8 +203,6 @@
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
 
     <string name="single_lesson_notification">You have %1$s %2$s in %3$s</string>
-
-    <string name="storage_full">No space left on SD card!</string>
 
     <string name="thursday">Thursday</string>
 

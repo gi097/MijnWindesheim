@@ -58,6 +58,8 @@ public class WebViewFragment extends Fragment {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
                     webViewController.intentCustomTab(url);
+                    closeWebView();
+                    getActivity().onBackPressed();
                 }
             }
         });

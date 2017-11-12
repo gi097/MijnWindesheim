@@ -99,9 +99,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         super.onResume();
         if (isMenuVisible()) {
             if (recyclerView != null && recyclerView.getAdapter() == null) {
-                new ScheduleFetcher(false, true, false).execute();
+                new ScheduleFetcher(false, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new ScheduleFetcher(false, false, false).execute();
+                new ScheduleFetcher(false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }
@@ -134,9 +134,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
             if (!DatabaseController.getInstance().isFetched(date)) {
-                new ScheduleFetcher(true, true, false).execute();
+                new ScheduleFetcher(true, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new ScheduleFetcher(false, false, false).execute();
+                new ScheduleFetcher(false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }
@@ -178,7 +178,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        new ScheduleFetcher(true, false, true).execute();
+                                        new ScheduleFetcher(true, false, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                         dialog.cancel();
                                     }
                                 })
@@ -194,7 +194,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        new ScheduleFetcher(true, false, true).execute();
+        new ScheduleFetcher(true, false, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void updateLayout() {

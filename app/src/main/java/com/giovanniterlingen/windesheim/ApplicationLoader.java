@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Handler;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -55,9 +56,9 @@ public class ApplicationLoader extends Application {
 
     public static volatile Context applicationContext;
     public static volatile Handler applicationHandler;
+    private static volatile boolean applicationInited = false;
 
     private static NotificationThread notificationThread;
-    private static volatile boolean notificationThreadInitialized = false;
     private static final IntentFilter intentFilter;
 
     static {
@@ -84,35 +85,30 @@ public class ApplicationLoader extends Application {
         registerReceiver(new TimeReceiver(), intentFilter);
 
         NotificationController.getInstance().initNotificationChannels();
-        restartNotificationThread();
-
-        startServices();
+        startPushService();
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
     }
 
-    public static void startServices() {
-        if (DatabaseController.getInstance().hasSchedules()) {
-            startBackground(true);
-            startBackground(false);
-            startFetcher();
+    public static void startPushService() {
+        Intent intent = new Intent(applicationContext, NotificationService.class);
+        if (Build.VERSION.SDK_INT >= 26) {
+            applicationContext.startForegroundService(intent);
+        } else {
+            applicationContext.startService(intent);
         }
     }
 
-    private static void startBackground(boolean immediately) {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher
-                (new GooglePlayDriver(applicationContext));
+    public static void postInitApplication() {
+        if (applicationInited) {
+            return;
+        }
+        applicationInited = true;
 
-        Job notificationJob = dispatcher.newJobBuilder()
-                .setService(NotificationService.class)
-                .setTag("backgroundJob-" + System.currentTimeMillis())
-                .setRecurring(!immediately)
-                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
-                .setTrigger(immediately ? Trigger.NOW :
-                        Trigger.executionWindow(50, 60))
-                .setReplaceCurrent(false)
-                .build();
-        dispatcher.mustSchedule(notificationJob);
+        if (DatabaseController.getInstance().hasSchedules()) {
+            restartNotificationThread();
+            startFetcher();
+        }
     }
 
     private static void startFetcher() {
@@ -125,20 +121,13 @@ public class ApplicationLoader extends Application {
                 .setRecurring(true)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
                 .setTrigger(Trigger.executionWindow((int) TimeUnit.DAYS.toSeconds(1),
-                        (int) TimeUnit.DAYS.toSeconds(1) + (int) TimeUnit.HOURS.toSeconds(1)))
+                        (int) TimeUnit.DAYS.toSeconds(1) +
+                                (int) TimeUnit.HOURS.toSeconds(1)))
                 .setConstraints(Constraint.ON_UNMETERED_NETWORK)
                 .setReplaceCurrent(false)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .build();
         dispatcher.mustSchedule(fetcherJob);
-    }
-
-    public static void initNotificationThread() {
-        if (notificationThreadInitialized) {
-            return;
-        }
-        notificationThreadInitialized = true;
-        restartNotificationThread();
     }
 
     public static void restartNotificationThread() {
@@ -157,8 +146,6 @@ public class ApplicationLoader extends Application {
     }
 
     public static void notifyMinuteChanged() {
-        NotificationCenter.getInstance()
-                .postNotificationName(NotificationCenter.scheduleNeedsReload);
         if (notificationThread != null) {
             notificationThread.notifyMinuteChanged();
         }

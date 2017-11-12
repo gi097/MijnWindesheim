@@ -104,7 +104,7 @@ public class ChooseScheduleFragment extends Fragment {
             }
         }
         if (isMenuVisible()) {
-            (componentFetcher = new ComponentFetcher()).execute();
+            (componentFetcher = new ComponentFetcher()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             if (adapter != null) {
                 adapter = null;
@@ -199,7 +199,7 @@ public class ChooseScheduleFragment extends Fragment {
                                                 componentFetcher.cancel(true);
                                             }
                                         }
-                                        (componentFetcher = new ComponentFetcher()).execute();
+                                        (componentFetcher = new ComponentFetcher()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                         dialog.cancel();
                                     }
                                 })
@@ -259,8 +259,7 @@ public class ChooseScheduleFragment extends Fragment {
                             }
                             editor.apply();
 
-                            ApplicationLoader.restartNotificationThread();
-                            ApplicationLoader.startServices();
+                            ApplicationLoader.postInitApplication();
 
                             if (!hasSchedules) {
                                 Intent intent = new Intent(context, ScheduleActivity.class);

@@ -38,6 +38,10 @@ public class NatschoolContent {
     public int type;
     public String imageUrl;
 
+    public boolean downloading = false;
+    public int progress = 0;
+    public String progressString = null;
+
     public NatschoolContent(String name) {
         this.name = name;
         this.type = -1;

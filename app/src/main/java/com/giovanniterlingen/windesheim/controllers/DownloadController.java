@@ -25,34 +25,25 @@
 package com.giovanniterlingen.windesheim.controllers;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.PowerManager;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.text.format.Formatter;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.util.SparseArray;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -64,185 +55,131 @@ public class DownloadController extends AsyncTask<String, Object, String>
         implements NotificationCenter.NotificationCenterDelegate {
 
     private final Activity activity;
-    private final TextView contentNameTextView;
-    private final TextView progressTextView;
-    private final ProgressBar progressBar;
-    private final FrameLayout cancelButton;
     private final String url;
+    private final int studyRouteId;
+    private final int contentId;
+    private final int adapterPosition;
 
-    private PowerManager.WakeLock wakeLock;
+    private DownloadManager downloadManager;
+    private long currentDownloadId = -1;
 
-    public DownloadController(Activity activity, TextView contentNameTextView,
-                              TextView progressTextView, ProgressBar progressBar,
-                              FrameLayout cancelButton, String url) {
+    static final SparseArray<Download> activeDownloads = new SparseArray<>();
+
+    public DownloadController(Activity activity, String url, int studyRouteId, int contentId,
+                              int adapterPosition) {
         this.activity = activity;
-        this.contentNameTextView = contentNameTextView;
-        this.progressTextView = progressTextView;
-        this.progressBar = progressBar;
-        this.cancelButton = cancelButton;
         this.url = url;
+        this.studyRouteId = studyRouteId;
+        this.contentId = contentId;
+        this.adapterPosition = adapterPosition;
     }
 
     @Override
     protected void onPreExecute() {
-        NotificationCenter.getInstance().addObserver(this, NotificationCenter.stopDownloadTasks);
-        PowerManager powerManager = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        wakeLock.acquire();
-
-        contentNameTextView.setVisibility(View.GONE);
-        progressTextView.setVisibility(View.VISIBLE);
-        progressTextView.setText(activity.getResources().getString(R.string.downloading));
-        progressBar.setVisibility(View.VISIBLE);
-        progressBar.setIndeterminate(true);
-        cancelButton.setVisibility(View.VISIBLE);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (wakeLock.isHeld()) {
-                    wakeLock.release();
-                }
-                DownloadController.this.cancel(true);
-                contentNameTextView.setVisibility(View.VISIBLE);
-                progressTextView.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-                cancelButton.setVisibility(View.GONE);
-                ((NatschoolActivity) activity).downloadCanceled();
-            }
-        });
+        super.onPreExecute();
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.downloadCancelled);
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadPending,
+                studyRouteId, adapterPosition, contentId);
     }
 
     @Override
     protected String doInBackground(final String... strings) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        int lastSlash = url.lastIndexOf('/');
-        String fileName = url.substring(lastSlash + 1);
-        File newFile = new File(Environment.getExternalStorageDirectory().toString(),
-                "MijnWindesheim" + File.separator + fileName);
         try {
-            if (newFile.exists()) {
-                newFile.delete();
-            }
-            newFile.getParentFile().mkdirs();
-            newFile.createNewFile();
+            activeDownloads.put(contentId, new Download());
+            int lastSlash = url.lastIndexOf('/');
+            String fileName = url.substring(lastSlash + 1);
+            File file = new File(Environment.getExternalStorageDirectory().toString(),
+                    "MijnWindesheim" + File.separator + fileName);
 
-            URI uri = new URI("https", "elo.windesheim.nl", url, null);
-            URL url = uri.toURL();
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("Cookie", new CookieController().getNatSchoolCookie());
-            connection.connect();
+            Uri uri = Uri.parse("https://elo.windesheim.nl" + url);
 
-            int fileLength = connection.getContentLength();
+            downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
+                    .setTitle(fileName)
+                    .setDescription(activity.getResources().getString(R.string.downloading))
+                    .setDestinationUri(Uri.fromFile(file));
 
-            input = connection.getInputStream();
-            output = new FileOutputStream(newFile);
-
-            byte data[] = new byte[32];
-            int total = 0;
-            long previousMillis = 0;
-            int count;
-            while ((count = input.read(data)) != -1) {
+            currentDownloadId = downloadManager.enqueue(request);
+            while (true) {
                 if (isCancelled()) {
-                    input.close();
-                    newFile.delete();
-                    return null;
+                    return "cancelled";
                 }
-                total += count;
-                if (fileLength > 0 && previousMillis + 1000 < System.currentTimeMillis()) {
-                    String s = Formatter.formatFileSize(activity, total) + "/"
-                            + Formatter.formatFileSize(activity, fileLength);
-                    publishProgress(total, fileLength, s);
-                    previousMillis = System.currentTimeMillis();
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(currentDownloadId);
+                Cursor cursor = downloadManager.query(query);
+                if (cursor.getCount() == 0) {
+                    return "cancelled";
                 }
-                output.write(data, 0, count);
-            }
-        } catch (Exception e) {
-            if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                    !new PermissionController().verifyStoragePermissions(activity)) {
-                return "permission";
-            }
-            if (e instanceof IOException) {
-                newFile.delete();
-                if (e.getMessage().contains("ENOSPC")) {
-                    return "nospace";
+                cursor.moveToFirst();
+                int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                    break;
                 }
-                return "exception";
-            }
-        } finally {
-            try {
-                if (output != null) {
-                    output.close();
+                if (status == DownloadManager.STATUS_PAUSED) {
+                    // paused, reset download state to pending
+                    activeDownloads.put(contentId, new Download());
+                    ApplicationLoader.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NotificationCenter.getInstance()
+                                    .postNotificationName(NotificationCenter.downloadPending,
+                                            studyRouteId, adapterPosition, contentId);
+                        }
+                    });
+                    Thread.sleep(100);
+                    continue;
                 }
-                if (input != null) {
-                    input.close();
+                long downloaded = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                long total = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                cursor.close();
+                if (total > 0 && downloaded > 0) {
+                    int progress = (int) (downloaded * 100 / total);
+                    String s = Formatter.formatFileSize(activity, downloaded) + "/"
+                            + Formatter.formatFileSize(activity, total);
+                    activeDownloads.get(contentId).setProgress(progress);
+                    activeDownloads.get(contentId).setProgressString(s);
+                    publishProgress(progress, s);
+                    Thread.sleep(100);
                 }
-            } catch (IOException ignored) {
-                //
             }
-            if (connection != null) {
-                connection.disconnect();
-            }
+            return file.getAbsolutePath();
+        } catch (SecurityException e) {
+            return "permission";
+        } catch (InterruptedException e) {
+            return null;
         }
-        return newFile.getAbsolutePath();
     }
 
     @Override
     protected void onProgressUpdate(Object... progress) {
         super.onProgressUpdate(progress);
-        progressBar.setIndeterminate(false);
-        progressBar.setMax((int) progress[1]);
-        progressBar.setProgress((int) progress[0]);
-        progressTextView.setText((String) progress[2]);
+        NotificationCenter.getInstance()
+                .postNotificationName(NotificationCenter.downloadUpdated, studyRouteId,
+                        adapterPosition, contentId, progress[0], progress[1]);
     }
 
     @Override
     protected void onCancelled(String s) {
         super.onCancelled(s);
-        onPostExecute(null);
+        if (currentDownloadId > -1 && downloadManager != null) {
+            downloadManager.remove(currentDownloadId);
+        }
+        onPostExecute("cancelled");
     }
 
     @Override
     protected void onPostExecute(final String result) {
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.stopDownloadTasks);
-        if (wakeLock.isHeld()) {
-            wakeLock.release();
-        }
-        contentNameTextView.setVisibility(View.VISIBLE);
-        progressTextView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        cancelButton.setVisibility(View.GONE);
+        activeDownloads.remove(contentId);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.downloadCancelled);
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadFinished,
+                studyRouteId, adapterPosition, contentId);
         if ("permission".equals(result)) {
             ((NatschoolActivity) activity).noPermission();
             return;
         }
-        if ("nospace".equals(result)) {
-            ((NatschoolActivity) activity).noSpace();
-            return;
-        }
-        if ("exception".equals(result)) {
-            new AlertDialog.Builder(activity)
-                    .setTitle(activity.getResources().getString(R.string.alert_connection_title))
-                    .setMessage(activity.getResources()
-                            .getString(R.string.alert_connection_description))
-                    .setPositiveButton(activity.getResources().getString(R.string.connect),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    DownloadController.this.cancel(true);
-                                    new DownloadController(activity, contentNameTextView,
-                                            progressTextView, progressBar, cancelButton, url)
-                                            .execute();
-                                    dialog.cancel();
-                                }
-                            })
-                    .setNegativeButton(activity.getResources()
-                                    .getString(R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            }).show();
+        if ("cancelled".equals(result)) {
+            ((NatschoolActivity) activity).downloadCanceled();
             return;
         }
         if (result != null) {
@@ -271,10 +208,8 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == NotificationCenter.stopDownloadTasks) {
-            if (!isCancelled()) {
-                this.cancel(true);
-            }
+        if (id == NotificationCenter.downloadCancelled && (int) args[0] == contentId) {
+            this.cancel(true);
         }
     }
 }

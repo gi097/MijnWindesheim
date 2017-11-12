@@ -48,6 +48,7 @@ public class NotificationController {
     private static final String PUSH_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.push";
     private static final int LESSON_NOTIFICATION_ID = 0;
     private static final int SCHEDULE_CHANGED_NOTIFICATION_ID = 1;
+    public static final int SERVICE_NOTIFICATION_ID = 2;
 
     public static final int NOTIFICATION_1_HOUR = 2;
     public static final int NOTIFICATION_30_MIN = 3;
@@ -173,5 +174,9 @@ public class NotificationController {
             mManager.createNotificationChannel(pushChannel);
             mManager.createNotificationChannel(persistentChannel);
         }
+    }
+
+    public Notification getServiceNotification() {
+        return new Notification.Builder(ApplicationLoader.applicationContext).getNotification();
     }
 }

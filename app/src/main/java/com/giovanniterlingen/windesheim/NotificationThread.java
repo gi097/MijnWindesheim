@@ -58,7 +58,7 @@ class NotificationThread extends Thread {
         int notificationType = preferences.getInt("notifications_type",
                 NotificationController.NOTIFICATION_NOT_SET);
         String notificationText;
-        while (notificationType != 0 && notificationType != NotificationController.NOTIFICATION_OFF) {
+        while (notificationType != 0) {
             try {
                 Date date = new Date();
                 if (!DatabaseController.getInstance().isFetched(date)) {
@@ -121,6 +121,9 @@ class NotificationThread extends Thread {
                             minuteLock.wait();
                         }
                     }
+                    // Notify the UI that a lesson has been changed
+                    NotificationCenter.getInstance()
+                            .postNotificationName(NotificationCenter.scheduleReload);
                 }
                 NotificationController.getInstance().clearNotification();
                 synchronized (dateLock) {

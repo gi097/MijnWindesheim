@@ -132,7 +132,7 @@ public class DownloadsActivity extends AppCompatActivity {
             }
             recyclerView.setAdapter(new NatschoolContentAdapter(this, contents) {
                 @Override
-                protected void onContentClick(NatschoolContent content) {
+                protected void onContentClick(NatschoolContent content, int position) {
                     Uri uri;
                     File file = new File(path.getAbsolutePath() + File.separator + content.name);
                     Intent target = new Intent(Intent.ACTION_VIEW);
