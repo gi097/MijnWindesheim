@@ -142,7 +142,7 @@ public abstract class NatSchoolController extends AsyncTask<Void, Void, Void> {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonobj = jsonArray.getJSONObject(i);
                     int type = jsonobj.getInt("ITEMTYPE");
-                    if (type == 0 || type == 1 || type == 3 || type == 10) {
+                    if (type == 0 || type == 1 || type == 3 || type == 10 || type == 11) {
                         NatschoolContent natschoolContent =
                                 new NatschoolContent(jsonobj.getInt("ID"), jsonobj.getString("NAME"),
                                         jsonobj.getInt("STUDYROUTE_ITEM_ID"), type,

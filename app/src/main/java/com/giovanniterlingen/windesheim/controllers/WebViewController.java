@@ -24,11 +24,14 @@
  **/
 package com.giovanniterlingen.windesheim.controllers;
 
-import android.content.Context;
+import android.app.Activity;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
+import android.webkit.DownloadListener;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.giovanniterlingen.windesheim.R;
 
@@ -39,19 +42,28 @@ import com.giovanniterlingen.windesheim.R;
  */
 public class WebViewController {
 
-    private final Context context;
+    private final Activity activity;
 
-    public WebViewController(Context context) {
-        this.context = context;
+    public WebViewController(Activity activity) {
+        this.activity = activity;
     }
 
     public WebView createWebView() {
-        WebView webView = new WebView(context);
+        WebView webView = new WebView(activity);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
+
+        webView.setDownloadListener(new DownloadListener() {
+            public void onDownloadStart(String url, String userAgent,
+                                        String contentDisposition, String mimetype,
+                                        long contentLength) {
+                new DownloadController(activity, url)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        });
         return webView;
     }
 
@@ -59,13 +71,13 @@ public class WebViewController {
         Uri uri = Uri.parse(url);
 
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
-        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(context,
+        intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(activity,
                 R.color.colorPrimary));
-        intentBuilder.setStartAnimations(context, R.anim.slide_in_right, R.anim.slide_out_left);
-        intentBuilder.setExitAnimations(context, R.anim.slide_in_left, R.anim.slide_out_right);
+        intentBuilder.setStartAnimations(activity, R.anim.slide_in_right, R.anim.slide_out_left);
+        intentBuilder.setExitAnimations(activity, R.anim.slide_in_left, R.anim.slide_out_right);
 
         CustomTabsIntent customTabsIntent = intentBuilder.build();
-        customTabsIntent.launchUrl(context, uri);
+        customTabsIntent.launchUrl(activity, uri);
     }
 }

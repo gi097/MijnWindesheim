@@ -128,7 +128,7 @@ public class ContentsFragment extends Fragment
                                     .addToBackStack("")
                                     .commit();
                         } else {
-                            if (content.type == 1 || content.type == 3) {
+                            if (content.type == 1 || content.type == 3 || content.type == 11) {
                                 createWebView(content.url);
                             } else if (content.type == 10) {
                                 if (!content.downloading) {
@@ -162,7 +162,7 @@ public class ContentsFragment extends Fragment
                     .commit();
             return;
         }
-        WebViewController webViewController = new WebViewController(getContext());
+        WebViewController webViewController = new WebViewController(getActivity());
         webViewController.intentCustomTab(url);
     }
 

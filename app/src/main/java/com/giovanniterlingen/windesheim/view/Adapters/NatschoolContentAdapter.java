@@ -133,7 +133,8 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                         R.drawable.ic_folder, null));
             }
         } else {
-            if (content.get(position).type == 1 || content.get(position).type == 3) {
+            if (content.get(position).type == 1 || content.get(position).type == 3 ||
+                    content.get(position).type == 11) {
                 icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
                         R.drawable.ic_link, null));
             } else if (content.get(position).type == 10) {

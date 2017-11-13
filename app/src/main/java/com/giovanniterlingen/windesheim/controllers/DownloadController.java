@@ -37,7 +37,6 @@ import android.support.v4.content.FileProvider;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 
-import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.Download;
@@ -74,24 +73,43 @@ public class DownloadController extends AsyncTask<String, Object, String>
         this.adapterPosition = adapterPosition;
     }
 
+    DownloadController(Activity activity, String url) {
+        this.activity = activity;
+        this.url = url;
+        this.studyRouteId = -1;
+        this.contentId = -1;
+        this.adapterPosition = -1;
+    }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        NotificationCenter.getInstance().addObserver(this, NotificationCenter.downloadCancelled);
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadPending,
-                studyRouteId, adapterPosition, contentId);
+        if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
+            NotificationCenter.getInstance().addObserver(this,
+                    NotificationCenter.downloadCancelled);
+            NotificationCenter.getInstance()
+                    .postNotificationName(NotificationCenter.downloadPending,
+                            studyRouteId, adapterPosition, contentId);
+        }
     }
 
     @Override
     protected String doInBackground(final String... strings) {
         try {
-            activeDownloads.put(contentId, new Download());
+            if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
+                activeDownloads.put(contentId, new Download());
+            }
             int lastSlash = url.lastIndexOf('/');
             String fileName = url.substring(lastSlash + 1);
             File file = new File(Environment.getExternalStorageDirectory().toString(),
                     "MijnWindesheim" + File.separator + fileName);
 
-            Uri uri = Uri.parse("https://elo.windesheim.nl" + url);
+            Uri uri;
+            if (url.startsWith("/")) {
+                uri = Uri.parse("https://elo.windesheim.nl" + url);
+            } else {
+                uri = Uri.parse(url);
+            }
 
             downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -118,15 +136,19 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 }
                 if (status == DownloadManager.STATUS_PAUSED) {
                     // paused, reset download state to pending
-                    activeDownloads.put(contentId, new Download());
-                    ApplicationLoader.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NotificationCenter.getInstance()
-                                    .postNotificationName(NotificationCenter.downloadPending,
-                                            studyRouteId, adapterPosition, contentId);
-                        }
-                    });
+                    if (this.studyRouteId > -1 && this.contentId > -1 &&
+                            this.adapterPosition > -1) {
+                        activeDownloads.put(contentId, new Download());
+                        NotificationCenter.getInstance()
+                                .postNotificationName(NotificationCenter.downloadPending,
+                                        studyRouteId, adapterPosition, contentId);
+                    }
+                    Thread.sleep(100);
+                    continue;
+                }
+                if (this.studyRouteId == -1 && this.contentId == -1 &&
+                        this.adapterPosition == -1) {
+                    cursor.close();
                     Thread.sleep(100);
                     continue;
                 }
@@ -170,10 +192,14 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
     @Override
     protected void onPostExecute(final String result) {
-        activeDownloads.remove(contentId);
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.downloadCancelled);
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadFinished,
-                studyRouteId, adapterPosition, contentId);
+        if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
+            activeDownloads.remove(contentId);
+            NotificationCenter.getInstance().removeObserver(this,
+                    NotificationCenter.downloadCancelled);
+            NotificationCenter.getInstance()
+                    .postNotificationName(NotificationCenter.downloadFinished,
+                            studyRouteId, adapterPosition, contentId);
+        }
         if ("permission".equals(result)) {
             ((NatschoolActivity) activity).noPermission();
             return;

@@ -51,7 +51,7 @@ public class WebViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_webview, container, false);
 
-        final WebViewController webViewController = new WebViewController(getContext());
+        final WebViewController webViewController = new WebViewController(getActivity());
         this.webView = webViewController.createWebView();
         this.webView.setWebViewClient(new WebViewClient() {
             @Override
