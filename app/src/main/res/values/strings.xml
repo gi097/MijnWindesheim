@@ -178,6 +178,8 @@
     <string name="progress">Progress</string>
     <string name="progress_results">Results</string>
 
+    <string name="propaedeutic_phase">Propaedeutic phase</string>
+
     <string name="push_notification">Push notifications</string>
     <string name="push_notification_description">Notifications for lessons and schedule changes</string>
 

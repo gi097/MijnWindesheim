@@ -3,6 +3,7 @@
     <dimen name="about_header_size">72.0dip</dimen>
 
     <dimen name="activity_margin">16.0dip</dimen>
+    <dimen name="activity_margin_half">8.0dip</dimen>
 
     <dimen name="adapter_item_margin">5.0dip</dimen>
 

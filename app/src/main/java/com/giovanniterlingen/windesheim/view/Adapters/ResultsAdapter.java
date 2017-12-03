@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.EC;
+import com.giovanniterlingen.windesheim.models.PropaedeuticEC;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
@@ -46,11 +47,16 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
     private final Context context;
     private final Result[][] results;
+    private final PropaedeuticEC[] propaedeuticEC;
+    private final boolean showPropaedeuticPhase;
     private final EC[] ec;
 
-    public ResultsAdapter(Context context, Result[][] results, EC[] ec) {
+    public ResultsAdapter(Context context, Result[][] results, PropaedeuticEC[] propaedeuticEC,
+                          EC[] ec) {
         this.context = context;
         this.results = results;
+        this.propaedeuticEC = propaedeuticEC;
+        this.showPropaedeuticPhase = propaedeuticEC.length > 0 && propaedeuticEC[0] != null;
         this.ec = ec;
     }
 
@@ -73,26 +79,38 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
         int index = 0;
         int total = 0;
         for (int i = 0; i < results.length; i++) {
-            total += results[i].length + 2;
+            total += results[i].length + +(showPropaedeuticPhase ? 3 : 2);
             if (position < total) {
                 index = i;
                 break;
             }
         }
         if (holder.type == 0) {
+            TextView studyName = holder.studyName;
+            TextView ecDescription = holder.description;
             DonutProgress progress = holder.progressBar;
             float percent = 0.0f;
-            if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
-                percent = (float) ec[index].getCurrentEC() / (float) ec[index].getMaxEC() * 100f;
+            if (showPropaedeuticPhase && position == 0) {
+                if (propaedeuticEC[index].getCurrentEC() > 0 &&
+                        propaedeuticEC[index].getMaxEC() > 0) {
+                    percent = (float) propaedeuticEC[index].getCurrentEC() /
+                            (float) propaedeuticEC[index].getMaxEC() * 100f;
+                    studyName.setText(context.getResources().getString(R.string.propaedeutic_phase));
+                    ecDescription.setText(ApplicationLoader.applicationContext.getResources()
+                            .getString(R.string.ec_description, propaedeuticEC[index].getCurrentEC(),
+                                    propaedeuticEC[index].getMaxEC()));
+                }
+            } else if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
+                percent = (float) ec[index].getCurrentEC() /
+                        (float) ec[index].getMaxEC() * 100f;
+                studyName.setText(ec[index].getStudyName());
+                ecDescription.setText(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.ec_description, ec[index].getCurrentEC(),
+                                ec[index].getMaxEC()));
             }
             int scale = (int) Math.pow(10, 2);
             progress.setProgress((float) Math.floor(percent * scale) / scale);
             progress.setMax(100);
-            TextView studyName = holder.studyName;
-            studyName.setText(ec[index].getStudyName());
-            TextView ecDescription = holder.description;
-            ecDescription.setText(ApplicationLoader.applicationContext.getResources()
-                    .getString(R.string.ec_description, ec[index].getCurrentEC(), ec[index].getMaxEC()));
         }
         if (holder.type == 2) {
             TextView nameTextView = holder.name;
@@ -101,7 +119,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             for (int i = 0; i < index; i++) {
                 previous += results[i].length;
             }
-            Result result = results[index][position - (((index + 1) * 2) + previous)];
+            Result result = results[index][position - (((index + 1) *
+                    (showPropaedeuticPhase ? 3 : 2)) + previous)];
             nameTextView.setText(result.getModule());
             if (result.getResult() != null && result.getResult().length() > 0) {
                 float mark = Float.parseFloat(result.getResult());
@@ -124,25 +143,25 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
         }
         int total = 0;
         for (Result[] result : results) {
-            total += result.length + 2;
+            total += result.length + (showPropaedeuticPhase ? 3 : 2);
         }
         return total;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position <= (showPropaedeuticPhase ? 1 : 0)) {
             return 0;
         }
-        if (position == 1) {
+        if (position == (showPropaedeuticPhase ? 2 : 1)) {
             return 1;
         }
         int total = 0;
         for (Result[] result : results) {
-            total += result.length + 2;
+            total += result.length + (showPropaedeuticPhase ? 3 : 2);
             if (position == total) {
                 return 0;
-            } else if (position == total + 1) {
+            } else if (position == total + (showPropaedeuticPhase ? 2 : 1)) {
                 return 1;
             }
         }
@@ -153,13 +172,13 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
         public final int type;
         public TextView name;
-        public TextView result;
+        TextView result;
 
-        public DonutProgress progressBar;
-        public TextView studyName;
-        public TextView description;
+        DonutProgress progressBar;
+        TextView studyName;
+        TextView description;
 
-        public ViewHolder(View view, int viewType) {
+        ViewHolder(View view, int viewType) {
             super(view);
             this.type = viewType;
             if (viewType == 0) {

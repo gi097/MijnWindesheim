@@ -91,7 +91,7 @@
     <string name="hide">Verberg</string>
     <string name="hide_lesson">Les verbergen</string>
 
-    <plurals formatted="false" name="hours">
+    <plurals name="hours" formatted="false">
         <item quantity="other">%s uur</item>
         <item quantity="one">1 uur</item>
     </plurals>
@@ -142,7 +142,7 @@
     <string name="menuitem_manage_schedules">Roosters beheren</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
 
-    <plurals formatted="false" name="minutes">
+    <plurals name="minutes" formatted="false">
         <item quantity="other">%s minuten</item>
         <item quantity="one">1 minuut</item>
     </plurals>
@@ -173,6 +173,8 @@
 
     <string name="progress">Voortgang</string>
     <string name="progress_results">Resultaten</string>
+
+    <string name="propaedeutic_phase">Propedeuse</string>
 
     <string name="push_notification">Push meldingen</string>
     <string name="push_notification_description">Meldingen voor lessen en roosterwijzigingen</string>

@@ -40,6 +40,7 @@ import android.widget.ProgressBar;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.EC;
+import com.giovanniterlingen.windesheim.models.PropaedeuticEC;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.giovanniterlingen.windesheim.view.Adapters.ResultsAdapter;
 
@@ -96,6 +97,7 @@ public class EducatorActivity extends AppCompatActivity {
 
         private ProgressBar progressBar;
         private Result[][] results;
+        private PropaedeuticEC[] propaedeuticEC;
         private EC[] ec;
 
         @Override
@@ -113,12 +115,19 @@ public class EducatorActivity extends AppCompatActivity {
                 String response = controller.getStudyInfo(studentNumber);
                 JSONArray studyJson = new JSONArray(response);
                 results = new Result[studyJson.length()][];
+                propaedeuticEC = new PropaedeuticEC[studyJson.length()];
                 ec = new EC[studyJson.length()];
                 for (int i = 0; i < studyJson.length(); i++) {
                     JSONObject study = studyJson.getJSONObject(i).getJSONObject("WH_study");
                     String studyName = study.getString("description");
                     String isatCode = study.getString("isatcode");
                     JSONObject progress = studyJson.getJSONObject(i).getJSONObject("WH_studyProgress");
+                    if (progress.has("ectsTeBehalenPropedeuse") &&
+                            progress.has("ectsBehaaldPropedeuse")) {
+                        int maxPropaedeuticECs = progress.getInt("ectsTeBehalenPropedeuse");
+                        int currentPropaedeuticECs = progress.getInt("ectsBehaaldPropedeuse");
+                        propaedeuticEC[i] = new PropaedeuticEC(maxPropaedeuticECs, currentPropaedeuticECs);
+                    }
                     int maxECs = progress.getInt("ectsTeBehalen");
                     int currentECs = progress.getInt("ectsBehaald");
                     ec[i] = new EC(maxECs, currentECs, studyName);
@@ -140,7 +149,8 @@ public class EducatorActivity extends AppCompatActivity {
             super.onPostExecute(param);
             progressBar.setVisibility(View.GONE);
             if (results != null && results.length > 0) {
-                ResultsAdapter adapter = new ResultsAdapter(EducatorActivity.this, results, ec);
+                ResultsAdapter adapter = new ResultsAdapter(EducatorActivity.this, results,
+                        propaedeuticEC, ec);
                 RecyclerView recyclerView = findViewById(R.id.results_recyclerview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(EducatorActivity.this));
                 recyclerView.setAdapter(adapter);
