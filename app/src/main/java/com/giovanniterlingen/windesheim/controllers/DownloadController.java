@@ -162,13 +162,13 @@ public class DownloadController extends AsyncTask<String, Object, String>
                     activeDownloads.get(contentId).setProgress(progress);
                     activeDownloads.get(contentId).setProgressString(s);
                     publishProgress(progress, s);
-                    Thread.sleep(100);
                 }
+                Thread.sleep(100);
             }
             return file.getAbsolutePath();
         } catch (SecurityException e) {
             return "permission";
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             return null;
         }
     }

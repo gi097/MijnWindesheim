@@ -95,14 +95,17 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
                         propaedeuticEC[index].getMaxEC() > 0) {
                     percent = (float) propaedeuticEC[index].getCurrentEC() /
                             (float) propaedeuticEC[index].getMaxEC() * 100f;
-                    studyName.setText(context.getResources().getString(R.string.propaedeutic_phase));
-                    ecDescription.setText(ApplicationLoader.applicationContext.getResources()
-                            .getString(R.string.ec_description, propaedeuticEC[index].getCurrentEC(),
-                                    propaedeuticEC[index].getMaxEC()));
                 }
-            } else if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
-                percent = (float) ec[index].getCurrentEC() /
-                        (float) ec[index].getMaxEC() * 100f;
+                studyName.setText(context.getResources().getString(R.string.propaedeutic_phase));
+                ecDescription.setText(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.ec_description, propaedeuticEC[index].getCurrentEC(),
+                                propaedeuticEC[index].getMaxEC()));
+
+            } else {
+                if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
+                    percent = (float) ec[index].getCurrentEC() /
+                            (float) ec[index].getMaxEC() * 100f;
+                }
                 studyName.setText(ec[index].getStudyName());
                 ecDescription.setText(ApplicationLoader.applicationContext.getResources()
                         .getString(R.string.ec_description, ec[index].getCurrentEC(),
