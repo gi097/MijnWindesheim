@@ -42,8 +42,6 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
-import com.google.android.gms.ads.MobileAds;
-import com.squareup.leakcanary.LeakCanary;
 
 import java.util.concurrent.TimeUnit;
 
@@ -72,12 +70,6 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
 
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
@@ -86,8 +78,6 @@ public class ApplicationLoader extends Application {
 
         NotificationController.getInstance().initNotificationChannels();
         startPushService();
-
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3076066986942675~1680475744");
     }
 
     public static void startPushService() {

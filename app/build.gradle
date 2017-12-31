@@ -8,8 +8,8 @@ android {
         applicationId "com.giovanniterlingen.windesheim"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 168
-        versionName "2.6.23"
+        versionCode 170
+        versionName "2.7.0"
     }
     buildTypes {
         release {
@@ -31,10 +31,6 @@ dependencies {
     compile 'com.android.support:customtabs:27.0.2'
 
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
-    compile 'com.google.firebase:firebase-ads:11.6.2'
     compile 'com.firebase:firebase-jobdispatcher:0.8.4'
     compile 'com.github.apl-devs:appintro:v4.2.2'
-
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }

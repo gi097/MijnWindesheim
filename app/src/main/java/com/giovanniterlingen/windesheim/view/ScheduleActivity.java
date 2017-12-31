@@ -44,7 +44,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
@@ -54,9 +53,6 @@ import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -114,15 +110,6 @@ public class ScheduleActivity extends AppCompatActivity
         }
 
         view = findViewById(R.id.coordinator_layout);
-
-        final LinearLayout layout = findViewById(R.id.pager_container);
-        int height = AdSize.SMART_BANNER.getHeightInPixels(ScheduleActivity.this);
-        layout.setPadding(0, 0, 0, height);
-
-        final AdView mAdView = findViewById(R.id.bottom_ad);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
         setViewPager();
     }
 
@@ -244,7 +231,7 @@ public class ScheduleActivity extends AppCompatActivity
         List<Fragment> fragments = fragmentManager.getFragments();
         if (fragments != null) {
             for (Fragment fragment : fragments) {
-                if (fragment != null && fragment.isMenuVisible()) {
+                if (fragment != null && fragment.isVisible()) {
                     ((ScheduleFragment) fragment).updateLayout();
                     return;
                 }
@@ -267,7 +254,7 @@ public class ScheduleActivity extends AppCompatActivity
             List<Fragment> fragments = fragmentManager.getFragments();
             if (fragments != null) {
                 for (Fragment fragment : fragments) {
-                    if (fragment != null && fragment.isMenuVisible()) {
+                    if (fragment != null && fragment.isVisible()) {
                         ((ScheduleFragment) fragment).updateAdapter();
                         return;
                     }

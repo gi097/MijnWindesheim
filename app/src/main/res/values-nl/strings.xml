@@ -3,7 +3,7 @@
     <string name="about">Over</string>
     <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
-    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Windesheim en ik kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is, loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nDeze app bevat advertenties van Google AdSense, mogelijk wordt je getracked. Ik heb ervoor gekozen advertenties toe te voegen om geld te verdienen voor mijn werk en de app blijvend gratis te houden. Wanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
+    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Windesheim en ik kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is, loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nWanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
 
     <string name="alert_connection_description">De gegevens konden niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.</string>
     <string name="alert_connection_title">Probleem met verbinden!</string>
@@ -59,6 +59,8 @@
     <string name="description_giovanni">Ontwikkelaar en onderhouder</string>
     <string name="description_thomas">N@Tschool! implementatie</string>
 
+    <string name="disable_notification_description">Houd deze notificatie ingedrukt om deze uit te schakelen</string>
+
     <string name="disclaimer">Disclaimer</string>
 
     <string name="downloading">Downloaden…</string>
@@ -91,7 +93,7 @@
     <string name="hide">Verberg</string>
     <string name="hide_lesson">Les verbergen</string>
 
-    <plurals name="hours" formatted="false">
+    <plurals name="hours">
         <item quantity="other">%s uur</item>
         <item quantity="one">1 uur</item>
     </plurals>
@@ -142,7 +144,7 @@
     <string name="menuitem_manage_schedules">Roosters beheren</string>
     <string name="menuitem_restore_lessons">Lessen herstellen</string>
 
-    <plurals name="minutes" formatted="false">
+    <plurals name="minutes">
         <item quantity="other">%s minuten</item>
         <item quantity="one">1 minuut</item>
     </plurals>
@@ -188,6 +190,9 @@
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
 
     <string name="september">september</string>
+
+    <string name="service_notification">Achtergrondproces</string>
+    <string name="service_notification_description">Geeft aan of MijnWindesheim actief is</string>
 
     <string name="settings">Instellingen</string>
     <string name="settings_account">Account</string>

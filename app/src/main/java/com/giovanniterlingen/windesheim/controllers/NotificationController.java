@@ -30,6 +30,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
@@ -44,8 +46,10 @@ import com.giovanniterlingen.windesheim.view.ScheduleActivity;
  */
 public class NotificationController {
 
-    private static final String PERSISTENT_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.persistent";
-    private static final String PUSH_NOTIFICATION_ID = "com.giovanniterlingen.windesheim.notification.push";
+    private static final String PERSISTENT_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.persistent";
+    private static final String PUSH_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.push";
+    private static final String SERVICE_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.service";
+
     private static final int LESSON_NOTIFICATION_ID = 0;
     private static final int SCHEDULE_CHANGED_NOTIFICATION_ID = 1;
     public static final int SERVICE_NOTIFICATION_ID = 2;
@@ -87,7 +91,7 @@ public class NotificationController {
                         intent, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                ApplicationLoader.applicationContext, PUSH_NOTIFICATION_ID)
+                ApplicationLoader.applicationContext, PUSH_NOTIFICATION_CHANNEL)
                 .setContentTitle(ApplicationLoader.applicationContext.getResources()
                         .getString(R.string.app_name))
                 .setContentText(ApplicationLoader.applicationContext.getResources()
@@ -117,8 +121,8 @@ public class NotificationController {
                         intent, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                ApplicationLoader.applicationContext, headsUp ? PUSH_NOTIFICATION_ID :
-                PERSISTENT_NOTIFICATION_ID)
+                ApplicationLoader.applicationContext, headsUp ? PUSH_NOTIFICATION_CHANNEL :
+                PERSISTENT_NOTIFICATION_CHANNEL)
                 .setContentTitle(ApplicationLoader.applicationContext.getResources()
                         .getString(R.string.app_name))
                 .setContentText(notificationText)
@@ -145,7 +149,7 @@ public class NotificationController {
 
     public void initNotificationChannels() {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel pushChannel = new NotificationChannel(PUSH_NOTIFICATION_ID,
+            NotificationChannel pushChannel = new NotificationChannel(PUSH_NOTIFICATION_CHANNEL,
                     ApplicationLoader.applicationContext.getResources()
                             .getString(R.string.push_notification),
                     NotificationManager.IMPORTANCE_HIGH);
@@ -158,7 +162,7 @@ public class NotificationController {
             pushChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             NotificationChannel persistentChannel = new NotificationChannel(
-                    PERSISTENT_NOTIFICATION_ID, ApplicationLoader.applicationContext.getResources()
+                    PERSISTENT_NOTIFICATION_CHANNEL, ApplicationLoader.applicationContext.getResources()
                     .getString(R.string.persistent_notification),
                     NotificationManager.IMPORTANCE_MIN);
 
@@ -169,14 +173,43 @@ public class NotificationController {
             persistentChannel.setShowBadge(false);
             persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    SERVICE_NOTIFICATION_CHANNEL, ApplicationLoader.applicationContext.getResources()
+                    .getString(R.string.service_notification),
+                    NotificationManager.IMPORTANCE_MIN);
+
+            serviceChannel.setDescription(ApplicationLoader.applicationContext.getResources()
+                    .getString(R.string.service_notification_description));
+            serviceChannel.enableLights(false);
+            serviceChannel.enableVibration(false);
+            serviceChannel.setShowBadge(false);
+            serviceChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+
             NotificationManager mManager = (NotificationManager) ApplicationLoader
                     .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
             mManager.createNotificationChannel(pushChannel);
             mManager.createNotificationChannel(persistentChannel);
+            mManager.createNotificationChannel(serviceChannel);
         }
     }
 
+    @RequiresApi(api = 26)
     public Notification getServiceNotification() {
-        return new Notification.Builder(ApplicationLoader.applicationContext).getNotification();
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                ApplicationLoader.applicationContext, SERVICE_NOTIFICATION_CHANNEL)
+                .setContentTitle(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.app_name))
+                .setContentText(ApplicationLoader.applicationContext.getResources()
+                        .getString(R.string.disable_notification_description))
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(ApplicationLoader.applicationContext.getResources()
+                                .getString(R.string.disable_notification_description)))
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.notifybar)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE);
+
+        return mBuilder.build();
     }
 }

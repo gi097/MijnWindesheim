@@ -3,7 +3,7 @@
     <string name="about">About</string>
     <string name="about_contributors">Contributors</string>
     <string name="about_devs">Developers</string>
-    <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Windesheim and I can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nThis app contains advertisements from Google AdSense, they might track you. I did choose to add advertisements since I want to earn some money for my work and to keep this app free. When you are using this app you automatically agree with this disclaimer.</string>
+    <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Windesheim and I can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nWhen you are using this app you automatically agree with this disclaimer.</string>
 
     <string name="alert_connection_description">The data could not be retrieved. Check your internet connection and try again.</string>
     <string name="alert_connection_title">Problem while connecting!</string>
@@ -58,6 +58,8 @@
     <string name="description_coen">Spell checking</string>
     <string name="description_giovanni">Developer and maintainer</string>
     <string name="description_thomas">N@Tschool! implementation</string>
+
+    <string name="disable_notification_description">Long press this notification to turn it off</string>
 
     <string name="disclaimer">Disclaimer</string>
 
@@ -192,6 +194,9 @@
     <string name="schedule_not_found">No schedule was found for this day</string>
 
     <string name="september">September</string>
+
+    <string name="service_notification">Background service</string>
+    <string name="service_notification_description">Indicates if MyWindesheim is running</string>
 
     <string name="settings">Settings</string>
     <string name="settings_account">Account</string>
