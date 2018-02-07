@@ -25,15 +25,18 @@
 package com.giovanniterlingen.windesheim.controllers;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.webkit.DownloadListener;
 import android.webkit.WebView;
-import android.widget.Toast;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
+
+import java.io.File;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -57,11 +60,24 @@ public class WebViewController {
         webView.getSettings().setDisplayZoomControls(false);
 
         webView.setDownloadListener(new DownloadListener() {
-            public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimetype,
-                                        long contentLength) {
-                new DownloadController(activity, url)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            public void onDownloadStart(String url, String userAgent, String contentDisposition,
+                                        String mimetype, long contentLength) {
+                int lastSlash = url.lastIndexOf('/');
+                String fileName = url.substring(lastSlash + 1);
+
+                DownloadManager downloadManager = (DownloadManager) activity
+                        .getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
+                        .setTitle(fileName)
+                        .setDescription(activity.getResources().getString(R.string.downloading))
+                        .setDestinationInExternalPublicDir(File.separator +
+                                ApplicationLoader.applicationContext.getResources()
+                                        .getString(R.string.app_name), fileName)
+                        .setNotificationVisibility(DownloadManager.Request.
+                                VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+                downloadManager.enqueue(request);
             }
         });
         return webView;

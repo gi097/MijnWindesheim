@@ -75,32 +75,19 @@ public class DownloadController extends AsyncTask<String, Object, String>
         this.adapterPosition = adapterPosition;
     }
 
-    DownloadController(Activity activity, String url) {
-        this.activity = activity;
-        this.url = url;
-        this.studyRouteId = -1;
-        this.contentId = -1;
-        this.adapterPosition = -1;
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
-            NotificationCenter.getInstance().addObserver(this,
-                    NotificationCenter.downloadCancelled);
-            NotificationCenter.getInstance()
-                    .postNotificationName(NotificationCenter.downloadPending,
-                            studyRouteId, adapterPosition, contentId);
-        }
+        NotificationCenter.getInstance().addObserver(this,
+                NotificationCenter.downloadCancelled);
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadPending,
+                studyRouteId, adapterPosition, contentId);
     }
 
     @Override
     protected String doInBackground(final String... strings) {
         try {
-            if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
-                activeDownloads.put(contentId, new Download());
-            }
+            activeDownloads.put(contentId, new Download());
             int lastSlash = url.lastIndexOf('/');
             String fileName = url.substring(lastSlash + 1);
 
@@ -110,16 +97,11 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 directory.mkdirs();
             }
 
-            final Uri uri;
-            if (url.startsWith("/")) {
-                uri = Uri.parse(new URI("https", "elo.windesheim.nl", url,
-                        null).toString());
-            } else {
-                uri = Uri.parse(url);
-            }
+            final String encodedUrl = new URI("https", "elo.windesheim.nl", url,
+                    null).toString();
 
             downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(uri);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(encodedUrl));
             request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
                     .setTitle(fileName)
                     .setDescription(activity.getResources().getString(R.string.downloading))
@@ -147,19 +129,10 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 if (status == DownloadManager.STATUS_PAUSED ||
                         status == DownloadManager.STATUS_PENDING) {
                     // paused, reset download state to pending
-                    if (this.studyRouteId > -1 && this.contentId > -1 &&
-                            this.adapterPosition > -1) {
-                        activeDownloads.put(contentId, new Download());
-                        NotificationCenter.getInstance()
-                                .postNotificationName(NotificationCenter.downloadPending,
-                                        studyRouteId, adapterPosition, contentId);
-                    }
-                    Thread.sleep(100);
-                    continue;
-                }
-                if (this.studyRouteId == -1 && this.contentId == -1 &&
-                        this.adapterPosition == -1) {
-                    cursor.close();
+                    activeDownloads.put(contentId, new Download());
+                    NotificationCenter.getInstance()
+                            .postNotificationName(NotificationCenter.downloadPending, studyRouteId,
+                                    adapterPosition, contentId);
                     Thread.sleep(100);
                     continue;
                 }
@@ -203,14 +176,12 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
     @Override
     protected void onPostExecute(final String result) {
-        if (this.studyRouteId > -1 && this.contentId > -1 && this.adapterPosition > -1) {
-            activeDownloads.remove(contentId);
-            NotificationCenter.getInstance().removeObserver(this,
-                    NotificationCenter.downloadCancelled);
-            NotificationCenter.getInstance()
-                    .postNotificationName(NotificationCenter.downloadFinished,
-                            studyRouteId, adapterPosition, contentId);
-        }
+        activeDownloads.remove(contentId);
+        NotificationCenter.getInstance().removeObserver(this,
+                NotificationCenter.downloadCancelled);
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadFinished,
+                studyRouteId, adapterPosition, contentId);
+
         if ("permission".equals(result)) {
             ((NatschoolActivity) activity).noPermission();
             return;
