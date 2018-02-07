@@ -40,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.PermissionController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
@@ -112,7 +113,8 @@ public class DownloadsActivity extends AppCompatActivity {
     }
 
     private void updateFilesList() {
-        final File path = new File(Environment.getExternalStorageDirectory().toString(), "MijnWindesheim" + File.separator);
+        final File path = Environment.getExternalStoragePublicDirectory
+                (ApplicationLoader.applicationContext.getResources().getString(R.string.app_name));
         File files[] = path.listFiles();
         if (files != null && files.length > 0) {
             List<NatschoolContent> contents = new ArrayList<>();

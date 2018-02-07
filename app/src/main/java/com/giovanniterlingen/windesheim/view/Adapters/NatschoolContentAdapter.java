@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
@@ -190,9 +191,10 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                 .setPositiveButton(activity.getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                File file = new File(Environment
-                                        .getExternalStorageDirectory().toString(),
-                                        "MijnWindesheim" + File.separator + content.get(position).name);
+                                File directory = Environment.getExternalStoragePublicDirectory
+                                        (ApplicationLoader.applicationContext.getResources()
+                                                .getString(R.string.app_name));
+                                File file = new File(directory, content.get(position).name);
                                 if (file.exists()) {
                                     file.delete();
                                 }

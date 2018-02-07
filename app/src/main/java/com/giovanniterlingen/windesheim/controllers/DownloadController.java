@@ -37,12 +37,14 @@ import android.support.v4.content.FileProvider;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -101,12 +103,17 @@ public class DownloadController extends AsyncTask<String, Object, String>
             }
             int lastSlash = url.lastIndexOf('/');
             String fileName = url.substring(lastSlash + 1);
-            File file = new File(Environment.getExternalStorageDirectory().toString(),
-                    "MijnWindesheim" + File.separator + fileName);
 
-            Uri uri;
+            File directory = Environment.getExternalStoragePublicDirectory(ApplicationLoader
+                    .applicationContext.getResources().getString(R.string.app_name));
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            final Uri uri;
             if (url.startsWith("/")) {
-                uri = Uri.parse("https://elo.windesheim.nl" + url);
+                uri = Uri.parse(new URI("https", "elo.windesheim.nl", url,
+                        null).toString());
             } else {
                 uri = Uri.parse(url);
             }
@@ -116,7 +123,9 @@ public class DownloadController extends AsyncTask<String, Object, String>
             request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
                     .setTitle(fileName)
                     .setDescription(activity.getResources().getString(R.string.downloading))
-                    .setDestinationUri(Uri.fromFile(file));
+                    .setDestinationInExternalPublicDir(File.separator +
+                            ApplicationLoader.applicationContext.getResources()
+                                    .getString(R.string.app_name), fileName);
 
             currentDownloadId = downloadManager.enqueue(request);
             while (true) {
@@ -131,10 +140,12 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 }
                 cursor.moveToFirst();
                 int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                if (status == DownloadManager.STATUS_SUCCESSFUL ||
+                        status == DownloadManager.STATUS_FAILED) {
                     break;
                 }
-                if (status == DownloadManager.STATUS_PAUSED) {
+                if (status == DownloadManager.STATUS_PAUSED ||
+                        status == DownloadManager.STATUS_PENDING) {
                     // paused, reset download state to pending
                     if (this.studyRouteId > -1 && this.contentId > -1 &&
                             this.adapterPosition > -1) {
@@ -165,7 +176,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 }
                 Thread.sleep(100);
             }
-            return file.getAbsolutePath();
+            return new File(directory, fileName).getAbsolutePath();
         } catch (SecurityException e) {
             return "permission";
         } catch (Exception e) {
