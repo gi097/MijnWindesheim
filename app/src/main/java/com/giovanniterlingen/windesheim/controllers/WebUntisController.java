@@ -160,6 +160,7 @@ public class WebUntisController {
                     visible ? 1 : 0);
             if (lastLesson != null) {
                 if (lastLesson.getId() == currentLesson.getId() &&
+                        lastLesson.getDate().equals(currentLesson.getDate()) &&
                         lastLesson.getEndTime().equals(currentLesson.getStartTime())) {
                     lastLesson.setEndTime(currentLesson.getEndTime());
                     if (i < data.length() - 1) {
