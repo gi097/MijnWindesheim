@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Giovanni Terlingen
+ * Copyright (c) 2019 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,10 +32,10 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -103,7 +103,7 @@ public class ChooseScheduleFragment extends Fragment {
                 componentFetcher.cancel(true);
             }
         }
-        if (isMenuVisible()) {
+        if (this.isVisible()) {
             (componentFetcher = new ComponentFetcher()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             if (adapter != null) {

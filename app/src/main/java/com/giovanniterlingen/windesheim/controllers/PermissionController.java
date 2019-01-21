@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Giovanni Terlingen
+ * Copyright (c) 2019 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 
 /**
  * A schedule app for students and teachers of Windesheim

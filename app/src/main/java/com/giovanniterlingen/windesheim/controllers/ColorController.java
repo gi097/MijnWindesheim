@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Giovanni Terlingen
+ * Copyright (c) 2019 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,7 +24,7 @@
  **/
 package com.giovanniterlingen.windesheim.controllers;
 
-import android.support.v4.util.LruCache;
+import androidx.collection.LruCache;
 
 /**
  * A schedule app for students and teachers of Windesheim

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Giovanni Terlingen
+ * Copyright (c) 2019 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,12 +27,12 @@ package com.giovanniterlingen.windesheim.view.Fragments;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,7 +97,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onResume() {
         super.onResume();
-        if (isMenuVisible()) {
+        if (this.isVisible()) {
             if (recyclerView != null && recyclerView.getAdapter() == null) {
                 new ScheduleFetcher(false, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
@@ -107,7 +107,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void updateToolbar() {
-        if (isMenuVisible()) {
+        if (this.isVisible()) {
             calendar.setTime(date);
             int month = calendar.get(GregorianCalendar.MONTH);
             int year = calendar.get(GregorianCalendar.YEAR);
@@ -166,7 +166,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void alertConnectionProblem() {
-        if (!isMenuVisible()) {
+        if (!this.isVisible()) {
             return;
         }
         ApplicationLoader.runOnUIThread(new Runnable() {

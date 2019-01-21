@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     tools:context=".view.SettingsActivity">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/colorBackgroundTint"
@@ -29,7 +29,7 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/material_title_size" />
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
@@ -72,7 +72,7 @@
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/description_size" />
 
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/lesson_notification_switch"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -151,7 +151,7 @@
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/description_size" />
 
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/schedule_change_notification_switch"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -161,7 +161,7 @@
 
                     </RelativeLayout>
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:layout_width="fill_parent"
@@ -172,7 +172,7 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/material_title_size" />
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
@@ -210,7 +210,7 @@
                     android:layout_gravity="bottom"
                     android:background="?android:listDivider" />
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-</android.support.design.widget.CoordinatorLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

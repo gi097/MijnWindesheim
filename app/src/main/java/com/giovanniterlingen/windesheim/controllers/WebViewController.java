@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Giovanni Terlingen
+ * Copyright (c) 2019 Giovanni Terlingen
  * <p/>
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,8 +28,8 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
-import android.support.v4.content.ContextCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
 import android.webkit.DownloadListener;
 import android.webkit.WebView;
 
