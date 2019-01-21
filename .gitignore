@@ -5,5 +5,5 @@ obj/
 *.iml
 local.properties
 *.keystore
-gradle.properties
 .DS_Store
+*.aab
