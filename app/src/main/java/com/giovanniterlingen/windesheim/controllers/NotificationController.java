@@ -172,6 +172,7 @@ public class NotificationController {
             persistentChannel.enableVibration(false);
             persistentChannel.setShowBadge(false);
             persistentChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            persistentChannel.setSound(null, null);
 
             NotificationChannel serviceChannel = new NotificationChannel(
                     SERVICE_NOTIFICATION_CHANNEL, ApplicationLoader.applicationContext.getResources()
@@ -184,6 +185,7 @@ public class NotificationController {
             serviceChannel.enableVibration(false);
             serviceChannel.setShowBadge(false);
             serviceChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+            serviceChannel.setSound(null, null);
 
             NotificationManager mManager = (NotificationManager) ApplicationLoader
                     .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
