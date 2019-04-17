@@ -97,7 +97,7 @@ public abstract class NatSchoolController extends AsyncTask<Void, Void, Void> {
     private void createWebRequest(final String path, final String urlParameters) {
         HttpURLConnection connection = null;
         try {
-            URL url = new URL("http://elo.windesheim.nl/services/Studyroutemobile.asmx/"
+            URL url = new URL("https://elo.windesheim.nl/services/Studyroutemobile.asmx/"
                     + path + "?" + urlParameters);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
