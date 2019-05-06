@@ -86,7 +86,8 @@
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
                         android:paddingEnd="@dimen/activity_margin"
-                        android:paddingStart="@dimen/activity_margin">
+                        android:paddingStart="@dimen/activity_margin"
+                        android:focusable="true">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="@dimen/avatar_size"
@@ -130,7 +131,8 @@
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
                         android:paddingEnd="@dimen/activity_margin"
-                        android:paddingStart="@dimen/activity_margin">
+                        android:paddingStart="@dimen/activity_margin"
+                        android:focusable="true">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="@dimen/avatar_size"

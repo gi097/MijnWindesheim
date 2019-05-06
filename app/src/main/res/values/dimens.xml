@@ -43,8 +43,8 @@
     <dimen name="navigation_header_size">170.0dip</dimen>
 
     <dimen name="result_divider_height">36.0dip</dimen>
-    <dimen name="result_divider_text_size">13.0dip</dimen>
-    <dimen name="result_header_subtitle_size">16.0dip</dimen>
+    <dimen name="result_divider_text_size">13.0sp</dimen>
+    <dimen name="result_header_subtitle_size">16.0sp</dimen>
 
     <dimen name="schedule_identifier_padding">5.0dip</dimen>
 

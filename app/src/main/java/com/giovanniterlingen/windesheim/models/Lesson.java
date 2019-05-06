@@ -31,18 +31,18 @@ package com.giovanniterlingen.windesheim.models;
  */
 public class Lesson {
 
-    private long rowId;
     private final int id;
     private final String subject;
     private final String date;
     private final String startTime;
-    private String endTime;
     private final String room;
     private final String teacher;
     private final String className;
     private final int scheduleId;
     private final int scheduleType;
     private final int visible;
+    private long rowId;
+    private String endTime;
 
     public Lesson(int id, String subject, String date, String startTime, String endTime, String room, String teacher, String className, int scheduleId, int scheduleType, int visible) {
         this.id = id;

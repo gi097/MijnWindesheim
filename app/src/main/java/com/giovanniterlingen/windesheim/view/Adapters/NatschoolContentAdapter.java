@@ -27,11 +27,6 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Environment;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,11 +36,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.DownloadsActivity;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -74,19 +77,21 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
 
     protected abstract void onContentClick(NatschoolContent content, int position);
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.adapter_item_content, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NotNull final ViewHolder holder, final int position) {
         final TextView contentName = holder.contentName;
         final ImageView icon = holder.icon;
         final FrameLayout menuButton = holder.menuButton;
         final ImageView menuButtonImage = holder.menuButtonImage;
+
         contentName.setText(content.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +100,17 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                         holder.getAdapterPosition());
             }
         });
+
         if (content.get(position).type == -1) {
+            final TextView progressTextView = holder.progressTextView;
+            final ProgressBar progressBar = holder.progressBar;
+            final FrameLayout cancelButton = holder.cancelButton;
+
+            progressTextView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.GONE);
+            contentName.setVisibility(View.VISIBLE);
+
             icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
                     getDrawableByName(content.get(position).name), null));
             menuButton.setVisibility(View.VISIBLE);
@@ -126,16 +141,34 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                 }
             });
         } else if (content.get(position).url == null || (content.get(position).url.length() == 0)) {
-            if (content.get(position).imageUrl != null) {
-                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
-                        R.drawable.ic_work, null));
-            } else {
+            final TextView progressTextView = holder.progressTextView;
+            final ProgressBar progressBar = holder.progressBar;
+            final FrameLayout cancelButton = holder.cancelButton;
+
+            progressTextView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.GONE);
+            contentName.setVisibility(View.VISIBLE);
+
+            if (content.get(position).imageUrl == null) {
                 icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
                         R.drawable.ic_folder, null));
+            } else {
+                icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
+                        R.drawable.ic_work, null));
             }
         } else {
             if (content.get(position).type == 1 || content.get(position).type == 3 ||
                     content.get(position).type == 11) {
+                final TextView progressTextView = holder.progressTextView;
+                final ProgressBar progressBar = holder.progressBar;
+                final FrameLayout cancelButton = holder.cancelButton;
+
+                progressTextView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
+                contentName.setVisibility(View.VISIBLE);
+
                 icon.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(),
                         R.drawable.ic_link, null));
             } else if (content.get(position).type == 10) {
@@ -175,10 +208,10 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                         }
                     });
                 } else {
-                    contentName.setVisibility(View.VISIBLE);
                     progressTextView.setVisibility(View.GONE);
                     progressBar.setVisibility(View.GONE);
                     cancelButton.setVisibility(View.GONE);
+                    contentName.setVisibility(View.VISIBLE);
                 }
             }
         }

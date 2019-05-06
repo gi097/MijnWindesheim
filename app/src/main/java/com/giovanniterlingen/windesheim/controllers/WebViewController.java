@@ -28,10 +28,11 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.content.ContextCompat;
 import android.webkit.DownloadListener;
 import android.webkit.WebView;
+
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -68,7 +69,7 @@ public class WebViewController {
                 DownloadManager downloadManager = (DownloadManager) activity
                         .getSystemService(Context.DOWNLOAD_SERVICE);
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
+                request.addRequestHeader("Cookie", CookieController.getNatSchoolCookie())
                         .setTitle(fileName)
                         .setDescription(activity.getResources().getString(R.string.downloading))
                         .setDestinationInExternalPublicDir(File.separator +

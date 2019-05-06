@@ -48,18 +48,11 @@ public class NotificationCenter {
     public static final int downloadUpdated = totalEvents++;
     public static final int downloadFinished = totalEvents++;
     public static final int downloadCancelled = totalEvents++;
-
+    private static volatile NotificationCenter Instance = null;
     private final SparseArray<ArrayList<Object>> observers = new SparseArray<>();
     private final SparseArray<ArrayList<Object>> removeAfterBroadcast = new SparseArray<>();
     private final SparseArray<ArrayList<Object>> addAfterBroadcast = new SparseArray<>();
-
     private int broadcasting = 0;
-
-    public interface NotificationCenterDelegate {
-        void didReceivedNotification(int id, Object... args);
-    }
-
-    private static volatile NotificationCenter Instance = null;
 
     public static NotificationCenter getInstance() {
         NotificationCenter localInstance = Instance;
@@ -155,5 +148,9 @@ public class NotificationCenter {
         if (objects != null) {
             objects.remove(observer);
         }
+    }
+
+    public interface NotificationCenterDelegate {
+        void didReceivedNotification(int id, Object... args);
     }
 }

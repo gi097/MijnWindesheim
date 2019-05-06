@@ -37,42 +37,27 @@ import java.util.Locale;
  */
 public class CalendarController {
 
-    private final SimpleDateFormat yearMonthDayDateTimeFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.FRANCE);
-    private final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
-    private final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
+    private static final SimpleDateFormat yearMonthDayDateTimeFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.FRANCE);
+    private static final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
+    private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
 
-    private static volatile CalendarController Instance = null;
-
-    public static CalendarController getInstance() {
-        CalendarController localInstance = Instance;
-        if (localInstance == null) {
-            synchronized (CalendarController.class) {
-                localInstance = Instance;
-                if (localInstance == null) {
-                    Instance = localInstance = new CalendarController();
-                }
-            }
-        }
-        return localInstance;
-    }
-
-    public SimpleDateFormat getYearMonthDayDateTimeFormat() {
+    public static SimpleDateFormat getYearMonthDayDateTimeFormat() {
         return yearMonthDayDateTimeFormat;
     }
 
-    public SimpleDateFormat getYearMonthDayDateFormat() {
+    public static SimpleDateFormat getYearMonthDayDateFormat() {
         return yearMonthDayDateFormat;
     }
 
-    public SimpleDateFormat getDayDateFormat() {
+    public static SimpleDateFormat getDayDateFormat() {
         return dayDateFormat;
     }
 
-    public Calendar getCalendar() {
+    public static Calendar getCalendar() {
         return GregorianCalendar.getInstance(Locale.FRANCE);
     }
 
-    String[] getWeekDates(Date date) {
+    public static String[] getWeekDates(Date date) {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.setTime(date);
         calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);

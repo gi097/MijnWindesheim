@@ -30,21 +30,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.PermissionController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class DownloadsActivity extends AppCompatActivity {
     private void updateFilesList() {
         final File path = Environment.getExternalStoragePublicDirectory
                 (ApplicationLoader.applicationContext.getResources().getString(R.string.app_name));
-        File files[] = path.listFiles();
+        File[] files = path.listFiles();
         if (files != null && files.length > 0) {
             List<NatschoolContent> contents = new ArrayList<>();
             for (File f : files) {
@@ -177,10 +178,9 @@ public class DownloadsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                super.onBackPressed();
-                return true;
+        if (id == android.R.id.home) {
+            super.onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

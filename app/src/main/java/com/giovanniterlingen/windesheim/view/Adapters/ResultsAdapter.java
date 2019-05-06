@@ -25,11 +25,12 @@
 package com.giovanniterlingen.windesheim.view.Adapters;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -37,6 +38,8 @@ import com.giovanniterlingen.windesheim.models.EC;
 import com.giovanniterlingen.windesheim.models.PropaedeuticEC;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.github.lzyzsd.circleprogress.DonutProgress;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -60,8 +63,9 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
         this.ec = ec;
     }
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         int resId = 0;
         if (viewType == 0) {
             resId = R.layout.result_adapter_header;
@@ -75,7 +79,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NotNull ViewHolder holder, int position) {
         int index = 0;
         int total = 0;
         for (int i = 0; i < results.length; i++) {
@@ -100,7 +104,6 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
                 ecDescription.setText(ApplicationLoader.applicationContext.getResources()
                         .getString(R.string.ec_description, propaedeuticEC[index].getCurrentEC(),
                                 propaedeuticEC[index].getMaxEC()));
-
             } else {
                 if (ec[index].getCurrentEC() > 0 && ec[index].getMaxEC() > 0) {
                     percent = (float) ec[index].getCurrentEC() /
@@ -128,9 +131,9 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
             if (result.getResult() != null && result.getResult().length() > 0) {
                 float mark = Float.parseFloat(result.getResult());
                 if (mark >= 5.5) {
-                    markTextView.setTextColor(0xff689f38);
+                    markTextView.setTextColor(0xFF9DCC25);
                 } else {
-                    markTextView.setTextColor(0xffd50000);
+                    markTextView.setTextColor(0xFFFF7761);
                 }
                 markTextView.setText(result.getResult());
             } else {
@@ -173,8 +176,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final int type;
-        public TextView name;
+        final int type;
+        TextView name;
         TextView result;
 
         DonutProgress progressBar;

@@ -27,17 +27,18 @@ package com.giovanniterlingen.windesheim.view.Fragments;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -48,6 +49,7 @@ import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -88,10 +90,10 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        calendar = CalendarController.getInstance().getCalendar();
+        calendar = CalendarController.getCalendar();
         date = (Date) getArguments().getSerializable("date");
-        yearMonthDayDateFormat = CalendarController.getInstance().getYearMonthDayDateFormat();
-        dayDateFormat = CalendarController.getInstance().getDayDateFormat();
+        yearMonthDayDateFormat = CalendarController.getYearMonthDayDateFormat();
+        dayDateFormat = CalendarController.getDayDateFormat();
     }
 
     @Override
@@ -99,10 +101,11 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         super.onResume();
         if (this.isVisible()) {
             if (recyclerView != null && recyclerView.getAdapter() == null) {
-                new ScheduleFetcher(false, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                new ScheduleFetcher(false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new ScheduleFetcher(this, false, true, false)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                return;
             }
+            new ScheduleFetcher(this, false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -115,10 +118,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
             if (toolbar != null) {
                 String title = dayDateFormat.format(date) + " " + monthString + " " + year;
-                if (!title.equals(toolbar.getTitle())) {
+                if (!title.contentEquals(toolbar.getTitle())) {
                     toolbar.setTitle(title);
-                    toolbar.setDisplayHomeAsUpEnabled(false);
-                    toolbar.setDisplayHomeAsUpEnabled(true);
                 }
             }
         }
@@ -134,10 +135,10 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisible()) {
             if (!DatabaseController.getInstance().isFetched(date)) {
-                new ScheduleFetcher(true, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                new ScheduleFetcher(false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new ScheduleFetcher(this, true, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                return;
             }
+            new ScheduleFetcher(this, false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -178,7 +179,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        new ScheduleFetcher(true, false, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                        new ScheduleFetcher(ScheduleFragment.this,
+                                                true, false, true)
+                                                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                         dialog.cancel();
                                     }
                                 })
@@ -194,7 +197,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        new ScheduleFetcher(true, false, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ScheduleFetcher(this, true, false, true)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void updateLayout() {
@@ -205,70 +209,91 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    private class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
+    private static class ScheduleFetcher extends AsyncTask<Void, Void, Void> {
 
         private final boolean fetchData;
         private final boolean showSpinner;
         private final boolean showSwipeRefresh;
         private Lesson[] lessons;
+        private final WeakReference<ScheduleFragment> weakReference;
 
-        ScheduleFetcher(boolean fetchData, boolean showSpinner, boolean showSwipeRefresh) {
+
+        ScheduleFetcher(ScheduleFragment fragment, boolean fetchData, boolean showSpinner,
+                        boolean showSwipeRefresh) {
             this.fetchData = fetchData;
             this.showSpinner = showSpinner;
             this.showSwipeRefresh = showSwipeRefresh;
+            this.weakReference = new WeakReference<>(fragment);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateToolbar();
-            if (adapter == null) {
+
+            ScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return;
+            }
+
+            fragment.updateToolbar();
+            if (fragment.adapter == null) {
                 if (showSpinner) {
-                    emptyTextView.setVisibility(View.GONE);
-                    spinner.setVisibility(View.VISIBLE);
+                    fragment.emptyTextView.setVisibility(View.GONE);
+                    fragment.spinner.setVisibility(View.VISIBLE);
                 }
-            } else if (adapter.getItemCount() == 0) {
-                emptyTextView.setVisibility(View.VISIBLE);
+            } else if (fragment.adapter.getItemCount() == 0) {
+                fragment.emptyTextView.setVisibility(View.VISIBLE);
             }
             if (showSwipeRefresh) {
-                swipeRefreshLayout.setRefreshing(true);
+                fragment.swipeRefreshLayout.setRefreshing(true);
             }
         }
 
         @Override
         protected Void doInBackground(Void... param) {
+            ScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return null;
+            }
+
             if (fetchData) {
                 try {
-                    new WebUntisController().getAndSaveAllSchedules(date, false);
+                    new WebUntisController().getAndSaveAllSchedules(fragment.date, false);
                 } catch (Exception e) {
-                    alertConnectionProblem();
+                    fragment.alertConnectionProblem();
                 }
             }
             lessons = DatabaseController.getInstance()
-                    .getLessons(yearMonthDayDateFormat.format(date));
+                    .getLessons(fragment.yearMonthDayDateFormat.format(fragment.date));
             return null;
         }
 
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            if (adapter == null) {
-                adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons,
-                        dayDateFormat.format(date), date);
-                recyclerView.setAdapter(adapter);
-            } else {
-                adapter.updateLessons(lessons);
+
+            ScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return;
             }
-            if (adapter.getItemCount() == 0) {
-                emptyTextView.setVisibility(View.VISIBLE);
+
+            if (fragment.adapter == null) {
+                fragment.adapter = new ScheduleAdapter((ScheduleActivity) fragment.getActivity(),
+                        lessons, fragment.dayDateFormat.format(fragment.date), fragment.date);
+                fragment.recyclerView.setAdapter(fragment.adapter);
             } else {
-                emptyTextView.setVisibility(View.GONE);
+                fragment.adapter.updateLessons(lessons);
+            }
+            if (fragment.adapter.getItemCount() == 0) {
+                fragment.emptyTextView.setVisibility(View.VISIBLE);
+            } else {
+                fragment.emptyTextView.setVisibility(View.GONE);
             }
             if (showSpinner) {
-                spinner.setVisibility(View.GONE);
+                fragment.spinner.setVisibility(View.GONE);
             }
-            if (showSwipeRefresh && swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
+            if (showSwipeRefresh && fragment.swipeRefreshLayout.isRefreshing()) {
+                fragment.swipeRefreshLayout.setRefreshing(false);
             }
         }
     }

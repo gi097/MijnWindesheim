@@ -32,10 +32,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -44,6 +40,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -55,10 +56,12 @@ import com.giovanniterlingen.windesheim.models.ScheduleItem;
 import com.giovanniterlingen.windesheim.view.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -74,14 +77,16 @@ public class ChooseScheduleFragment extends Fragment {
     private Context context;
     private ProgressBar spinner;
     private View view;
-    private ComponentFetcher componentFetcher;
     private boolean isViewShown = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getActivity();
-        int position = getArguments().getInt("position");
+        if (this.getArguments() == null) {
+            return;
+        }
+        int position = this.getArguments().getInt("position");
         type = position + 1;
     }
 
@@ -91,32 +96,22 @@ public class ChooseScheduleFragment extends Fragment {
         if (getView() != null) {
             isViewShown = true;
             startTask();
-        } else {
-            isViewShown = false;
+            return;
         }
+        isViewShown = false;
     }
 
     private void startTask() {
-        if (componentFetcher != null) {
-            if (componentFetcher.getStatus() == AsyncTask.Status.RUNNING
-                    || componentFetcher.getStatus() == AsyncTask.Status.PENDING) {
-                componentFetcher.cancel(true);
-            }
+        adapter = null;
+        if (recyclerView != null) {
+            recyclerView.setAdapter(null);
         }
-        if (this.isVisible()) {
-            (componentFetcher = new ComponentFetcher()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            if (adapter != null) {
-                adapter = null;
-            }
-            if (recyclerView != null) {
-                recyclerView.setAdapter(null);
-            }
-        }
+        ComponentFetcher componentFetcher = new ComponentFetcher(ChooseScheduleFragment.this);
+        componentFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_choose_schedule, container, false);
         TextView chooseTextview = view.findViewById(R.id.choose_textview);
@@ -127,14 +122,12 @@ public class ChooseScheduleFragment extends Fragment {
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_class_description));
             dataSearch.setHint(getResources().getString(R.string.choose_class_hint));
-        }
-        if (type == 2) {
+        } else if (type == 2) {
             chooseTextview.setText(getResources().getString(R.string.choose_teacher));
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_teacher_description));
             dataSearch.setHint(getResources().getString(R.string.choose_teacher_hint));
-        }
-        if (type == 3) {
+        } else if (type == 3) {
             chooseTextview.setText(getResources().getString(R.string.choose_subject));
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_subject_description));
@@ -193,13 +186,7 @@ public class ChooseScheduleFragment extends Fragment {
                         .setPositiveButton(getResources().getString(R.string.connect),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        if (componentFetcher != null) {
-                                            if (componentFetcher.getStatus() == AsyncTask.Status.RUNNING
-                                                    || componentFetcher.getStatus() == AsyncTask.Status.PENDING) {
-                                                componentFetcher.cancel(true);
-                                            }
-                                        }
-                                        (componentFetcher = new ComponentFetcher()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                        startTask();
                                         dialog.cancel();
                                     }
                                 })
@@ -225,33 +212,51 @@ public class ChooseScheduleFragment extends Fragment {
                         }).show();
     }
 
-    private class ComponentFetcher extends AsyncTask<Void, Void, Void> {
+    private static class ComponentFetcher extends AsyncTask<Void, Void, Void> {
+
+        private final WeakReference<ChooseScheduleFragment> weakReference;
+
+        ComponentFetcher(ChooseScheduleFragment fragmentActivity) {
+            weakReference = new WeakReference<>(fragmentActivity);
+        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            spinner.setVisibility(View.VISIBLE);
-            adapter = null;
+
+            ChooseScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return;
+            }
+
+            fragment.spinner.setVisibility(View.VISIBLE);
+            fragment.adapter = null;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            final ChooseScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return null;
+            }
+
             try {
-                ArrayList<ScheduleItem> scheduleItems = buildClassArray(new WebUntisController()
-                        .getListFromServer(type).getJSONArray("elements"));
-                adapter = new ChooseScheduleAdapter(context, scheduleItems) {
+                ArrayList<ScheduleItem> scheduleItems = fragment.buildClassArray(
+                        new WebUntisController().getListFromServer(fragment.type)
+                                .getJSONArray("elements"));
+                fragment.adapter = new ChooseScheduleAdapter(fragment.context, scheduleItems) {
                     @Override
                     protected void onContentClick(int id, String name) {
                         try {
                             boolean hasSchedules = DatabaseController.getInstance().hasSchedules();
 
-                            DatabaseController.getInstance().addSchedule(id, name, type);
+                            DatabaseController.getInstance().addSchedule(id, name, fragment.type);
                             DatabaseController.getInstance().clearFetched();
 
-                            ColorController.getInstance().invalidateColorCache();
+                            ColorController.invalidateColorCache();
 
                             SharedPreferences preferences = PreferenceManager
-                                    .getDefaultSharedPreferences(context);
+                                    .getDefaultSharedPreferences(fragment.context);
                             SharedPreferences.Editor editor = preferences.edit();
                             if (!hasSchedules) {
                                 editor.putInt("notifications_type",
@@ -262,19 +267,20 @@ public class ChooseScheduleFragment extends Fragment {
                             ApplicationLoader.postInitApplication();
 
                             if (!hasSchedules) {
-                                Intent intent = new Intent(context, ScheduleActivity.class);
-                                startActivity(intent);
+                                Intent intent = new Intent(fragment.context,
+                                        ScheduleActivity.class);
+                                fragment.startActivity(intent);
                             }
-                            getActivity().finish();
+                            fragment.getActivity().finish();
                         } catch (SQLiteConstraintException e) {
-                            alertScheduleExists();
+                            fragment.alertScheduleExists();
                         }
                     }
                 };
             } catch (InterruptedException e) {
                 //
             } catch (Exception e) {
-                alertConnectionProblem();
+                fragment.alertConnectionProblem();
             }
             return null;
         }
@@ -282,11 +288,18 @@ public class ChooseScheduleFragment extends Fragment {
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            spinner.setVisibility(View.GONE);
-            recyclerView.setAdapter(adapter);
-            EditText dataSearch = view.findViewById(R.id.filter_edittext);
-            if (adapter != null && dataSearch.getText() != null && dataSearch.getText().toString().length() > 0) {
-                adapter.filter(dataSearch.getText().toString());
+
+            ChooseScheduleFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return;
+            }
+
+            fragment.spinner.setVisibility(View.GONE);
+            fragment.recyclerView.setAdapter(fragment.adapter);
+            EditText dataSearch = fragment.view.findViewById(R.id.filter_edittext);
+            if (fragment.adapter != null && dataSearch.getText() != null &&
+                    dataSearch.getText().toString().length() > 0) {
+                fragment.adapter.filter(dataSearch.getText().toString());
             }
         }
     }

@@ -24,12 +24,13 @@
  **/
 package com.giovanniterlingen.windesheim.view.Adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -37,6 +38,8 @@ import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.HiddenLessonsActivity;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -53,15 +56,16 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         this.lessons = lessons;
     }
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.adapter_item_hidden_schedule, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NotNull final ViewHolder holder, int position) {
         TextView lessonName = holder.lessonName;
         TextView lessonComponent = holder.lessonComponent;
         View scheduleIdentifier = holder.scheduleIdentifier;
@@ -71,8 +75,7 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         lessonComponent.setText(lesson.getScheduleType() == 2 ? lesson.getClassName() : lesson.getTeacher());
         lessonComponent.setSelected(true);
 
-        scheduleIdentifier.setBackgroundColor(ColorController.getInstance()
-                .getColorById(lesson.getScheduleId()));
+        scheduleIdentifier.setBackgroundColor(ColorController.getColorById(lesson.getScheduleId()));
 
         Button button = holder.itemView.findViewById(R.id.restore_button);
         button.setOnClickListener(new View.OnClickListener() {

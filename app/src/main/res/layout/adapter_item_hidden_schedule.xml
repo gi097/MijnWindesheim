@@ -7,11 +7,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/material_card_margin_half"
         android:layout_marginLeft="@dimen/material_card_margin"
-        android:layout_marginRight="@dimen/material_card_margin"
         android:layout_marginTop="@dimen/material_card_margin_half"
+        android:layout_marginRight="@dimen/material_card_margin"
+        android:layout_marginBottom="@dimen/material_card_margin_half"
         android:clickable="true"
+        android:focusable="true"
         android:foreground="?selectableItemBackground"
         card_view:cardCornerRadius="@dimen/material_card_corner_radius"
         card_view:cardUseCompatPadding="true">
@@ -32,14 +33,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="3"
-                android:paddingBottom="@dimen/material_card_margin_half"
-                android:paddingEnd="@dimen/card_text_margin_end"
-                android:paddingLeft="@dimen/card_text_margin"
-                android:paddingRight="@dimen/card_text_margin_end"
                 android:paddingStart="@dimen/card_text_margin"
+                android:paddingLeft="@dimen/card_text_margin"
                 android:paddingTop="@dimen/card_text_margin"
+                android:paddingEnd="@dimen/card_text_margin_end"
+                android:paddingRight="@dimen/card_text_margin_end"
+                android:paddingBottom="@dimen/material_card_margin_half"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="@dimen/text_size" />
+                android:textSize="@dimen/text_size"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/schedule_list_row_component"
@@ -49,10 +51,10 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:paddingBottom="@dimen/card_text_margin"
                 android:paddingLeft="@dimen/card_text_margin"
-                android:paddingRight="@dimen/card_text_margin"
                 android:paddingTop="@dimen/material_card_margin_half"
+                android:paddingRight="@dimen/card_text_margin"
+                android:paddingBottom="@dimen/card_text_margin"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@color/colorSecondaryText"
@@ -61,8 +63,8 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/divider_height"
-                android:layout_marginLeft="@dimen/schedule_identifier_padding"
                 android:layout_marginStart="@dimen/schedule_identifier_padding"
+                android:layout_marginLeft="@dimen/schedule_identifier_padding"
                 android:background="?android:listDivider" />
 
             <RelativeLayout
@@ -79,8 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:text="@string/restore"
-                    android:textColor="@color/colorAccent" />
+                    android:text="@string/restore" />
 
             </RelativeLayout>
         </LinearLayout>

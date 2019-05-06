@@ -25,20 +25,21 @@
 package com.giovanniterlingen.windesheim.view;
 
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.Adapters.HiddenLessonsAdapter;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -90,10 +91,9 @@ public class HiddenLessonsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

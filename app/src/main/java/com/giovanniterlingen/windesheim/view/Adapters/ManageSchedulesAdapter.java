@@ -26,13 +26,14 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -40,6 +41,8 @@ import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.view.ManageSchedulesActivity;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -56,21 +59,22 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
         this.schedules = schedules;
     }
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity)
                 .inflate(R.layout.adapter_item_manage_schedule, parent, false);
         return new ManageSchedulesAdapter.ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NotNull final ViewHolder holder, int position) {
         TextView scheduleName = holder.scheduleName;
         View scheduleIdentifier = holder.scheduleIdentifier;
 
         String name = schedules[holder.getAdapterPosition()].getName();
         scheduleName.setText(name);
-        scheduleIdentifier.setBackgroundColor(ColorController.getInstance()
+        scheduleIdentifier.setBackgroundColor(ColorController
                 .getColorById(schedules[position].getId()));
         Button deleteButton = holder.delete;
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -91,8 +95,8 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                                 DatabaseController.getInstance()
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
                                 ApplicationLoader.restartNotificationThread();
-                                
-                                ColorController.getInstance().cachedColors.evictAll();
+
+                                ColorController.invalidateColorCache();
                                 schedules = DatabaseController.getInstance().getSchedules();
                                 notifyDataSetChanged();
 
@@ -121,7 +125,7 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final Button delete;
+        final Button delete;
         final TextView scheduleName;
         final View scheduleIdentifier;
 

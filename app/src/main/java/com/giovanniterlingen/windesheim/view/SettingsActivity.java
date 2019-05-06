@@ -28,21 +28,22 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -98,7 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new CookieController().deleteCookies();
+                CookieController.deleteCookies();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.remove("username");
                 editor.remove("password");
@@ -184,10 +185,9 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

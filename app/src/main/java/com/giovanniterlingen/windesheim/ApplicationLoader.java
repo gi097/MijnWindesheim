@@ -52,12 +52,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class ApplicationLoader extends Application {
 
+    private static final IntentFilter intentFilter;
     public static volatile Context applicationContext;
     public static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;
-
     private static NotificationThread notificationThread;
-    private static final IntentFilter intentFilter;
 
     static {
         intentFilter = new IntentFilter();
@@ -65,19 +64,6 @@ public class ApplicationLoader extends Application {
         intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
         intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        applicationContext = getApplicationContext();
-        applicationHandler = new Handler(applicationContext.getMainLooper());
-
-        registerReceiver(new TimeReceiver(), intentFilter);
-
-        NotificationController.getInstance().initNotificationChannels();
-        startPushService();
     }
 
     public static void startPushService() {
@@ -150,5 +136,18 @@ public class ApplicationLoader extends Application {
 
     public static void runOnUIThread(Runnable runnable) {
         applicationHandler.post(runnable);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        applicationContext = getApplicationContext();
+        applicationHandler = new Handler(applicationContext.getMainLooper());
+
+        registerReceiver(new TimeReceiver(), intentFilter);
+
+        NotificationController.getInstance().initNotificationChannels();
+        startPushService();
     }
 }

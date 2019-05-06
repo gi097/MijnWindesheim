@@ -34,43 +34,29 @@ import androidx.collection.LruCache;
 public class ColorController {
 
     private static final int[] colors = new int[]{
-            0xff008dd7,
-            0xff82189e,
-            0xffe64310,
-            0xff23a669,
-            0xff545454
+            0xFF9DCC25,
+            0xFFFF7761,
+            0xFF2056B3,
+            0xFF8CB329,
+            0xFF478BFF
     };
-    public final LruCache<Integer, Integer> cachedColors = new LruCache<>(colors.length);
+    private static final LruCache<Integer, Integer> cachedColors = new LruCache<>(colors.length);
 
-    private static volatile ColorController Instance = null;
-
-    public static ColorController getInstance() {
-        ColorController localInstance = Instance;
-        if (localInstance == null) {
-            synchronized (ColorController.class) {
-                localInstance = Instance;
-                if (localInstance == null) {
-                    Instance = localInstance = new ColorController();
-                }
-            }
-        }
-        return localInstance;
-    }
-
-    private int getColorByPosition(int position) {
+    private static int getColorByPosition(int position) {
         return colors[position];
     }
 
-    public int getColorById(int id) {
-        if (cachedColors.get(id) == null) {
+    public static int getColorById(int id) {
+        Integer color;
+        if ((color = cachedColors.get(id)) == null) {
             int position = DatabaseController.getInstance().getPositionByScheduleId(id);
-            int color = getColorByPosition(position);
+            color = getColorByPosition(position);
             cachedColors.put(id, color);
         }
-        return cachedColors.get(id);
+        return color;
     }
 
-    public void invalidateColorCache() {
-        this.cachedColors.evictAll();
+    public static void invalidateColorCache() {
+        cachedColors.evictAll();
     }
 }

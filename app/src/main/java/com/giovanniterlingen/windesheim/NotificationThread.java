@@ -27,8 +27,9 @@ package com.giovanniterlingen.windesheim;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import androidx.annotation.VisibleForTesting;
 import android.text.format.DateUtils;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
@@ -55,24 +56,23 @@ class NotificationThread extends Thread {
     public void run() {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
-        int notificationType = preferences.getInt("notifications_type",
-                NotificationController.NOTIFICATION_NOT_SET);
+        int notificationType;
         String notificationText;
-        while (notificationType != 0) {
+        while ((notificationType = preferences.getInt("notifications_type",
+                NotificationController.NOTIFICATION_NOT_SET)) != 0) {
             try {
                 Date date = new Date();
                 if (!DatabaseController.getInstance().isFetched(date)) {
                     new WebUntisController().getAndSaveAllSchedules(date, false);
                 }
                 Lesson[] lessons = DatabaseController.getInstance()
-                        .getLessons(CalendarController.getInstance()
-                                .getYearMonthDayDateFormat().format(date));
+                        .getLessons(CalendarController.getYearMonthDayDateFormat().format(date));
                 for (int i = 0; i < lessons.length; i++) {
                     Lesson lesson = lessons[i];
                     String startTimeString = lesson.getStartTime();
                     String[] startTime = startTimeString.split(":");
 
-                    Calendar calendar = CalendarController.getInstance().getCalendar();
+                    Calendar calendar = CalendarController.getCalendar();
                     calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTime[0]));
                     calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(startTime[1]));
                     calendar.set(GregorianCalendar.SECOND, 0);

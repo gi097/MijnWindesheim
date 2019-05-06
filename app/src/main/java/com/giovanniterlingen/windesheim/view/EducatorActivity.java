@@ -29,13 +29,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
@@ -47,6 +48,8 @@ import com.giovanniterlingen.windesheim.view.Adapters.ResultsAdapter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -54,12 +57,10 @@ import org.json.JSONObject;
  */
 public class EducatorActivity extends AppCompatActivity {
 
-    private SharedPreferences preferences;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = PreferenceManager.getDefaultSharedPreferences(EducatorActivity.this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EducatorActivity.this);
         if (preferences.getString("username", "").length() == 0 ||
                 preferences.getString("password", "").length() == 0) {
             Intent intent = new Intent(EducatorActivity.this, AuthenticationActivity.class);
@@ -74,16 +75,15 @@ public class EducatorActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        new ResultsFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ResultsFetcher(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -93,30 +93,47 @@ public class EducatorActivity extends AppCompatActivity {
         finish();
     }
 
-    public class ResultsFetcher extends AsyncTask<Void, Void, Void> {
+    static class ResultsFetcher extends AsyncTask<Void, Void, Void> {
 
-        private ProgressBar progressBar;
+        final WeakReference<EducatorActivity> weakReference;
         private Result[][] results;
         private PropaedeuticEC[] propaedeuticEC;
         private EC[] ec;
 
+        ResultsFetcher(EducatorActivity educatorActivity) {
+            weakReference = new WeakReference<>(educatorActivity);
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar = findViewById(R.id.progress_bar);
+
+            EducatorActivity activity = weakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+            ProgressBar progressBar = activity.findViewById(R.id.progress_bar);
             progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Void doInBackground(Void... param) {
+            EducatorActivity activity = weakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return null;
+            }
             try {
-                WindesheimAPIController controller = new WindesheimAPIController();
+                SharedPreferences preferences = PreferenceManager
+                        .getDefaultSharedPreferences(activity);
+
                 String studentNumber = preferences.getString("username", "").split("@")[0];
-                String response = controller.getStudyInfo(studentNumber);
+                String response = WindesheimAPIController.getStudyInfo(studentNumber);
+
                 JSONArray studyJson = new JSONArray(response);
                 results = new Result[studyJson.length()][];
                 propaedeuticEC = new PropaedeuticEC[studyJson.length()];
                 ec = new EC[studyJson.length()];
+
                 for (int i = 0; i < studyJson.length(); i++) {
                     JSONObject study = studyJson.getJSONObject(i).getJSONObject("WH_study");
                     String studyName = study.getString("description");
@@ -131,15 +148,15 @@ public class EducatorActivity extends AppCompatActivity {
                     int maxECs = progress.getInt("ectsTeBehalen");
                     int currentECs = progress.getInt("ectsBehaald");
                     ec[i] = new EC(maxECs, currentECs, studyName);
-                    String response2 = controller.getResults(studentNumber, isatCode);
+                    String response2 = WindesheimAPIController.getResults(studentNumber, isatCode);
                     JSONArray resultsJSON = new JSONArray(response2);
-                    results[i] = controller.getResultArray(resultsJSON);
+                    results[i] = WindesheimAPIController.getResultArray(resultsJSON);
                 }
             } catch (Exception e) {
-                Intent intent = new Intent(EducatorActivity.this, AuthenticationActivity.class);
+                Intent intent = new Intent(activity, AuthenticationActivity.class);
                 intent.putExtra("educator", true);
-                startActivity(intent);
-                finish();
+                activity.startActivity(intent);
+                activity.finish();
             }
             return null;
         }
@@ -147,14 +164,22 @@ public class EducatorActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-            progressBar.setVisibility(View.GONE);
-            if (results != null && results.length > 0) {
-                ResultsAdapter adapter = new ResultsAdapter(EducatorActivity.this, results,
-                        propaedeuticEC, ec);
-                RecyclerView recyclerView = findViewById(R.id.results_recyclerview);
-                recyclerView.setLayoutManager(new LinearLayoutManager(EducatorActivity.this));
-                recyclerView.setAdapter(adapter);
+
+            EducatorActivity activity = weakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
             }
+            if (results == null || results.length == 0) {
+                return;
+            }
+
+            ProgressBar progressBar = activity.findViewById(R.id.progress_bar);
+            progressBar.setVisibility(View.GONE);
+
+            ResultsAdapter adapter = new ResultsAdapter(activity, results, propaedeuticEC, ec);
+            RecyclerView recyclerView = activity.findViewById(R.id.results_recyclerview);
+            recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+            recyclerView.setAdapter(adapter);
         }
     }
 }

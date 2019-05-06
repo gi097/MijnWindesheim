@@ -27,20 +27,21 @@ package com.giovanniterlingen.windesheim.view;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.MenuItem;
+import android.view.View;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.view.Adapters.ManageSchedulesAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -85,10 +86,9 @@ public class ManageSchedulesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

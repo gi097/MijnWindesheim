@@ -57,6 +57,7 @@
                 android:paddingStart="@dimen/card_text_margin"
                 android:paddingTop="@dimen/card_text_margin"
                 android:textColor="@color/colorPrimaryText"
+                android:textStyle="bold"
                 android:textSize="@dimen/text_size" />
 
             <TextView
@@ -113,6 +114,7 @@
                     android:maxLines="1"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="@dimen/text_size" />
+
             </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

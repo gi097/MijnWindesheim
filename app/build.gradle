@@ -8,8 +8,8 @@ android {
         applicationId 'com.giovanniterlingen.windesheim'
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 180
-        versionName "2.8.0"
+        versionCode 182
+        versionName "3.0.0"
     }
     buildTypes {
         release {

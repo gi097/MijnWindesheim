@@ -28,9 +28,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import androidx.appcompat.app.AlertDialog;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -45,48 +46,49 @@ import com.giovanniterlingen.windesheim.view.NatschoolActivity;
  */
 public class CookieController {
 
-    public void checkCookieAndIntent(final Context context, final boolean educator) {
+    public static void checkCookieAndIntent(final Context context, final boolean educator) {
         if (ApplicationLoader.isConnected()) {
             if (educator) {
                 if (getEducatorCookie() != null && getEducatorCookie().length() > 0) {
                     Intent intent = new Intent(context, EducatorActivity.class);
                     context.startActivity(intent);
-                } else {
-                    Intent intent = new Intent(context, AuthenticationActivity.class);
-                    intent.putExtra("educator", true);
-                    context.startActivity(intent);
+                    return;
                 }
-            } else {
-                if (getNatSchoolCookie() != null && getNatSchoolCookie().length() > 0) {
-                    Intent intent = new Intent(context, NatschoolActivity.class);
-                    context.startActivity(intent);
-                } else {
-                    Intent intent = new Intent(context, AuthenticationActivity.class);
-                    intent.putExtra("educator", false);
-                    context.startActivity(intent);
-                }
+                Intent intent = new Intent(context, AuthenticationActivity.class);
+                intent.putExtra("educator", true);
+                context.startActivity(intent);
+                return;
             }
-        } else {
-            new AlertDialog.Builder(context)
-                    .setTitle(context.getResources().getString(R.string.alert_connection_title))
-                    .setMessage(context.getResources().getString(R.string.alert_connection_description))
-                    .setPositiveButton(context.getResources().getString(R.string.connect),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    checkCookieAndIntent(context, educator);
-                                    dialog.cancel();
-                                }
-                            })
-                    .setNegativeButton(context.getResources().getString(R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            }).show();
+            if (getNatSchoolCookie() != null && getNatSchoolCookie().length() > 0) {
+                Intent intent = new Intent(context, NatschoolActivity.class);
+                context.startActivity(intent);
+                return;
+            }
+            Intent intent = new Intent(context, AuthenticationActivity.class);
+            intent.putExtra("educator", false);
+            context.startActivity(intent);
+            return;
+
         }
+        new AlertDialog.Builder(context)
+                .setTitle(context.getResources().getString(R.string.alert_connection_title))
+                .setMessage(context.getResources().getString(R.string.alert_connection_description))
+                .setPositiveButton(context.getResources().getString(R.string.connect),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                checkCookieAndIntent(context, educator);
+                                dialog.cancel();
+                            }
+                        })
+                .setNegativeButton(context.getResources().getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
     }
 
-    String getNatSchoolCookie() {
+    public static String getNatSchoolCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
@@ -94,7 +96,7 @@ public class CookieController {
         return cookieManager.getCookie("https://elo.windesheim.nl");
     }
 
-    String getEducatorCookie() {
+    static String getEducatorCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);
@@ -102,7 +104,7 @@ public class CookieController {
         return cookieManager.getCookie("https://windesheimapi.azurewebsites.net");
     }
 
-    public void deleteCookies() {
+    public static void deleteCookies() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);

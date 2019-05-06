@@ -27,13 +27,6 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +37,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
@@ -51,6 +51,9 @@ import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -92,7 +95,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         long databaseDateEnd = Long.parseLong(lesson.getDate().replaceAll("-", "")
                 + lesson.getEndTime().replaceAll(":", ""));
 
-        SimpleDateFormat yearMonthDayDateFormat = CalendarController.getInstance()
+        SimpleDateFormat yearMonthDayDateFormat = CalendarController
                 .getYearMonthDayDateTimeFormat();
         long currentDate = Long.parseLong(yearMonthDayDateFormat.format(new Date()));
 
@@ -102,7 +105,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         lessonComponent.setSelected(true);
 
         if (databaseDateStart <= currentDate && databaseDateEnd >= currentDate) {
-            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
+            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.lesson_started));
             holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +120,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
                         lessonTime.setText(ApplicationLoader.applicationContext
                                 .getResources().getString(R.string.lesson_started));
                     } else {
@@ -134,7 +137,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 }
             });
         } else if (databaseDateEnd < currentDate) {
-            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
+            lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.finished));
             holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +152,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
+                        lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
                         lessonTime.setText(ApplicationLoader.applicationContext.getResources()
                                 .getString(R.string.finished));
                     } else {
@@ -201,8 +204,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 popupMenu.show();
             }
         });
-        scheduleIdentifier.setBackgroundColor(ColorController.getInstance()
-                .getColorById(lesson.getScheduleId()));
+        scheduleIdentifier.setBackgroundColor(ColorController.getColorById(lesson.getScheduleId()));
     }
 
     private void showCalendarDialog(final long rowId) {
@@ -211,7 +213,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             String[] startTimeStrings = lesson.getStartTime().split(":");
             String[] endTimeStrings = lesson.getEndTime().split(":");
 
-            Calendar calendar = CalendarController.getInstance().getCalendar();
+            Calendar calendar = CalendarController.getCalendar();
             calendar.setTime(date);
 
             calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
@@ -285,8 +287,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 }).show();
     }
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(activity).
                 inflate(R.layout.adapter_item_schedule, parent, false);
         return new ViewHolder(itemView);

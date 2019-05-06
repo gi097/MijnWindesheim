@@ -46,49 +46,6 @@ import java.util.Date;
  */
 public class WebUntisController {
 
-    public synchronized void getAndSaveAllSchedules(Date date, boolean compare) throws Exception {
-        DatabaseController.getInstance().deleteFetched(date);
-        Schedule[] schedules = DatabaseController.getInstance().getSchedules();
-        for (Schedule schedule : schedules) {
-            JSONObject data = getScheduleFromServer(schedule.getId(), date, schedule.getType());
-            saveSchedule(data, date, schedule.getId(), schedule.getType(), compare);
-        }
-        DatabaseController.getInstance().addFetched(date);
-    }
-
-    public JSONObject getListFromServer(int type) throws Exception {
-        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                "ajaxCommand=getPageConfig&type=" + type);
-        return getJsonFromUrl(url);
-    }
-
-    private JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {
-        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
-                "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
-                "&date=" + CalendarController.getInstance()
-                .getYearMonthDayDateFormat().format(date));
-        return getJsonFromUrl(url);
-    }
-
-    private JSONObject getJsonFromUrl(URL url) throws IOException, JSONException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
-        connection.setDoInput(true);
-        connection.connect();
-
-        StringBuilder stringBuffer = new StringBuilder("");
-
-        InputStream inputStream = connection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            stringBuffer.append(line);
-        }
-        return new JSONObject(stringBuffer.toString());
-    }
-
     private static synchronized void saveSchedule(JSONObject jsonObject, Date date, int id, int type, boolean compare)
             throws Exception {
         Lesson[] oldLessons = null;
@@ -208,5 +165,47 @@ public class WebUntisController {
         String hours = time.substring(0, 2);
         String minutes = time.substring(2);
         return hours + ":" + minutes;
+    }
+
+    public synchronized void getAndSaveAllSchedules(Date date, boolean compare) throws Exception {
+        DatabaseController.getInstance().deleteFetched(date);
+        Schedule[] schedules = DatabaseController.getInstance().getSchedules();
+        for (Schedule schedule : schedules) {
+            JSONObject data = getScheduleFromServer(schedule.getId(), date, schedule.getType());
+            saveSchedule(data, date, schedule.getId(), schedule.getType(), compare);
+        }
+        DatabaseController.getInstance().addFetched(date);
+    }
+
+    public JSONObject getListFromServer(int type) throws Exception {
+        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+                "ajaxCommand=getPageConfig&type=" + type);
+        return getJsonFromUrl(url);
+    }
+
+    private JSONObject getScheduleFromServer(int id, Date date, int type) throws Exception {
+        URL url = new URL("https://roosters.windesheim.nl/WebUntis/Timetable.do?" +
+                "ajaxCommand=getWeeklyTimetable&elementType=" + type + "&elementId=" + id +
+                "&date=" + CalendarController.getYearMonthDayDateFormat().format(date));
+        return getJsonFromUrl(url);
+    }
+
+    private JSONObject getJsonFromUrl(URL url) throws IOException, JSONException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Cookie", "schoolname=\"_V2luZGVzaGVpbQ==\"");
+        connection.setDoInput(true);
+        connection.connect();
+
+        StringBuilder stringBuffer = new StringBuilder();
+
+        InputStream inputStream = connection.getInputStream();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuffer.append(line);
+        }
+        return new JSONObject(stringBuffer.toString());
     }
 }

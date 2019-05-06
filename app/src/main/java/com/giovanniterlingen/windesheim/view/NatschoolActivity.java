@@ -28,16 +28,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.PermissionController;
 import com.giovanniterlingen.windesheim.view.Fragments.ContentsFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -70,10 +71,9 @@ public class NatschoolActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                super.onBackPressed();
-                return true;
+        if (id == android.R.id.home) {
+            super.onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

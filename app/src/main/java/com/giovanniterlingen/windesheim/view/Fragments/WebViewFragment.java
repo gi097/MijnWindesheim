@@ -26,13 +26,14 @@ package com.giovanniterlingen.windesheim.view.Fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
+
+import androidx.fragment.app.Fragment;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WebViewController;
@@ -42,7 +43,7 @@ import com.giovanniterlingen.windesheim.controllers.WebViewController;
  *
  * @author Giovanni Terlingen
  */
-public class WebViewFragment extends Fragment {
+class WebViewFragment extends Fragment {
 
     public final static String KEY_URL = "WEB_VIEW_URL";
     private WebView webView;
@@ -59,14 +60,17 @@ public class WebViewFragment extends Fragment {
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
                     webViewController.intentCustomTab(url);
                     closeWebView();
-                    getActivity().onBackPressed();
+                    if (getActivity() != null) {
+                        getActivity().onBackPressed();
+                    }
                 }
             }
         });
 
         Bundle bundle = getArguments();
-        this.webView.loadUrl(bundle.getString(KEY_URL));
-
+        if (bundle != null) {
+            this.webView.loadUrl(bundle.getString(KEY_URL));
+        }
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout
                 .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -82,12 +86,13 @@ public class WebViewFragment extends Fragment {
     }
 
     private void closeWebView() {
-        if (webView != null) {
-            webView.clearHistory();
-            webView.clearCache(true);
-            webView.loadUrl("about:blank");
-            webView.pauseTimers();
-            webView = null;
+        if (webView == null) {
+            return;
         }
+        webView.clearHistory();
+        webView.clearCache(true);
+        webView.loadUrl("about:blank");
+        webView.pauseTimers();
+        webView = null;
     }
 }

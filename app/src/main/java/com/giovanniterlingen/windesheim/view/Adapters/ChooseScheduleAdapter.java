@@ -25,14 +25,17 @@
 package com.giovanniterlingen.windesheim.view.Adapters;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,15 +59,16 @@ public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseS
 
     protected abstract void onContentClick(int id, String name);
 
+    @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(context).
                 inflate(R.layout.adapter_item_schedule_item, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NotNull final ViewHolder holder, int position) {
         TextView name = holder.name;
         name.setText(scheduleItemsFilterable.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {

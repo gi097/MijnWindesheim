@@ -44,28 +44,28 @@ import java.util.ArrayList;
  */
 public class WindesheimAPIController {
 
-    public String getStudyInfo(String studentNumber) throws Exception {
+    public static String getStudyInfo(String studentNumber) throws Exception {
         URL url = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
                 + studentNumber + "/Study?onlydata=true");
         return getDataFromUrl(url);
     }
 
-    public String getResults(String studentNumber, String isat) throws Exception {
+    public static String getResults(String studentNumber, String isat) throws Exception {
         URL url = new URL("https://windesheimapi.azurewebsites.net/api/v1/Persons/"
                 + studentNumber + "/Study/" + isat
                 + "/CourseResults?onlydata=true&$orderby=lastmodified");
         return getDataFromUrl(url);
     }
 
-    private String getDataFromUrl(URL url) throws IOException {
+    private static String getDataFromUrl(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");
-        connection.setRequestProperty("Cookie", new CookieController().getEducatorCookie());
+        connection.setRequestProperty("Cookie", CookieController.getEducatorCookie());
         connection.setDoInput(true);
         connection.connect();
 
-        StringBuilder stringBuffer = new StringBuilder("");
+        StringBuilder stringBuffer = new StringBuilder();
 
         InputStream inputStream = connection.getInputStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -76,7 +76,7 @@ public class WindesheimAPIController {
         return stringBuffer.toString();
     }
 
-    public Result[] getResultArray(JSONArray resultsJSON) throws Exception {
+    public static Result[] getResultArray(JSONArray resultsJSON) throws Exception {
         ArrayList<Result> results = new ArrayList<>();
         for (int i = resultsJSON.length() - 1; i >= 0; i--) {
             JSONObject current = resultsJSON.getJSONObject(i);
@@ -86,6 +86,6 @@ public class WindesheimAPIController {
                 results.add(new Result(name, result));
             }
         }
-        return results.toArray(new Result[results.size()]);
+        return results.toArray(new Result[0]);
     }
 }

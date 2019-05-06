@@ -26,19 +26,20 @@ package com.giovanniterlingen.windesheim.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
+import android.view.MenuItem;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.view.Fragments.ChooseScheduleFragment;
+import com.google.android.material.tabs.TabLayout;
 
 /**
  * A schedule app for students and teachers of Windesheim

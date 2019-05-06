@@ -51,7 +51,7 @@ public class FetchService extends JobService {
                 public void run() {
                     try {
                         WebUntisController webUntisController = new WebUntisController();
-                        Calendar calendar = CalendarController.getInstance().getCalendar();
+                        Calendar calendar = CalendarController.getCalendar();
                         if (calendar.get(GregorianCalendar.DAY_OF_WEEK) ==
                                 GregorianCalendar.SATURDAY) {
                             calendar.add(GregorianCalendar.DATE, 2);

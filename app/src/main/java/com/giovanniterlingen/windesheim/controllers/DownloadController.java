@@ -33,9 +33,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import androidx.core.content.FileProvider;
 import android.text.format.Formatter;
 import android.util.SparseArray;
+
+import androidx.core.content.FileProvider;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
@@ -44,6 +45,7 @@ import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.net.URI;
 
 /**
@@ -55,20 +57,18 @@ import java.net.URI;
 public class DownloadController extends AsyncTask<String, Object, String>
         implements NotificationCenter.NotificationCenterDelegate {
 
-    private final Activity activity;
+    public static final SparseArray<Download> activeDownloads = new SparseArray<>();
+    private final WeakReference<Activity> weakReference;
     private final String url;
     private final int studyRouteId;
     private final int contentId;
     private final int adapterPosition;
-
     private DownloadManager downloadManager;
     private long currentDownloadId = -1;
 
-    static final SparseArray<Download> activeDownloads = new SparseArray<>();
-
     public DownloadController(Activity activity, String url, int studyRouteId, int contentId,
                               int adapterPosition) {
-        this.activity = activity;
+        this.weakReference = new WeakReference<>(activity);
         this.url = url;
         this.studyRouteId = studyRouteId;
         this.contentId = contentId;
@@ -86,6 +86,11 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
     @Override
     protected String doInBackground(final String... strings) {
+        Activity activity = weakReference.get();
+        if (activity == null || activity.isFinishing()) {
+            return null;
+        }
+
         try {
             activeDownloads.put(contentId, new Download());
             int lastSlash = url.lastIndexOf('/');
@@ -102,7 +107,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
             downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(encodedUrl));
-            request.addRequestHeader("Cookie", new CookieController().getNatSchoolCookie())
+            request.addRequestHeader("Cookie", CookieController.getNatSchoolCookie())
                     .setTitle(fileName)
                     .setDescription(activity.getResources().getString(R.string.downloading))
                     .setDestinationInExternalPublicDir(File.separator +
@@ -182,6 +187,11 @@ public class DownloadController extends AsyncTask<String, Object, String>
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.downloadFinished,
                 studyRouteId, adapterPosition, contentId);
 
+        Activity activity = weakReference.get();
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
+
         if ("permission".equals(result)) {
             ((NatschoolActivity) activity).noPermission();
             return;
@@ -216,7 +226,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == NotificationCenter.downloadCancelled && (int) args[0] == contentId) {
+        if (NotificationCenter.downloadCancelled == id && contentId == (int) args[0]) {
             this.cancel(true);
         }
     }

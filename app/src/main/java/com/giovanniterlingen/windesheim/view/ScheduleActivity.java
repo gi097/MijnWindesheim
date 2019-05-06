@@ -28,22 +28,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.core.view.GravityCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
@@ -53,6 +51,9 @@ import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -128,12 +129,10 @@ public class ScheduleActivity extends AppCompatActivity
                                 finish();
                                 break;
                             case R.id.natschool:
-                                new CookieController()
-                                        .checkCookieAndIntent(ScheduleActivity.this, false);
+                                CookieController.checkCookieAndIntent(ScheduleActivity.this, false);
                                 break;
                             case R.id.educator:
-                                new CookieController()
-                                        .checkCookieAndIntent(ScheduleActivity.this, true);
+                                CookieController.checkCookieAndIntent(ScheduleActivity.this, true);
                                 break;
                             case R.id.downloads:
                                 Intent intent1 = new Intent(ScheduleActivity.this,
@@ -167,7 +166,7 @@ public class ScheduleActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         mPager = findViewById(R.id.pager);
 
-        Calendar calendar = CalendarController.getInstance().getCalendar();
+        Calendar calendar = CalendarController.getCalendar();
         int calendarDayIndex = calendar.get(GregorianCalendar.DAY_OF_WEEK);
 
         if (calendarDayIndex <= GregorianCalendar.FRIDAY) {
@@ -205,7 +204,7 @@ public class ScheduleActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.hasExtra("notification")) {
+        if (intent.getExtras() != null && intent.hasExtra("notification")) {
             boolean fromNotification = intent.getExtras().getBoolean("notification");
             if (fromNotification) {
                 setViewPager();
@@ -229,12 +228,10 @@ public class ScheduleActivity extends AppCompatActivity
 
     public void updateFragmentView() {
         List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                if (fragment != null && fragment.isVisible()) {
-                    ((ScheduleFragment) fragment).updateLayout();
-                    return;
-                }
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible()) {
+                ((ScheduleFragment) fragment).updateLayout();
+                return;
             }
         }
     }
@@ -252,12 +249,10 @@ public class ScheduleActivity extends AppCompatActivity
     public void didReceivedNotification(int id, Object... args) {
         if (id == NotificationCenter.scheduleReload) {
             List<Fragment> fragments = fragmentManager.getFragments();
-            if (fragments != null) {
-                for (Fragment fragment : fragments) {
-                    if (fragment != null && fragment.isVisible()) {
-                        ((ScheduleFragment) fragment).updateAdapter();
-                        return;
-                    }
+            for (Fragment fragment : fragments) {
+                if (fragment != null && fragment.isVisible()) {
+                    ((ScheduleFragment) fragment).updateAdapter();
+                    return;
                 }
             }
         }
@@ -271,7 +266,7 @@ public class ScheduleActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            Calendar calendar = CalendarController.getInstance().getCalendar();
+            Calendar calendar = CalendarController.getCalendar();
             if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
                 DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
                 calendar.add(GregorianCalendar.DATE, 2);
