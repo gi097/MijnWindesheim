@@ -43,6 +43,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
+import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WebUntisController;
 import com.giovanniterlingen.windesheim.models.Lesson;
@@ -148,7 +149,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_schedule, container, false);
         swipeRefreshLayout = viewGroup.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryText, R.color.colorPrimary);
+        swipeRefreshLayout.setColorSchemeColors(ColorController.colors);
         emptyTextView = viewGroup.findViewById(R.id.schedule_not_found);
         spinner = viewGroup.findViewById(R.id.progress_bar);
         recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);

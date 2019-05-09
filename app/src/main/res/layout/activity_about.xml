@@ -43,8 +43,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/material_card_margin_half"
-                android:layout_marginTop="@dimen/material_card_margin_half"
                 card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <TextView
@@ -69,8 +67,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/material_card_margin_half"
-                android:layout_marginTop="@dimen/material_card_margin_half"
                 card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <LinearLayout
@@ -177,8 +173,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/material_card_margin_half"
-                android:layout_marginTop="@dimen/material_card_margin_half"
                 card_view:cardCornerRadius="@dimen/material_zero_radius">
 
                 <LinearLayout

@@ -196,12 +196,15 @@
 
     <string name="settings">Instellingen</string>
     <string name="settings_account">Account</string>
+    <string name="settings_appearance">Uiterlijk</string>
+    <string name="settings_dark_mode">Donkere modus</string>
+    <string name="settings_dark_mode_description">Maak gebruik van donkere kleuren</string>
     <string name="settings_interval">Tijd van melden</string>
     <string name="settings_lessons">Lessen</string>
     <string name="settings_lessons_description">Melden wanneer een nieuwe les gaat beginnen</string>
     <string name="settings_logout">UITLOGGEN</string>
     <string name="settings_logout_msg">Het account is uitgelogd van dit apparaat</string>
-    <string name="settings_notification_description">Meldingen</string>
+    <string name="settings_notifications">Meldingen</string>
     <string name="settings_schedule_change">Roosterwijzigingen</string>
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
 

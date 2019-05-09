@@ -17,7 +17,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="fill_parent" />
 
         <TextView
             android:id="@+id/hidden_schedule_not_found"

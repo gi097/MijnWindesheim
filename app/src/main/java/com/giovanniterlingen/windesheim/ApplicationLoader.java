@@ -28,10 +28,15 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -149,5 +154,21 @@ public class ApplicationLoader extends Application {
 
         NotificationController.getInstance().initNotificationChannels();
         startPushService();
+
+        setDarkMode();
+    }
+
+    private void setDarkMode() {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(applicationContext);
+        int currentNightMode = applicationContext.getResources().getConfiguration().uiMode &
+                Configuration.UI_MODE_NIGHT_MASK;
+        boolean useDarkMode = preferences.getBoolean("dark_mode",
+                currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        if (useDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            return;
+        }
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 }

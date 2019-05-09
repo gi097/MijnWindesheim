@@ -25,7 +25,9 @@
 package com.giovanniterlingen.windesheim.view;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -44,6 +47,8 @@ import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.google.android.material.snackbar.Snackbar;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -55,6 +60,7 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private TextView intervalTextview;
     private SwitchCompat lessonStart;
+    private SwitchCompat darkMode;
     private CharSequence[] items;
     private int notificationId = NotificationController.NOTIFICATION_NOT_SET;
 
@@ -76,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
 
         lessonStart = findViewById(R.id.lesson_notification_switch);
-
         lessonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +99,27 @@ public class SettingsActivity extends AppCompatActivity {
         });
         int pref = preferences.getInt("notifications_type", 0);
         lessonStart.setChecked(pref != 0 && pref != NotificationController.NOTIFICATION_OFF);
+
+        darkMode = findViewById(R.id.dark_mode_switch);
+        darkMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("dark_mode", darkMode.isChecked());
+                editor.apply();
+
+                if (darkMode.isChecked()) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+                restart();
+            }
+        });
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean useDarkMode = preferences.getBoolean("dark_mode",
+                currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        darkMode.setChecked(useDarkMode);
 
         Button deleteAccountButton = findViewById(R.id.logout_button);
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +174,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void updateLessonSwitch() {
         int interval = preferences.getInt("notifications_type",
                 NotificationController.NOTIFICATION_NOT_SET);
-        lessonStart.setChecked(interval != -NotificationController.NOTIFICATION_NOT_SET &&
+        lessonStart.setChecked(interval != NotificationController.NOTIFICATION_NOT_SET &&
                 interval != NotificationController.NOTIFICATION_OFF);
     }
 
@@ -190,5 +216,13 @@ public class SettingsActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void restart() {
+        Intent intent = new Intent(this, LaunchActivity.class);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+        Runtime.getRuntime().exit(0);
     }
 }

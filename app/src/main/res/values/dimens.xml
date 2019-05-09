@@ -16,6 +16,7 @@
     <dimen name="card_text_margin">16.0dip</dimen>
     <dimen name="card_text_margin_end">48.0dip</dimen>
     <dimen name="card_text_margin_half">8.0dip</dimen>
+    <dimen name="card_text_margin_small">2.0dip</dimen>
 
     <dimen name="description_size">12.0sp</dimen>
 
@@ -34,9 +35,7 @@
     <dimen name="login_padding">32.0dip</dimen>
     <dimen name="login_text_header_size">68.0dip</dimen>
 
-    <dimen name="material_card_corner_radius">2.0dip</dimen>
-    <dimen name="material_card_margin">8.0dip</dimen>
-    <dimen name="material_card_margin_half">4.0dip</dimen>
+    <dimen name="material_card_corner_radius">24.0dip</dimen>
     <dimen name="material_title_size">16.0sp</dimen>
     <dimen name="material_zero_radius">0.0dip</dimen>
 

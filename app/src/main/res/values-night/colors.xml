@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <color name="colorAccent">#1B88CC</color>
+    <color name="colorBackground">#050505</color>
+    <color name="colorBackgroundTint">#111111</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorLoginBottom">#1A1816</color>
+    <color name="colorLoginDivider">#55FFFFFF</color>
+    <color name="colorPrimary">#ffcb08</color>
+    <color name="colorPrimaryDark">@color/colorPrimary</color>
+    <color name="colorPrimaryText">#DCE0DF</color>
+    <color name="colorResultDivider">#0D0D0D</color>
+    <color name="colorResultDividerText">#757575</color>
+    <color name="colorSecondaryText">#A4A4A4</color>
+    <color name="colorTitle">#DDFFFFFF</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTransparent">#00000000</color>
+</resources>

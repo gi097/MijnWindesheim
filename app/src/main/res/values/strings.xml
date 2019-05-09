@@ -200,12 +200,15 @@
 
     <string name="settings">Settings</string>
     <string name="settings_account">Account</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark mode</string>
+    <string name="settings_dark_mode_description">Use dark colors</string>
     <string name="settings_interval">Time for notify</string>
     <string name="settings_lessons">Lessons</string>
     <string name="settings_lessons_description">Notify when a new lesson starts</string>
     <string name="settings_logout">LOGOUT</string>
     <string name="settings_logout_msg">Account has been logged out from this device</string>
-    <string name="settings_notification_description">Notifications</string>
+    <string name="settings_notifications">Notifications</string>
     <string name="settings_schedule_change">Schedule changes</string>
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
 

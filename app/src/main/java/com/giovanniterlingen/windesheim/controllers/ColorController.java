@@ -33,7 +33,7 @@ import androidx.collection.LruCache;
  */
 public class ColorController {
 
-    private static final int[] colors = new int[]{
+    public static final int[] colors = new int[]{
             0xFF9DCC25,
             0xFFFF7761,
             0xFF2056B3,

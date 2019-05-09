@@ -9,10 +9,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/material_card_margin_half"
-        android:layout_marginLeft="@dimen/material_card_margin"
-        android:layout_marginRight="@dimen/material_card_margin"
-        android:layout_marginTop="@dimen/material_card_margin_half"
         card_view:cardCornerRadius="@dimen/material_card_corner_radius"
         card_view:cardUseCompatPadding="true">
 
