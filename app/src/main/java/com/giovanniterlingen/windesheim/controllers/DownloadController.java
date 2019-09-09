@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 
@@ -96,11 +95,12 @@ public class DownloadController extends AsyncTask<String, Object, String>
             int lastSlash = url.lastIndexOf('/');
             String fileName = url.substring(lastSlash + 1);
 
-            File directory = Environment.getExternalStoragePublicDirectory(ApplicationLoader
+            File directory = new File(activity.getExternalFilesDir(null), ApplicationLoader
                     .applicationContext.getResources().getString(R.string.app_name));
             if (!directory.exists()) {
                 directory.mkdirs();
             }
+            File file = new File(directory, fileName);
 
             final String encodedUrl = new URI("https", "elo.windesheim.nl", url,
                     null).toString();
@@ -110,9 +110,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
             request.addRequestHeader("Cookie", CookieController.getNatSchoolCookie())
                     .setTitle(fileName)
                     .setDescription(activity.getResources().getString(R.string.downloading))
-                    .setDestinationInExternalPublicDir(File.separator +
-                            ApplicationLoader.applicationContext.getResources()
-                                    .getString(R.string.app_name), fileName);
+                    .setDestinationUri(Uri.fromFile(file));
 
             currentDownloadId = downloadManager.enqueue(request);
             while (true) {
@@ -154,7 +152,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 }
                 Thread.sleep(100);
             }
-            return new File(directory, fileName).getAbsolutePath();
+            return file.getAbsolutePath();
         } catch (SecurityException e) {
             return "permission";
         } catch (Exception e) {

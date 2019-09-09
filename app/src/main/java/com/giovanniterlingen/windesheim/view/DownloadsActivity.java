@@ -28,7 +28,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
@@ -114,8 +113,8 @@ public class DownloadsActivity extends AppCompatActivity {
     }
 
     private void updateFilesList() {
-        final File path = Environment.getExternalStoragePublicDirectory
-                (ApplicationLoader.applicationContext.getResources().getString(R.string.app_name));
+        final File path = new File(this.getExternalFilesDir(null), ApplicationLoader
+                .applicationContext.getResources().getString(R.string.app_name));
         File[] files = path.listFiles();
         if (files != null && files.length > 0) {
             List<NatschoolContent> contents = new ArrayList<>();

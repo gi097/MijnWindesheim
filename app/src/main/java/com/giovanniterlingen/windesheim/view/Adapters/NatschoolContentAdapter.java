@@ -26,7 +26,6 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -224,9 +223,8 @@ public abstract class NatschoolContentAdapter extends RecyclerView.Adapter<Natsc
                 .setPositiveButton(activity.getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                File directory = Environment.getExternalStoragePublicDirectory
-                                        (ApplicationLoader.applicationContext.getResources()
-                                                .getString(R.string.app_name));
+                                File directory = new File(activity.getExternalFilesDir(null), ApplicationLoader
+                                        .applicationContext.getResources().getString(R.string.app_name));
                                 File file = new File(directory, content.get(position).name);
                                 if (file.exists()) {
                                     file.delete();
