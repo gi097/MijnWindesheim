@@ -45,7 +45,7 @@ import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.WebUntisController;
+import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.view.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
@@ -79,7 +79,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     };
     private Calendar calendar;
     private Date date;
-    private SimpleDateFormat yearMonthDayDateFormat;
     private SimpleDateFormat dayDateFormat;
 
     private ScheduleAdapter adapter;
@@ -93,14 +92,13 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         super.onCreate(savedInstanceState);
         calendar = CalendarController.getCalendar();
         date = (Date) getArguments().getSerializable("date");
-        yearMonthDayDateFormat = CalendarController.getYearMonthDayDateFormat();
         dayDateFormat = CalendarController.getDayDateFormat();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (this.isVisible()) {
+        if (this.isMenuVisible() && this.isVisible()) {
             if (recyclerView != null && recyclerView.getAdapter() == null) {
                 new ScheduleFetcher(this, false, true, false)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -111,7 +109,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void updateToolbar() {
-        if (this.isVisible()) {
+        if (this.isMenuVisible() && this.isVisible()) {
             calendar.setTime(date);
             int month = calendar.get(GregorianCalendar.MONTH);
             int year = calendar.get(GregorianCalendar.YEAR);
@@ -134,12 +132,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (isVisible()) {
-            if (!DatabaseController.getInstance().isFetched(date)) {
-                new ScheduleFetcher(this, true, true, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                return;
-            }
-            new ScheduleFetcher(this, false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (this.isMenuVisible() && this.isVisible()) {
+            new ScheduleFetcher(this, false, false,
+                    false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -155,11 +150,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        Lesson[] lessons = DatabaseController.getInstance()
-                .getLessons(yearMonthDayDateFormat.format(date));
+        Lesson[] lessons = DatabaseController.getInstance().getLessons(date);
         if (lessons.length > 0) {
-            adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons,
-                    yearMonthDayDateFormat.format(date), date);
+            adapter = new ScheduleAdapter((ScheduleActivity) getActivity(), lessons, date);
             recyclerView.setAdapter(adapter);
         } else {
             emptyTextView.setVisibility(View.VISIBLE);
@@ -215,8 +208,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         private final boolean fetchData;
         private final boolean showSpinner;
         private final boolean showSwipeRefresh;
-        private Lesson[] lessons;
         private final WeakReference<ScheduleFragment> weakReference;
+        private Lesson[] lessons;
 
 
         ScheduleFetcher(ScheduleFragment fragment, boolean fetchData, boolean showSpinner,
@@ -259,13 +252,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             if (fetchData) {
                 try {
-                    new WebUntisController().getAndSaveAllSchedules(fragment.date, false);
+                    WindesheimAPIController.getAndSaveLessons(fragment.date, false);
                 } catch (Exception e) {
                     fragment.alertConnectionProblem();
                 }
             }
-            lessons = DatabaseController.getInstance()
-                    .getLessons(fragment.yearMonthDayDateFormat.format(fragment.date));
+            lessons = DatabaseController.getInstance().getLessons(fragment.date);
             return null;
         }
 
@@ -280,7 +272,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             if (fragment.adapter == null) {
                 fragment.adapter = new ScheduleAdapter((ScheduleActivity) fragment.getActivity(),
-                        lessons, fragment.dayDateFormat.format(fragment.date), fragment.date);
+                        lessons, fragment.date);
                 fragment.recyclerView.setAdapter(fragment.adapter);
             } else {
                 fragment.adapter.updateLessons(lessons);

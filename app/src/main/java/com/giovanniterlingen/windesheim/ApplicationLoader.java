@@ -34,9 +34,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -161,10 +161,8 @@ public class ApplicationLoader extends Application {
     private void setDarkMode() {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(applicationContext);
-        int currentNightMode = applicationContext.getResources().getConfiguration().uiMode &
-                Configuration.UI_MODE_NIGHT_MASK;
-        boolean useDarkMode = preferences.getBoolean("dark_mode",
-                currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        int currentNightMode = applicationContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean useDarkMode = preferences.getBoolean("dark_mode", currentNightMode == Configuration.UI_MODE_NIGHT_YES);
         if (useDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             return;

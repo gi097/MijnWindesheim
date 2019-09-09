@@ -31,7 +31,6 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -43,26 +42,26 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
-import com.giovanniterlingen.windesheim.controllers.WebUntisController;
+import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
 import com.giovanniterlingen.windesheim.view.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -71,9 +70,9 @@ import java.util.ArrayList;
  */
 public class ChooseScheduleFragment extends Fragment {
 
+    private Constants.SCHEDULE_TYPE type;
     private ChooseScheduleAdapter adapter;
     private RecyclerView recyclerView;
-    private int type;
     private Context context;
     private ProgressBar spinner;
     private View view;
@@ -87,7 +86,17 @@ public class ChooseScheduleFragment extends Fragment {
             return;
         }
         int position = this.getArguments().getInt("position");
-        type = position + 1;
+        switch (position) {
+            case 0:
+                type = Constants.SCHEDULE_TYPE.CLASS;
+                break;
+            case 1:
+                type = Constants.SCHEDULE_TYPE.TEACHER;
+                break;
+            case 2:
+                type = Constants.SCHEDULE_TYPE.SUBJECT;
+                break;
+        }
     }
 
     @Override
@@ -117,17 +126,17 @@ public class ChooseScheduleFragment extends Fragment {
         TextView chooseTextview = view.findViewById(R.id.choose_textview);
         TextView descriptionTextview = view.findViewById(R.id.description_textview);
         EditText dataSearch = view.findViewById(R.id.filter_edittext);
-        if (type == 1) {
+        if (type == Constants.SCHEDULE_TYPE.CLASS) {
             chooseTextview.setText(getResources().getString(R.string.choose_class));
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_class_description));
             dataSearch.setHint(getResources().getString(R.string.choose_class_hint));
-        } else if (type == 2) {
+        } else if (type == Constants.SCHEDULE_TYPE.TEACHER) {
             chooseTextview.setText(getResources().getString(R.string.choose_teacher));
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_teacher_description));
             dataSearch.setHint(getResources().getString(R.string.choose_teacher_hint));
-        } else if (type == 3) {
+        } else if (type == Constants.SCHEDULE_TYPE.SUBJECT) {
             chooseTextview.setText(getResources().getString(R.string.choose_subject));
             descriptionTextview.setText(getResources().getString(R.string
                     .choose_subject_description));
@@ -153,24 +162,6 @@ public class ChooseScheduleFragment extends Fragment {
             startTask();
         }
         return view;
-    }
-
-    private synchronized ArrayList<ScheduleItem> buildClassArray(JSONArray jsonArray) {
-        ArrayList<ScheduleItem> scheduleItems = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                if (Thread.interrupted()) {
-                    return null;
-                }
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                scheduleItems.add(new ScheduleItem(jsonObject.getInt("id"),
-                        jsonObject.getString("name") + " - " + jsonObject.getString("longName")));
-            } catch (JSONException e) {
-                alertConnectionProblem();
-                return null;
-            }
-        }
-        return scheduleItems;
     }
 
     private void alertConnectionProblem() {
@@ -241,17 +232,27 @@ public class ChooseScheduleFragment extends Fragment {
             }
 
             try {
-                ArrayList<ScheduleItem> scheduleItems = fragment.buildClassArray(
-                        new WebUntisController().getListFromServer(fragment.type)
-                                .getJSONArray("elements"));
+                ScheduleItem[] items = null;
+                switch (fragment.type) {
+                    case CLASS:
+                        items = WindesheimAPIController.getClasses();
+                        break;
+                    case TEACHER:
+                        items = WindesheimAPIController.getTeachers();
+                        break;
+                    case SUBJECT:
+                        items = WindesheimAPIController.getSubjects();
+                        break;
+                }
+
+                ArrayList<ScheduleItem> scheduleItems = new ArrayList<>(Arrays.asList(items));
                 fragment.adapter = new ChooseScheduleAdapter(fragment.context, scheduleItems) {
                     @Override
-                    protected void onContentClick(int id, String name) {
+                    protected void onContentClick(String id, String name) {
                         try {
                             boolean hasSchedules = DatabaseController.getInstance().hasSchedules();
 
                             DatabaseController.getInstance().addSchedule(id, name, fragment.type);
-                            DatabaseController.getInstance().clearFetched();
 
                             ColorController.invalidateColorCache();
 

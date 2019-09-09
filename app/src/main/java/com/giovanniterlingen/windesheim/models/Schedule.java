@@ -24,6 +24,8 @@
  **/
 package com.giovanniterlingen.windesheim.models;
 
+import com.giovanniterlingen.windesheim.Constants;
+
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -31,25 +33,31 @@ package com.giovanniterlingen.windesheim.models;
  */
 public class Schedule {
 
-    private final int type;
-    private final String name;
-    private final int id;
+    private String id;
+    private String name;
+    private Constants.SCHEDULE_TYPE type;
 
-    public Schedule(int id, String name, int type) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
         this.id = id;
-        this.name = name;
-        this.type = type;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getId() {
-        return id;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getType() {
+    public Constants.SCHEDULE_TYPE getType() {
         return type;
+    }
+
+    public void setType(Constants.SCHEDULE_TYPE type) {
+        this.type = type;
     }
 }

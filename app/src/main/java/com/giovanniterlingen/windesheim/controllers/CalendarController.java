@@ -37,15 +37,11 @@ import java.util.Locale;
  */
 public class CalendarController {
 
-    private static final SimpleDateFormat yearMonthDayDateTimeFormat = new SimpleDateFormat("yyyyMMddHHmm", Locale.FRANCE);
     private static final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
     private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
+    private static final SimpleDateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm", Locale.FRANCE);
 
-    public static SimpleDateFormat getYearMonthDayDateTimeFormat() {
-        return yearMonthDayDateTimeFormat;
-    }
-
-    public static SimpleDateFormat getYearMonthDayDateFormat() {
+    static SimpleDateFormat getYearMonthDayDateFormat() {
         return yearMonthDayDateFormat;
     }
 
@@ -53,11 +49,15 @@ public class CalendarController {
         return dayDateFormat;
     }
 
+    public static SimpleDateFormat getHourMinuteFormat() {
+        return hourMinuteFormat;
+    }
+
     public static Calendar getCalendar() {
         return GregorianCalendar.getInstance(Locale.FRANCE);
     }
 
-    public static String[] getWeekDates(Date date) {
+    static String[] getWeekDates(Date date) {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.setTime(date);
         calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);

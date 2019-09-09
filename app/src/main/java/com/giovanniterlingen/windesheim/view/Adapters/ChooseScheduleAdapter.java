@@ -57,7 +57,7 @@ public abstract class ChooseScheduleAdapter extends RecyclerView.Adapter<ChooseS
         this.scheduleItemsFilterable.addAll(scheduleItems);
     }
 
-    protected abstract void onContentClick(int id, String name);
+    protected abstract void onContentClick(String id, String name);
 
     @NotNull
     @Override

@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
@@ -106,7 +106,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("dark_mode", darkMode.isChecked());
-                editor.apply();
+                editor.commit(); // Make sure to use commit()
 
                 if (darkMode.isChecked()) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -117,8 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        boolean useDarkMode = preferences.getBoolean("dark_mode",
-                currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        boolean useDarkMode = preferences.getBoolean("dark_mode", currentNightMode == Configuration.UI_MODE_NIGHT_YES);
         darkMode.setChecked(useDarkMode);
 
         Button deleteAccountButton = findViewById(R.id.logout_button);
@@ -218,7 +217,7 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void restart() {
+    private void restart() {
         Intent intent = new Intent(this, LaunchActivity.class);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

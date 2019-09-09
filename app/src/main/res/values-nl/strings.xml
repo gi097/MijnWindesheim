@@ -149,6 +149,8 @@
         <item quantity="one">1 minuut</item>
     </plurals>
 
+    <string name="migration_warning">We migreren naar de nieuwe Windesheim API. De data die wordt getoond kan incorrect zijn.</string>
+
     <string name="monday">maandag</string>
 
     <string name="multiple_lessons_notification">Je hebt %1$s meerdere lessen</string>

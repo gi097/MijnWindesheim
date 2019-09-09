@@ -24,6 +24,10 @@
  **/
 package com.giovanniterlingen.windesheim.models;
 
+import com.giovanniterlingen.windesheim.Constants;
+
+import java.util.Date;
+
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -31,73 +35,55 @@ package com.giovanniterlingen.windesheim.models;
  */
 public class Lesson {
 
-    private final int id;
-    private final String subject;
-    private final String date;
-    private final String startTime;
-    private final String room;
-    private final String teacher;
-    private final String className;
-    private final int scheduleId;
-    private final int scheduleType;
-    private final int visible;
+    private String id;
+    private String scheduleId;
+    private String subject;
+    private Date startTime;
+    private Date endTime;
+    private String room;
+    private String teacher;
+    private String className;
+    private Constants.SCHEDULE_TYPE scheduleType;
+    private boolean visible;
     private long rowId;
-    private String endTime;
 
-    public Lesson(int id, String subject, String date, String startTime, String endTime, String room, String teacher, String className, int scheduleId, int scheduleType, int visible) {
-        this.id = id;
-        this.subject = subject;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.room = room;
-        this.teacher = teacher;
-        this.className = className;
-        this.scheduleId = scheduleId;
-        this.scheduleType = scheduleType;
-        this.visible = visible;
-    }
-
-    public Lesson(long rowId, int id, String subject, String date, String startTime, String endTime, String room, String teacher, String className, int scheduleId, int scheduleType, int visible) {
-        this.rowId = rowId;
-        this.id = id;
-        this.subject = subject;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.room = room;
-        this.teacher = teacher;
-        this.className = className;
-        this.scheduleId = scheduleId;
-        this.scheduleType = scheduleType;
-        this.visible = visible;
-    }
-
-    public long getRowId() {
-        return rowId;
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public String getDate() {
-        return date;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public String getEndTime() {
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
@@ -105,24 +91,47 @@ public class Lesson {
         return room;
     }
 
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
     public String getTeacher() {
         return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
     }
 
     public String getClassName() {
         return className;
     }
 
-    public int getScheduleId() {
-        return scheduleId;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
-    public int getScheduleType() {
+    public Constants.SCHEDULE_TYPE getScheduleType() {
         return scheduleType;
     }
 
-    public int getVisible() {
+    public void setScheduleType(Constants.SCHEDULE_TYPE scheduleType) {
+        this.scheduleType = scheduleType;
+    }
+
+    public boolean isVisible() {
         return visible;
     }
 
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public long getRowId() {
+        return rowId;
+    }
+
+    public void setRowId(long rowId) {
+        this.rowId = rowId;
+    }
 }

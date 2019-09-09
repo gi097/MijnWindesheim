@@ -45,6 +45,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
@@ -55,10 +56,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -68,14 +66,12 @@ import java.util.GregorianCalendar;
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
 
     private final ScheduleActivity activity;
-    private final String dateString;
     private final Date date;
     private Lesson[] lessons;
 
-    public ScheduleAdapter(ScheduleActivity activity, Lesson[] lessons, String dateString, Date date) {
+    public ScheduleAdapter(ScheduleActivity activity, Lesson[] lessons, Date date) {
         this.activity = activity;
         this.lessons = lessons;
-        this.dateString = dateString;
         this.date = date;
     }
 
@@ -90,21 +86,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final View scheduleIdentifier = holder.scheduleIdentifier;
 
         Lesson lesson = this.lessons[position];
-        long databaseDateStart = Long.parseLong(lesson.getDate().replaceAll("-", "")
-                + lesson.getStartTime().replaceAll(":", ""));
-        long databaseDateEnd = Long.parseLong(lesson.getDate().replaceAll("-", "")
-                + lesson.getEndTime().replaceAll(":", ""));
-
-        SimpleDateFormat yearMonthDayDateFormat = CalendarController
-                .getYearMonthDayDateTimeFormat();
-        long currentDate = Long.parseLong(yearMonthDayDateFormat.format(new Date()));
+        long startTime = lesson.getStartTime().getTime();
+        long endTime = lesson.getEndTime().getTime();
+        long currentTime = new Date().getTime();
 
         lessonName.setText(lesson.getSubject());
         lessonRoom.setText(lesson.getRoom());
-        lessonComponent.setText(lesson.getScheduleType() == 2 ? lesson.getClassName() : lesson.getTeacher());
+        lessonComponent.setText(lesson.getScheduleType() == Constants.SCHEDULE_TYPE.TEACHER ?
+                lesson.getClassName() : lesson.getTeacher());
         lessonComponent.setSelected(true);
 
-        if (databaseDateStart <= currentDate && databaseDateEnd >= currentDate) {
+        if (startTime <= currentTime && endTime >= currentTime) {
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.lesson_started));
@@ -130,13 +122,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
+                        String lessonTimes =
+                                CalendarController.getHourMinuteFormat().format(lesson
+                                        .getStartTime()) + " - " +
+                                        CalendarController.getHourMinuteFormat()
+                                                .format(lesson.getEndTime());
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
                 }
             });
-        } else if (databaseDateEnd < currentDate) {
+        } else if (endTime < currentTime) {
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryText));
             lessonTime.setText(ApplicationLoader.applicationContext
                     .getResources().getString(R.string.finished));
@@ -162,14 +158,22 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         );
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
-                        String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
+                        String lessonTimes =
+                                CalendarController.getHourMinuteFormat().format(lesson
+                                        .getStartTime()) + " - " +
+                                        CalendarController.getHourMinuteFormat()
+                                                .format(lesson.getEndTime());
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
                     }
                 }
             });
         } else {
-            String lessonTimes = lesson.getStartTime() + " - " + lesson.getEndTime();
+            String lessonTimes =
+                    CalendarController.getHourMinuteFormat().format(lesson
+                            .getStartTime()) + " - " +
+                            CalendarController.getHourMinuteFormat()
+                                    .format(lesson.getEndTime());
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
             lessonTime.setText(lessonTimes);
             holder.cardView.setOnClickListener(null);
@@ -185,7 +189,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     public boolean onMenuItemClick(MenuItem item) {
                         Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                         if (item.getItemId() == R.id.hide_lesson) {
-                            showPromptDialog(lesson.getSubject());
+                            showPromptDialog(lesson.getId());
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
@@ -210,24 +214,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     private void showCalendarDialog(final long rowId) {
         Lesson lesson = DatabaseController.getInstance().getSingleLesson(rowId);
         if (lesson != null) {
-            String[] startTimeStrings = lesson.getStartTime().split(":");
-            String[] endTimeStrings = lesson.getEndTime().split(":");
-
-            Calendar calendar = CalendarController.getCalendar();
-            calendar.setTime(date);
-
-            calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTimeStrings[0]));
-            calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(startTimeStrings[1]));
-
             Intent intent = new Intent(Intent.ACTION_EDIT);
             intent.setType("vnd.android.cursor.item/event");
-            intent.putExtra("beginTime", calendar.getTimeInMillis());
+            intent.putExtra("beginTime", lesson.getStartTime());
             intent.putExtra("allDay", false);
-
-            calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(endTimeStrings[0]));
-            calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(endTimeStrings[1]));
-
-            intent.putExtra("endTime", calendar.getTimeInMillis());
+            intent.putExtra("endTime", lesson.getEndTime());
             intent.putExtra("title", lesson.getSubject());
             intent.putExtra("eventLocation", lesson.getRoom());
 
@@ -240,15 +231,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
     }
 
-    private void showPromptDialog(final String lessonName) {
+    private void showPromptDialog(final String lessonId) {
         new AlertDialog.Builder(activity)
                 .setTitle(activity.getResources().getString(R.string.confirmation))
                 .setMessage(activity.getResources().getString(R.string.deletion_description))
                 .setPositiveButton(activity.getResources().getString(R.string.hide),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                DatabaseController.getInstance().hideLesson(lessonName);
-                                updateLessons(DatabaseController.getInstance().getLessons(dateString));
+                                DatabaseController.getInstance().hideLesson(lessonId);
+                                updateLessons(DatabaseController.getInstance().getLessons(date));
                                 final boolean isEmpty = getItemCount() == 0;
                                 if (isEmpty) {
                                     activity.updateFragmentView();
@@ -261,8 +252,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                         .getString(R.string.undo), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        DatabaseController.getInstance().restoreLesson(lessonName);
-                                        updateLessons(DatabaseController.getInstance().getLessons(dateString));
+                                        DatabaseController.getInstance().restoreLesson(lessonId);
+                                        updateLessons(DatabaseController.getInstance().getLessons(date));
                                         if (isEmpty) {
                                             activity.updateFragmentView();
                                         }

@@ -46,12 +46,13 @@ public class ColorController {
         return colors[position];
     }
 
-    public static int getColorById(int id) {
+    public static int getColorById(String id) {
+        int hashCode = id.hashCode();
         Integer color;
-        if ((color = cachedColors.get(id)) == null) {
+        if ((color = cachedColors.get(hashCode)) == null) {
             int position = DatabaseController.getInstance().getPositionByScheduleId(id);
             color = getColorByPosition(position);
-            cachedColors.put(id, color);
+            cachedColors.put(hashCode, color);
         }
         return color;
     }

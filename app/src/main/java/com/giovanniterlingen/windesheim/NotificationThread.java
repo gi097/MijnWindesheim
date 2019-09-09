@@ -26,21 +26,18 @@ package com.giovanniterlingen.windesheim;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
-import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
-import com.giovanniterlingen.windesheim.controllers.WebUntisController;
+import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -62,25 +59,15 @@ class NotificationThread extends Thread {
                 NotificationController.NOTIFICATION_NOT_SET)) != 0) {
             try {
                 Date date = new Date();
-                if (!DatabaseController.getInstance().isFetched(date)) {
-                    new WebUntisController().getAndSaveAllSchedules(date, false);
-                }
-                Lesson[] lessons = DatabaseController.getInstance()
-                        .getLessons(CalendarController.getYearMonthDayDateFormat().format(date));
+                WindesheimAPIController.getAndSaveLessons(date, false);
+
+                Lesson[] lessons = DatabaseController.getInstance().getLessons(date);
                 for (int i = 0; i < lessons.length; i++) {
                     Lesson lesson = lessons[i];
-                    String startTimeString = lesson.getStartTime();
-                    String[] startTime = startTimeString.split(":");
 
-                    Calendar calendar = CalendarController.getCalendar();
-                    calendar.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(startTime[0]));
-                    calendar.set(GregorianCalendar.MINUTE, Integer.parseInt(startTime[1]));
-                    calendar.set(GregorianCalendar.SECOND, 0);
-                    calendar.set(GregorianCalendar.MILLISECOND, 0);
-
-                    long lessonStartTime = calendar.getTimeInMillis();
+                    long lessonStartTime = lesson.getStartTime().getTime();
                     boolean nextLessonSameTime = i + 1 < lessons.length
-                            && startTimeString.equals(lessons[i + 1].getStartTime());
+                            && lessons[i].getStartTime() == lessons[i + 1].getStartTime();
                     String lessonName = lesson.getSubject();
                     String lessonLocation = lesson.getRoom();
 

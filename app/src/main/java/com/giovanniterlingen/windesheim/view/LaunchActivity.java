@@ -29,7 +29,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
+
+import com.giovanniterlingen.windesheim.R;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -41,6 +45,10 @@ public class LaunchActivity extends Activity {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+
+        Toast.makeText(this, getResources().getString(R.string.migration_warning),
+                Toast.LENGTH_LONG).show();
+
         new Handler().post(new Runnable() {
             @Override
             public void run() {

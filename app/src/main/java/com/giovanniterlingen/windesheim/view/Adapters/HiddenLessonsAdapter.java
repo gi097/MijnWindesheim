@@ -33,6 +33,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
@@ -72,7 +73,7 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
 
         Lesson lesson = lessons[position];
         lessonName.setText(lesson.getSubject());
-        lessonComponent.setText(lesson.getScheduleType() == 2 ? lesson.getClassName() : lesson.getTeacher());
+        lessonComponent.setText(lesson.getScheduleType() == Constants.SCHEDULE_TYPE.SUBJECT ? lesson.getClassName() : lesson.getTeacher());
         lessonComponent.setSelected(true);
 
         scheduleIdentifier.setBackgroundColor(ColorController.getColorById(lesson.getScheduleId()));
@@ -81,7 +82,7 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Lesson lesson = lessons[holder.getAdapterPosition()];
-                DatabaseController.getInstance().restoreLesson(lesson.getSubject());
+                DatabaseController.getInstance().restoreLesson(lesson.getId());
                 activity.showSnackbar();
 
                 ApplicationLoader.restartNotificationThread();

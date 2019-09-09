@@ -25,16 +25,15 @@
 package com.giovanniterlingen.windesheim;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
-import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.WebUntisController;
+import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -50,24 +49,11 @@ public class FetchService extends JobService {
                 @Override
                 public void run() {
                     try {
-                        WebUntisController webUntisController = new WebUntisController();
-                        Calendar calendar = CalendarController.getCalendar();
-                        if (calendar.get(GregorianCalendar.DAY_OF_WEEK) ==
-                                GregorianCalendar.SATURDAY) {
-                            calendar.add(GregorianCalendar.DATE, 2);
-                        } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) ==
-                                GregorianCalendar.SUNDAY) {
-                            calendar.add(GregorianCalendar.DATE, 1);
-                        }
-
                         SharedPreferences preferences = PreferenceManager
                                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
                         boolean notify = preferences
                                 .getBoolean("schedule_change_notification", true);
-
-                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), notify);
-                        calendar.add(GregorianCalendar.DATE, 7);
-                        webUntisController.getAndSaveAllSchedules(calendar.getTime(), notify);
+                        WindesheimAPIController.getAndSaveLessons(new Date(), notify);
                         jobFinished(job, false);
                     } catch (Exception e) {
                         jobFinished(job, true);

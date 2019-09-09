@@ -22,20 +22,17 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.models;
+package com.giovanniterlingen.windesheim;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleItem {
-
-    public final String id;
-    public final String name;
-
-    public ScheduleItem(String id, String name) {
-        this.id = id;
-        this.name = name;
+public class Constants {
+    public enum SCHEDULE_TYPE {
+        CLASS,
+        TEACHER,
+        SUBJECT
     }
 }

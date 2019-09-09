@@ -32,6 +32,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Schedule;
 
@@ -44,12 +45,12 @@ import java.util.Date;
  */
 public class DatabaseController extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "schedulestore.db";
     private static final String SQL_CREATE_SCHEDULE_ENTRIES =
             "CREATE TABLE " + ScheduleEntry.TABLE_NAME + " (" +
                     ScheduleEntry._ID + " INTEGER PRIMARY KEY," +
-                    ScheduleEntry.COLUMN_NAME_SCHEDULE_ID + " INTEGER UNIQUE," +
+                    ScheduleEntry.COLUMN_NAME_SCHEDULE_ID + " TEXT UNIQUE," +
                     ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME + " TEXT," +
                     ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE + " INTEGER);";
     private static final String SQL_CREATE_LESSON_ENTRIES =
@@ -58,17 +59,14 @@ public class DatabaseController extends SQLiteOpenHelper {
                     LessonEntry.COLUMN_NAME_LESSON_ID + " INTEGER," +
                     LessonEntry.COLUMN_NAME_SUBJECT + " TEXT," +
                     LessonEntry.COLUMN_NAME_DATE + " TEXT," +
-                    LessonEntry.COLUMN_NAME_START_TIME + " TEXT," +
-                    LessonEntry.COLUMN_NAME_END_TIME + " TEXT," +
+                    LessonEntry.COLUMN_NAME_START_TIME + " INTEGER," +
+                    LessonEntry.COLUMN_NAME_END_TIME + " INTEGER," +
                     LessonEntry.COLUMN_NAME_ROOM + " TEXT," +
                     LessonEntry.COLUMN_NAME_TEACHER + " TEXT," +
                     LessonEntry.COLUMN_NAME_CLASS_NAME + " TEXT," +
                     LessonEntry.COLUMN_NAME_SCHEDULE_ID + " INTEGER," +
                     LessonEntry.COLUMN_NAME_SCHEDULE_TYPE + " INTEGER," +
                     LessonEntry.COLUMN_NAME_VISIBLE + " INTEGER)";
-    private static final String SQL_CREATE_FETCHED_DATES_ENTRIES =
-            "CREATE TABLE " + FetchedDateEntry.TABLE_NAME + " (" +
-                    FetchedDateEntry.COLUMN_NAME_DATE + " TEXT UNIQUE)";
     private static volatile DatabaseController Instance = null;
     private final SQLiteDatabase database;
 
@@ -94,61 +92,54 @@ public class DatabaseController extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
         database.execSQL(SQL_CREATE_LESSON_ENTRIES);
-        database.execSQL(SQL_CREATE_FETCHED_DATES_ENTRIES);
     }
 
-    void saveScheduleData(Lesson lesson) {
+    void saveLessons(Lesson[] lessons) {
+        for (Lesson lesson : lessons) {
+            saveLesson(lesson);
+        }
+    }
+
+    private void saveLesson(Lesson lesson) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_LESSON_ID, lesson.getId());
         values.put(LessonEntry.COLUMN_NAME_SUBJECT, lesson.getSubject());
-        values.put(LessonEntry.COLUMN_NAME_DATE, lesson.getDate());
-        values.put(LessonEntry.COLUMN_NAME_START_TIME, lesson.getStartTime());
-        values.put(LessonEntry.COLUMN_NAME_END_TIME, lesson.getEndTime());
+        values.put(LessonEntry.COLUMN_NAME_DATE, CalendarController.getYearMonthDayDateFormat()
+                .format(lesson.getStartTime()));
+        values.put(LessonEntry.COLUMN_NAME_START_TIME, lesson.getStartTime().getTime());
+        values.put(LessonEntry.COLUMN_NAME_END_TIME, lesson.getEndTime().getTime());
         values.put(LessonEntry.COLUMN_NAME_ROOM, lesson.getRoom());
         values.put(LessonEntry.COLUMN_NAME_TEACHER, lesson.getTeacher());
         values.put(LessonEntry.COLUMN_NAME_CLASS_NAME, lesson.getClassName());
         values.put(LessonEntry.COLUMN_NAME_SCHEDULE_ID, lesson.getScheduleId());
-        values.put(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE, lesson.getScheduleType());
-        values.put(LessonEntry.COLUMN_NAME_VISIBLE, lesson.getVisible());
+        values.put(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE, lesson.getScheduleType().ordinal());
+        values.put(LessonEntry.COLUMN_NAME_VISIBLE, lesson.isVisible() ? 1 : 0);
         database.insert(LessonEntry.TABLE_NAME, null, values);
     }
 
-    void clearScheduleData(Date date, int id) {
-        String[] weekDates = CalendarController.getWeekDates(date);
-        String selection = LessonEntry.COLUMN_NAME_DATE + " >= ? AND " +
-                LessonEntry.COLUMN_NAME_DATE + " <= ? AND " +
-                LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
-        String[] selectionArgs = {weekDates[0], weekDates[1], Integer.toString(id)};
+    void clearScheduleData(String id) {
+        String selection = LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
+        String[] selectionArgs = {id};
         database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
     }
 
-    public void clearOldScheduleData(Date date) {
-        String selection = LessonEntry.COLUMN_NAME_DATE + " < ? AND " +
-                LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
-        String[] selectionArgs = {
-                CalendarController.getYearMonthDayDateFormat().format(date),
-                Integer.toString(1)};
-        database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
-        deleteOldFetched(date);
-    }
-
-    public void hideLesson(String lessonName) {
+    public void hideLesson(String lessonId) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 0);
-        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ?";
-        String[] selectionArgs = {lessonName};
+        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
+        String[] selectionArgs = {lessonId};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public void restoreLesson(String lessonName) {
+    public void restoreLesson(String lessonId) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 1);
-        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ?";
-        String[] selectionArgs = {lessonName};
+        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
+        String[] selectionArgs = {lessonId};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public Lesson[] getLessons(String date) {
+    public Lesson[] getLessons(Date date) {
         String[] projection = {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
@@ -166,7 +157,8 @@ public class DatabaseController extends SQLiteOpenHelper {
 
         String selection = LessonEntry.COLUMN_NAME_DATE + " = ? AND " +
                 LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
-        String[] selectionArgs = {date, Integer.toString(1)};
+        String[] selectionArgs = {CalendarController.getYearMonthDayDateFormat().format(date),
+                Integer.toString(1)};
         String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
                 LessonEntry.COLUMN_NAME_END_TIME + ", " + LessonEntry.COLUMN_NAME_SUBJECT;
 
@@ -182,23 +174,34 @@ public class DatabaseController extends SQLiteOpenHelper {
         Lesson[] lessons = new Lesson[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {
-            lessons[i] = new Lesson(cursor.getLong(0), cursor.getInt(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9),
-                    cursor.getInt(10), cursor.getInt(11));
+            Lesson lesson = new Lesson();
+            lesson.setRowId(cursor.getLong(cursor.getColumnIndex(LessonEntry._ID)));
+            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
+            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
+            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
+            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
+            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
+            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
+            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
+            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
+            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
+            lessons[i] = lesson;
             i++;
         }
         cursor.close();
         return lessons;
     }
 
-    Lesson[] getLessonsForCompare(Date date, int scheduleId) {
-        String[] weekDates = CalendarController.getWeekDates(date);
+    /**
+     * Get lessons for this week to check if they are changed
+     */
+    Lesson[] getLessonsForCompare(String scheduleId) {
+        String[] weekDates = CalendarController.getWeekDates(new Date());
         String[] projection = {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
                 LessonEntry.COLUMN_NAME_SUBJECT,
-                LessonEntry.COLUMN_NAME_DATE,
                 LessonEntry.COLUMN_NAME_START_TIME,
                 LessonEntry.COLUMN_NAME_END_TIME,
                 LessonEntry.COLUMN_NAME_ROOM,
@@ -211,7 +214,7 @@ public class DatabaseController extends SQLiteOpenHelper {
         String selection = LessonEntry.COLUMN_NAME_DATE + " >= ? AND " +
                 LessonEntry.COLUMN_NAME_DATE + " <= ? AND " +
                 LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
-        String[] selectionArgs = {weekDates[0], weekDates[1], Integer.toString(scheduleId)};
+        String[] selectionArgs = {weekDates[0], weekDates[1], scheduleId};
         String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
                 LessonEntry.COLUMN_NAME_END_TIME + ", " + LessonEntry.COLUMN_NAME_SUBJECT;
 
@@ -227,27 +230,35 @@ public class DatabaseController extends SQLiteOpenHelper {
         Lesson[] lessons = new Lesson[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {
-            lessons[i] = new Lesson(cursor.getLong(0), cursor.getInt(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9),
-                    cursor.getInt(10), cursor.getInt(11));
+            Lesson lesson = new Lesson();
+            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
+            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
+            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
+            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
+            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
+            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
+            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
+            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
+            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
+            lessons[i] = lesson;
             i++;
         }
         cursor.close();
         return lessons;
     }
 
-    public void addSchedule(int id, String name, int type) throws SQLiteConstraintException {
+    public void addSchedule(String id, String name, Constants.SCHEDULE_TYPE type) throws SQLiteConstraintException {
         ContentValues values = new ContentValues();
         values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_ID, id);
         values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME, name);
-        values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE, type);
+        values.put(ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE, type.ordinal());
         database.insertOrThrow(ScheduleEntry.TABLE_NAME, null, values);
     }
 
-    public void deleteSchedule(int id) {
+    public void deleteSchedule(String id) {
         String selection = ScheduleEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
-        String[] selectionArgs = {Integer.toString(id)};
+        String[] selectionArgs = {id};
         database.delete(ScheduleEntry.TABLE_NAME, selection, selectionArgs);
 
         String selection2 = LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
@@ -273,7 +284,11 @@ public class DatabaseController extends SQLiteOpenHelper {
         Schedule[] schedules = new Schedule[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {
-            schedules[i] = new Schedule(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
+            Schedule schedule = new Schedule();
+            schedule.setId(cursor.getString(cursor.getColumnIndex(ScheduleEntry.COLUMN_NAME_SCHEDULE_ID)));
+            schedule.setName(cursor.getString(cursor.getColumnIndex(ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME)));
+            schedule.setType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            schedules[i] = schedule;
             i++;
         }
         cursor.close();
@@ -305,7 +320,6 @@ public class DatabaseController extends SQLiteOpenHelper {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
                 LessonEntry.COLUMN_NAME_SUBJECT,
-                LessonEntry.COLUMN_NAME_DATE,
                 LessonEntry.COLUMN_NAME_START_TIME,
                 LessonEntry.COLUMN_NAME_END_TIME,
                 LessonEntry.COLUMN_NAME_ROOM,
@@ -327,12 +341,18 @@ public class DatabaseController extends SQLiteOpenHelper {
                 null,
                 null
         );
-        Lesson lesson = null;
+        Lesson lesson = new Lesson();
         if (cursor.moveToFirst()) {
-            lesson = new Lesson(cursor.getLong(0), cursor.getInt(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9),
-                    cursor.getInt(10), cursor.getInt(11));
+            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
+            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
+            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
+            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
+            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
+            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
+            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
+            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
+            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
         }
         cursor.close();
         return lesson;
@@ -343,7 +363,6 @@ public class DatabaseController extends SQLiteOpenHelper {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
                 LessonEntry.COLUMN_NAME_SUBJECT,
-                LessonEntry.COLUMN_NAME_DATE,
                 LessonEntry.COLUMN_NAME_START_TIME,
                 LessonEntry.COLUMN_NAME_END_TIME,
                 LessonEntry.COLUMN_NAME_ROOM,
@@ -356,7 +375,7 @@ public class DatabaseController extends SQLiteOpenHelper {
 
         String selection = LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
         String[] selectionArgs = {Integer.toString(0)};
-        String group = LessonEntry.COLUMN_NAME_SUBJECT;
+        String group = LessonEntry.COLUMN_NAME_LESSON_ID;
         String sortOrder = LessonEntry.COLUMN_NAME_SUBJECT;
 
         Cursor cursor = database.query(
@@ -371,17 +390,25 @@ public class DatabaseController extends SQLiteOpenHelper {
         Lesson[] lessons = new Lesson[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {
-            lessons[i] = new Lesson(cursor.getLong(0), cursor.getInt(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9),
-                    cursor.getInt(10), cursor.getInt(11));
+            Lesson lesson = new Lesson();
+            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
+            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
+            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
+            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
+            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
+            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
+            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
+            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
+            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
+            lessons[i] = lesson;
             i++;
         }
         cursor.close();
         return lessons;
     }
 
-    int getPositionByScheduleId(int id) {
+    int getPositionByScheduleId(String id) {
         String[] projection = {ScheduleEntry.COLUMN_NAME_SCHEDULE_ID};
         Cursor cursor = database.query(
                 ScheduleEntry.TABLE_NAME,
@@ -393,7 +420,8 @@ public class DatabaseController extends SQLiteOpenHelper {
                 null
         );
         while (cursor.moveToNext()) {
-            if (id == cursor.getInt(0)) {
+            if (id.equals(cursor.getString(cursor
+                    .getColumnIndex(ScheduleEntry.COLUMN_NAME_SCHEDULE_ID)))) {
                 int i = cursor.getPosition();
                 cursor.close();
                 return i;
@@ -404,58 +432,14 @@ public class DatabaseController extends SQLiteOpenHelper {
         return 0;
     }
 
-    public boolean isFetched(Date date) {
-        String[] weekDates = CalendarController.getWeekDates(date);
-        String[] projection = {FetchedDateEntry.COLUMN_NAME_DATE};
-        String selection = FetchedDateEntry.COLUMN_NAME_DATE + " >= ? AND " +
-                FetchedDateEntry.COLUMN_NAME_DATE + " <= ?";
-        String[] selectionArgs = {weekDates[0], weekDates[1]};
-        Cursor cursor = database.query(
-                FetchedDateEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-        boolean bool = cursor.getCount() > 0;
-        cursor.close();
-        return bool;
-    }
-
-    void addFetched(Date date) {
-        String[] weekDates = CalendarController.getWeekDates(date);
-        for (String weekDate : weekDates) {
-            ContentValues values = new ContentValues();
-            values.put(FetchedDateEntry.COLUMN_NAME_DATE, weekDate);
-            database.insertWithOnConflict(FetchedDateEntry.TABLE_NAME, null, values,
-                    SQLiteDatabase.CONFLICT_IGNORE);
-        }
-    }
-
-    private void deleteOldFetched(Date date) {
-        String[] weekDates = CalendarController.getWeekDates(date);
-        String selection = FetchedDateEntry.COLUMN_NAME_DATE + "< ?";
-        String[] selectionArgs = {weekDates[1]};
-        database.delete(FetchedDateEntry.TABLE_NAME, selection, selectionArgs);
-    }
-
-    public void clearFetched() {
-        database.delete(FetchedDateEntry.TABLE_NAME, null, null);
-    }
-
-    void deleteFetched(Date date) {
-        String[] weekDates = CalendarController.getWeekDates(date);
-        String selection = FetchedDateEntry.COLUMN_NAME_DATE + " >= ? AND "
-                + FetchedDateEntry.COLUMN_NAME_DATE + " <= ?";
-        String[] selectionArgs = {weekDates[0], weekDates[1]};
-        database.delete(FetchedDateEntry.TABLE_NAME, selection, selectionArgs);
-    }
-
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        if (oldVersion == 7 && newVersion == 8) {
+        if (oldVersion == 8 && newVersion == 9) {
+            database.execSQL("DROP TABLE IF EXISTS fetched_dates");
+            database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
+            database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
+            database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
+        } else if (oldVersion == 7 && newVersion == 8) {
             database.execSQL("ALTER TABLE schedules RENAME TO tmp_schedules");
             database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
             database.execSQL("INSERT INTO " + ScheduleEntry.TABLE_NAME + " (" +
@@ -463,16 +447,15 @@ public class DatabaseController extends SQLiteOpenHelper {
                     ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME + ", " +
                     ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE + ") " +
                     "SELECT schedule_id, schedule_name, schedule_type FROM tmp_schedules");
-            database.execSQL("DROP TABLE tmp_schedules");
+            database.execSQL("DROP TABLE IF EXISTS tmp_schedules");
         } else {
-            database.execSQL("DROP TABLE schedules");
+            database.execSQL("DROP TABLE IF EXISTS schedules");
             database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
         }
-        database.execSQL("DROP TABLE subject");
-        database.execSQL("DROP TABLE fetched_dates");
+        database.execSQL("DROP TABLE IF EXISTS subject");
+        database.execSQL("DROP TABLE IF EXISTS fetched_dates");
 
         database.execSQL(SQL_CREATE_LESSON_ENTRIES);
-        database.execSQL(SQL_CREATE_FETCHED_DATES_ENTRIES);
     }
 
     private class ScheduleEntry implements BaseColumns {
@@ -495,10 +478,5 @@ public class DatabaseController extends SQLiteOpenHelper {
         static final String COLUMN_NAME_SCHEDULE_ID = "schedule_id";
         static final String COLUMN_NAME_SCHEDULE_TYPE = "schedule_type";
         static final String COLUMN_NAME_VISIBLE = "visible";
-    }
-
-    private class FetchedDateEntry implements BaseColumns {
-        static final String TABLE_NAME = "fetched_dates";
-        static final String COLUMN_NAME_DATE = "date";
     }
 }

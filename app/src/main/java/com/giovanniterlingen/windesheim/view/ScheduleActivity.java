@@ -27,7 +27,6 @@ package com.giovanniterlingen.windesheim.view;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +40,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
@@ -268,14 +268,11 @@ public class ScheduleActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             Calendar calendar = CalendarController.getCalendar();
             if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
-                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
                 calendar.add(GregorianCalendar.DATE, 2);
             } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SUNDAY) {
-                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
                 calendar.add(GregorianCalendar.DATE, 1);
             } else {
                 calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
-                DatabaseController.getInstance().clearOldScheduleData(calendar.getTime());
             }
             if (position <= 4) {
                 calendar.add(GregorianCalendar.DATE, position);

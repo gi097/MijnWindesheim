@@ -153,6 +153,8 @@
         <item quantity="other">%s minutes</item>
     </plurals>
 
+    <string name="migration_warning">We are migrating to the new Windesheim API. The data shown might not be accurate.</string>
+
     <string name="monday">Monday</string>
 
     <string name="multiple_lessons_notification">You have multiple lessons %1$s</string>
