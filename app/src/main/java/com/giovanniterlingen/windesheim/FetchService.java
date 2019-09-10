@@ -33,8 +33,6 @@ import com.firebase.jobdispatcher.JobService;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 
-import java.util.Date;
-
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -53,7 +51,7 @@ public class FetchService extends JobService {
                                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
                         boolean notify = preferences
                                 .getBoolean("schedule_change_notification", true);
-                        WindesheimAPIController.getAndSaveLessons(new Date(), notify);
+                        WindesheimAPIController.getAndSaveLessons(notify);
                         jobFinished(job, false);
                     } catch (Exception e) {
                         jobFinished(job, true);

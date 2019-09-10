@@ -99,9 +99,7 @@ public class ChooseScheduleFragment extends Fragment {
         }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
+    public void onVisible() {
         if (getView() != null) {
             isViewShown = true;
             startTask();
@@ -165,7 +163,7 @@ public class ChooseScheduleFragment extends Fragment {
     }
 
     private void alertConnectionProblem() {
-        if (!getUserVisibleHint()) {
+        if (!isVisible() && !isMenuVisible()) {
             return;
         }
         ApplicationLoader.runOnUIThread(new Runnable() {

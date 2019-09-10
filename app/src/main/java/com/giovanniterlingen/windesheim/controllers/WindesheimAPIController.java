@@ -52,7 +52,7 @@ public class WindesheimAPIController {
     private static final String WINDESHEIM_API_URL = "http://api.windesheim.nl/api";
     private static final String WINDESHEIM_AZURE_API_URL = "https://windesheimapi.azurewebsites.net/api/v1";
 
-    public static synchronized void getAndSaveLessons(Date date, boolean notify) throws Exception {
+    public static synchronized void getAndSaveLessons(boolean notify) throws Exception {
         Schedule[] schedules = DatabaseController.getInstance().getSchedules();
         for (Schedule schedule : schedules) {
             Lesson[] hiddenLessons = DatabaseController.getInstance().getHiddenLessons();

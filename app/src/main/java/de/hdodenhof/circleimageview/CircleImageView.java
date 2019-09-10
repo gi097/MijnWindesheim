@@ -30,11 +30,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.giovanniterlingen.windesheim.R;
 
@@ -297,6 +298,11 @@ public class CircleImageView extends ImageView {
     }
 
     @Override
+    public ColorFilter getColorFilter() {
+        return mColorFilter;
+    }
+
+    @Override
     public void setColorFilter(ColorFilter cf) {
         if (cf == mColorFilter) {
             return;
@@ -305,11 +311,6 @@ public class CircleImageView extends ImageView {
         mColorFilter = cf;
         applyColorFilter();
         invalidate();
-    }
-
-    @Override
-    public ColorFilter getColorFilter() {
-        return mColorFilter;
     }
 
     private void applyColorFilter() {

@@ -65,10 +65,10 @@
                 android:focusableInTouchMode="true"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:paddingLeft="@dimen/card_text_margin"
+                android:paddingTop="@dimen/card_text_margin_small"
                 android:paddingRight="@dimen/card_text_margin"
                 android:paddingBottom="@dimen/card_text_margin"
                 android:scrollHorizontally="true"
-                android:paddingTop="@dimen/card_text_margin_small"
                 android:singleLine="true"
                 android:textColor="@color/colorSecondaryText"
                 android:textSize="@dimen/text_size" />

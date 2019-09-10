@@ -130,8 +130,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void onVisible() {
         if (this.isMenuVisible() && this.isVisible()) {
             new ScheduleFetcher(this, false, false,
                     false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -252,7 +251,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             if (fetchData) {
                 try {
-                    WindesheimAPIController.getAndSaveLessons(fragment.date, false);
+                    WindesheimAPIController.getAndSaveLessons(false);
                 } catch (Exception e) {
                     fragment.alertConnectionProblem();
                 }

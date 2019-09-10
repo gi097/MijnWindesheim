@@ -47,10 +47,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/login_bottom_size"
                 android:paddingLeft="@dimen/login_padding"
+                android:paddingTop="@dimen/activity_margin"
                 android:paddingRight="@dimen/login_padding"
-                android:paddingTop="@dimen/activity_margin">
+                android:paddingBottom="@dimen/login_bottom_size">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -62,8 +62,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/login_padding"
                     android:paddingTop="@dimen/activity_margin"
+                    android:paddingBottom="@dimen/login_padding"
                     android:text="@string/auth_description"
                     android:textAppearance="@android:style/TextAppearance.Medium" />
 
@@ -71,8 +71,8 @@
                     android:id="@+id/input_username_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/login_input_padding"
-                    android:paddingTop="@dimen/login_input_padding">
+                    android:paddingTop="@dimen/login_input_padding"
+                    android:paddingBottom="@dimen/login_input_padding">
 
                     <EditText
                         android:id="@+id/input_username"
@@ -88,8 +88,8 @@
                     android:id="@+id/input_password_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/login_input_padding"
-                    android:paddingTop="@dimen/login_input_padding">
+                    android:paddingTop="@dimen/login_input_padding"
+                    android:paddingBottom="@dimen/login_input_padding">
 
                     <EditText
                         android:id="@+id/input_password"
@@ -131,8 +131,8 @@
                 android:drawableEnd="@drawable/ic_navigate_next"
                 android:drawableRight="@drawable/ic_navigate_next"
                 android:minWidth="@dimen/login_button_width"
-                android:paddingEnd="@dimen/login_button_padding"
                 android:paddingStart="@dimen/login_button_padding"
+                android:paddingEnd="@dimen/login_button_padding"
                 android:text="@string/auth_login" />
 
         </FrameLayout>

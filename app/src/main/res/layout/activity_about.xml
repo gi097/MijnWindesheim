@@ -22,9 +22,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/about_header_size"
                 android:layout_gravity="center"
+                android:drawableStart="@drawable/about_logo"
                 android:drawableLeft="@drawable/about_logo"
                 android:drawablePadding="@dimen/activity_margin"
-                android:drawableStart="@drawable/about_logo"
                 android:gravity="center"
                 android:maxLines="1"
                 android:padding="@dimen/activity_margin"
@@ -79,11 +79,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
-                        android:paddingEnd="@dimen/activity_margin"
                         android:paddingStart="@dimen/activity_margin"
-                        android:focusable="true">
+                        android:paddingEnd="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="@dimen/avatar_size"
@@ -124,11 +124,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?selectableItemBackground"
                         android:orientation="horizontal"
-                        android:paddingEnd="@dimen/activity_margin"
                         android:paddingStart="@dimen/activity_margin"
-                        android:focusable="true">
+                        android:paddingEnd="@dimen/activity_margin">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="@dimen/avatar_size"
@@ -179,8 +179,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingEnd="@dimen/activity_margin"
-                    android:paddingStart="@dimen/activity_margin">
+                    android:paddingStart="@dimen/activity_margin"
+                    android:paddingEnd="@dimen/activity_margin">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:layout_width="@dimen/avatar_size"

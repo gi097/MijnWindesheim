@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -56,14 +57,22 @@ public class ChooseScheduleActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ViewPager mPager = findViewById(R.id.pager);
-        ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
-                getSupportFragmentManager());
-        if (mPager != null) {
-            mPager.setAdapter(mPagerAdapter);
+        ViewPager pager = findViewById(R.id.pager);
+        final ScreenSlidePagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(
+                getSupportFragmentManager(),
+                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        if (pager != null) {
+            pager.setAdapter(pagerAdapter);
+            pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    ((ChooseScheduleFragment) pagerAdapter.getItem(position)).onVisible();
+                }
+            });
+
             TabLayout tabLayout = findViewById(R.id.tabs);
             if (tabLayout != null) {
-                tabLayout.setupWithViewPager(mPager);
+                tabLayout.setupWithViewPager(pager);
             }
         }
         if (DatabaseController.getInstance().hasSchedules()) {
@@ -95,8 +104,8 @@ public class ChooseScheduleActivity extends AppCompatActivity {
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 
-        ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
+        ScreenSlidePagerAdapter(@NonNull FragmentManager fm, int behavior) {
+            super(fm, behavior);
         }
 
         @Override

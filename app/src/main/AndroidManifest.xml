@@ -18,8 +18,8 @@
         android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="false"
         android:usesCleartextTraffic="true"
-        tools:replace="android:supportsRtl"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:supportsRtl">
         <activity
             android:name=".view.LaunchActivity"
             android:label="@string/app_name"

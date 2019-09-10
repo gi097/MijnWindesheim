@@ -173,9 +173,16 @@ public class ScheduleActivity extends AppCompatActivity
             currentDayIndex = calendar.get(GregorianCalendar.DAY_OF_WEEK) - 2;
         }
 
-        ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
-                getSupportFragmentManager());
+        final ScreenSlidePagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(
+                getSupportFragmentManager(),
+                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mPager.setAdapter(mPagerAdapter);
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                ((ScheduleFragment) mPagerAdapter.getItem(position)).onVisible();
+            }
+        });
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
@@ -260,8 +267,8 @@ public class ScheduleActivity extends AppCompatActivity
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-        ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
+        ScreenSlidePagerAdapter(@NonNull FragmentManager fm, int behavior) {
+            super(fm, behavior);
         }
 
         @Override

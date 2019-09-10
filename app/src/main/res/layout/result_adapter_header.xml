@@ -8,10 +8,10 @@
         android:id="@+id/ec_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_margin_half"
         android:layout_marginLeft="@dimen/activity_margin"
-        android:layout_marginRight="@dimen/activity_margin"
         android:layout_marginTop="@dimen/activity_margin_half"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/activity_margin_half"
         custom:donut_finished_color="@color/colorAccent"
         custom:donut_text_color="@color/colorAccent" />
 
@@ -20,10 +20,10 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingEnd="@dimen/activity_margin"
+        android:paddingStart="@dimen/material_zero_radius"
         android:paddingLeft="@dimen/material_zero_radius"
-        android:paddingRight="@dimen/activity_margin"
-        android:paddingStart="@dimen/material_zero_radius">
+        android:paddingEnd="@dimen/activity_margin"
+        android:paddingRight="@dimen/activity_margin">
 
         <TextView
             android:id="@+id/lesson_name"
