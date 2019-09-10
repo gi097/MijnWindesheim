@@ -123,19 +123,21 @@ public class DatabaseController extends SQLiteOpenHelper {
         database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
     }
 
-    public void hideLesson(String lessonId) {
+    public void hideLesson(Lesson lesson) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 0);
-        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
-        String[] selectionArgs = {lessonId};
+        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ? AND " +
+                LessonEntry.COLUMN_NAME_TEACHER + " = ?";
+        String[] selectionArgs = {lesson.getSubject(), lesson.getTeacher()};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public void restoreLesson(String lessonId) {
+    public void restoreLesson(Lesson lesson) {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_VISIBLE, 1);
-        String selection = LessonEntry.COLUMN_NAME_LESSON_ID + " = ?";
-        String[] selectionArgs = {lessonId};
+        String selection = LessonEntry.COLUMN_NAME_SUBJECT + " = ? AND " +
+                LessonEntry.COLUMN_NAME_TEACHER + " = ?";
+        String[] selectionArgs = {lesson.getSubject(), lesson.getTeacher()};
         database.update(LessonEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
@@ -176,6 +178,53 @@ public class DatabaseController extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             Lesson lesson = new Lesson();
             lesson.setRowId(cursor.getLong(cursor.getColumnIndex(LessonEntry._ID)));
+            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
+            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
+            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
+            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
+            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
+            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
+            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
+            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
+            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
+            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
+            lessons[i] = lesson;
+            i++;
+        }
+        cursor.close();
+        return lessons;
+    }
+
+    public Lesson[] getAllLessons() {
+        String[] projection = {
+                LessonEntry._ID,
+                LessonEntry.COLUMN_NAME_LESSON_ID,
+                LessonEntry.COLUMN_NAME_SUBJECT,
+                LessonEntry.COLUMN_NAME_START_TIME,
+                LessonEntry.COLUMN_NAME_END_TIME,
+                LessonEntry.COLUMN_NAME_ROOM,
+                LessonEntry.COLUMN_NAME_TEACHER,
+                LessonEntry.COLUMN_NAME_CLASS_NAME,
+                LessonEntry.COLUMN_NAME_SCHEDULE_ID,
+                LessonEntry.COLUMN_NAME_SCHEDULE_TYPE,
+                LessonEntry.COLUMN_NAME_VISIBLE,
+        };
+        String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
+                LessonEntry.COLUMN_NAME_END_TIME + ", " + LessonEntry.COLUMN_NAME_SUBJECT;
+
+        Cursor cursor = database.query(
+                LessonEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+        Lesson[] lessons = new Lesson[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()) {
+            Lesson lesson = new Lesson();
             lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
             lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
             lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
@@ -375,7 +424,7 @@ public class DatabaseController extends SQLiteOpenHelper {
 
         String selection = LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
         String[] selectionArgs = {Integer.toString(0)};
-        String group = LessonEntry.COLUMN_NAME_LESSON_ID;
+        String group = LessonEntry.COLUMN_NAME_SUBJECT + " AND " + LessonEntry.COLUMN_NAME_TEACHER;
         String sortOrder = LessonEntry.COLUMN_NAME_SUBJECT;
 
         Cursor cursor = database.query(

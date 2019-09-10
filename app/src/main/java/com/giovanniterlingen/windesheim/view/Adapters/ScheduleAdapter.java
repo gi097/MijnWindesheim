@@ -189,7 +189,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     public boolean onMenuItemClick(MenuItem item) {
                         Lesson lesson = ScheduleAdapter.this.lessons[holder.getAdapterPosition()];
                         if (item.getItemId() == R.id.hide_lesson) {
-                            showPromptDialog(lesson.getId());
+                            showPromptDialog(lesson);
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
@@ -231,14 +231,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
     }
 
-    private void showPromptDialog(final String lessonId) {
+    private void showPromptDialog(final Lesson lesson) {
         new AlertDialog.Builder(activity)
                 .setTitle(activity.getResources().getString(R.string.confirmation))
                 .setMessage(activity.getResources().getString(R.string.deletion_description))
                 .setPositiveButton(activity.getResources().getString(R.string.hide),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                DatabaseController.getInstance().hideLesson(lessonId);
+                                DatabaseController.getInstance().hideLesson(lesson);
                                 updateLessons(DatabaseController.getInstance().getLessons(date));
                                 final boolean isEmpty = getItemCount() == 0;
                                 if (isEmpty) {
@@ -252,7 +252,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                         .getString(R.string.undo), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        DatabaseController.getInstance().restoreLesson(lessonId);
+                                        DatabaseController.getInstance().restoreLesson(lesson);
                                         updateLessons(DatabaseController.getInstance().getLessons(date));
                                         if (isEmpty) {
                                             activity.updateFragmentView();

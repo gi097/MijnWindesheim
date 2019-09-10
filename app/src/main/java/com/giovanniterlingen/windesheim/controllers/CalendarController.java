@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -37,19 +38,21 @@ import java.util.Locale;
  */
 public class CalendarController {
 
-    private static final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
-    private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
-    private static final SimpleDateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm", Locale.FRANCE);
-
     static SimpleDateFormat getYearMonthDayDateFormat() {
+        SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
+        yearMonthDayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return yearMonthDayDateFormat;
     }
 
     public static SimpleDateFormat getDayDateFormat() {
+        SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
+        dayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return dayDateFormat;
     }
 
     public static SimpleDateFormat getHourMinuteFormat() {
+        SimpleDateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+        hourMinuteFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return hourMinuteFormat;
     }
 
@@ -58,12 +61,14 @@ public class CalendarController {
     }
 
     static String[] getWeekDates(Date date) {
+        SimpleDateFormat yearMonthDateFormat = getYearMonthDayDateFormat();
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendar.setTime(date);
         calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
-        String lowestDate = yearMonthDayDateFormat.format(calendar.getTime());
+        String lowestDate = yearMonthDateFormat.format(calendar.getTime());
         calendar.add(GregorianCalendar.DATE, 6);
-        String highestDate = yearMonthDayDateFormat.format(calendar.getTime());
+        String highestDate = yearMonthDateFormat.format(calendar.getTime());
         return new String[]{lowestDate, highestDate};
     }
 }

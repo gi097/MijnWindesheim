@@ -62,7 +62,8 @@ public class WindesheimAPIController {
             Lesson[] lessons = getLessons(schedule.getId(), schedule.getType());
             for (Lesson hiddenLesson : hiddenLessons) {
                 for (Lesson lesson : lessons) {
-                    if (hiddenLesson.getId().equals(lesson.getId())) {
+                    if (hiddenLesson.getSubject().equals(lesson.getSubject()) &&
+                            hiddenLesson.getTeacher().equals(lesson.getTeacher())) {
                         lesson.setVisible(false);
                     }
                 }

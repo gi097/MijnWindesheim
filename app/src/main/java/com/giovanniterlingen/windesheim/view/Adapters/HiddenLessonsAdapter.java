@@ -82,7 +82,7 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Lesson lesson = lessons[holder.getAdapterPosition()];
-                DatabaseController.getInstance().restoreLesson(lesson.getId());
+                DatabaseController.getInstance().restoreLesson(lesson);
                 activity.showSnackbar();
 
                 ApplicationLoader.restartNotificationThread();

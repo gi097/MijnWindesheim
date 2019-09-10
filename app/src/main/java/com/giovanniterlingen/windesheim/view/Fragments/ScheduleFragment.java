@@ -99,6 +99,11 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onResume() {
         super.onResume();
         if (this.isMenuVisible() && this.isVisible()) {
+            if (DatabaseController.getInstance().getAllLessons().length == 0) {
+                new ScheduleFetcher(this, true, true, false)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                return;
+            }
             if (recyclerView != null && recyclerView.getAdapter() == null) {
                 new ScheduleFetcher(this, false, true, false)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

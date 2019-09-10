@@ -40,19 +40,18 @@ public class ColorController {
             0xFF8CB329,
             0xFF478BFF
     };
-    private static final LruCache<Integer, Integer> cachedColors = new LruCache<>(colors.length);
+    private static final LruCache<String, Integer> cachedColors = new LruCache<>(colors.length);
 
     private static int getColorByPosition(int position) {
         return colors[position];
     }
 
     public static int getColorById(String id) {
-        int hashCode = id.hashCode();
         Integer color;
-        if ((color = cachedColors.get(hashCode)) == null) {
+        if ((color = cachedColors.get(id)) == null) {
             int position = DatabaseController.getInstance().getPositionByScheduleId(id);
             color = getColorByPosition(position);
-            cachedColors.put(hashCode, color);
+            cachedColors.put(id, color);
         }
         return color;
     }
