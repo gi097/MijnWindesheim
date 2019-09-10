@@ -56,6 +56,7 @@
     <string name="deletion_description">Alle lessen van dit vak worden verborgen, deze kunnen worden hersteld via het menu.</string>
 
     <string name="description_coen">Spellingscontrole</string>
+    <string name="description_engbert">Tester</string>
     <string name="description_giovanni">Ontwikkelaar en onderhouder</string>
     <string name="description_thomas">N@Tschool! implementatie</string>
 
@@ -149,8 +150,6 @@
         <item quantity="one">1 minuut</item>
     </plurals>
 
-    <string name="migration_warning">We migreren naar de nieuwe Windesheim API. De data die wordt getoond kan incorrect zijn.</string>
-
     <string name="monday">maandag</string>
 
     <string name="multiple_lessons_notification">Je hebt %1$s meerdere lessen</string>
@@ -222,6 +221,7 @@
     </string-array>
 
     <string name="title_coen">Coen van Dam</string>
+    <string name="title_engbert">Engbert Blaauw</string>>
     <string name="title_giovanni">Giovanni Terlingen</string>
     <string name="title_thomas">Thomas Visch</string>
 

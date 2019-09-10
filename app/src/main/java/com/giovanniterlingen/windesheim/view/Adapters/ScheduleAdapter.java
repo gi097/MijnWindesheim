@@ -47,10 +47,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CalendarController;
-import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
+import com.giovanniterlingen.windesheim.utils.ColorUtils;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -88,7 +88,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         Lesson lesson = this.lessons[position];
         long startTime = lesson.getStartTime().getTime();
         long endTime = lesson.getEndTime().getTime();
-        long currentTime = new Date().getTime();
+        long currentTime = TimeUtils.currentTimeWithOffset();
 
         lessonName.setText(lesson.getSubject());
         lessonRoom.setText(lesson.getRoom());
@@ -123,9 +123,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
                         String lessonTimes =
-                                CalendarController.getHourMinuteFormat().format(lesson
+                                TimeUtils.getHourMinuteFormat().format(lesson
                                         .getStartTime()) + " - " +
-                                        CalendarController.getHourMinuteFormat()
+                                        TimeUtils.getHourMinuteFormat()
                                                 .format(lesson.getEndTime());
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
@@ -159,9 +159,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         animation.setDuration(100);
                         lessonTime.setAnimation(animation);
                         String lessonTimes =
-                                CalendarController.getHourMinuteFormat().format(lesson
+                                TimeUtils.getHourMinuteFormat().format(lesson
                                         .getStartTime()) + " - " +
-                                        CalendarController.getHourMinuteFormat()
+                                        TimeUtils.getHourMinuteFormat()
                                                 .format(lesson.getEndTime());
                         lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
                         lessonTime.setText(lessonTimes);
@@ -169,11 +169,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 }
             });
         } else {
-            String lessonTimes =
-                    CalendarController.getHourMinuteFormat().format(lesson
-                            .getStartTime()) + " - " +
-                            CalendarController.getHourMinuteFormat()
-                                    .format(lesson.getEndTime());
+            String lessonTimes = TimeUtils.getHourMinuteFormat().format(lesson.getStartTime()) +
+                    " - " + TimeUtils.getHourMinuteFormat().format(lesson.getEndTime());
             lessonTime.setTextColor(ContextCompat.getColor(activity, R.color.colorSecondaryText));
             lessonTime.setText(lessonTimes);
             holder.cardView.setOnClickListener(null);
@@ -208,7 +205,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 popupMenu.show();
             }
         });
-        scheduleIdentifier.setBackgroundColor(ColorController.getColorById(lesson.getScheduleId()));
+        scheduleIdentifier.setBackgroundColor(ColorUtils.getColorById(lesson.getScheduleId()));
     }
 
     private void showCalendarDialog(final long rowId) {

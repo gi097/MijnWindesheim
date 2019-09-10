@@ -35,6 +35,7 @@ import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -58,7 +59,7 @@ class NotificationThread extends Thread {
         while ((notificationType = preferences.getInt("notifications_type",
                 NotificationController.NOTIFICATION_NOT_SET)) != 0) {
             try {
-                Date date = new Date();
+                Date date = TimeUtils.getCalendar().getTime();
                 WindesheimAPIController.getAndSaveLessons(false);
 
                 Lesson[] lessons = DatabaseController.getInstance().getLessons(date);
@@ -71,8 +72,8 @@ class NotificationThread extends Thread {
                     String lessonName = lesson.getSubject();
                     String lessonLocation = lesson.getRoom();
 
-                    while (System.currentTimeMillis() < lessonStartTime) {
-                        long delta = lessonStartTime - System.currentTimeMillis();
+                    while (TimeUtils.currentTimeWithOffset() < lessonStartTime) {
+                        long delta = lessonStartTime - TimeUtils.currentTimeWithOffset();
 
                         // Round delta upwards to the nearest whole minute. (e.g. 7m 58s -> 8m)
                         final long remainder = delta % DateUtils.MINUTE_IN_MILLIS;

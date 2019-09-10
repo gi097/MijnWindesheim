@@ -56,6 +56,7 @@
     <string name="deletion_description">This will hide all lessons of this subject, these can be restored via the menu.</string>
 
     <string name="description_coen">Spell checking</string>
+    <string name="description_engbert">Tester</string>
     <string name="description_giovanni">Developer and maintainer</string>
     <string name="description_thomas">N@Tschool! implementation</string>
 
@@ -153,8 +154,6 @@
         <item quantity="other">%s minutes</item>
     </plurals>
 
-    <string name="migration_warning">We are migrating to the new Windesheim API. The data shown might not be accurate.</string>
-
     <string name="monday">Monday</string>
 
     <string name="multiple_lessons_notification">You have multiple lessons %1$s</string>
@@ -227,6 +226,7 @@
     </string-array>
 
     <string name="title_coen">Coen van Dam</string>
+    <string name="title_engbert">Engbert Blaauw</string>
     <string name="title_giovanni">Giovanni Terlingen</string>
     <string name="title_thomas">Thomas Visch</string>
 

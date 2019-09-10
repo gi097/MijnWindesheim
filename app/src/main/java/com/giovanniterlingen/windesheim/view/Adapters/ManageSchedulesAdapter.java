@@ -37,9 +37,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Schedule;
+import com.giovanniterlingen.windesheim.utils.ColorUtils;
 import com.giovanniterlingen.windesheim.view.ManageSchedulesActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -74,8 +74,7 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
 
         String name = schedules[holder.getAdapterPosition()].getName();
         scheduleName.setText(name);
-        scheduleIdentifier.setBackgroundColor(ColorController
-                .getColorById(schedules[position].getId()));
+        scheduleIdentifier.setBackgroundColor(ColorUtils.getColorById(schedules[position].getId()));
         Button deleteButton = holder.delete;
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +95,7 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
                                 ApplicationLoader.restartNotificationThread();
 
-                                ColorController.invalidateColorCache();
+                                ColorUtils.invalidateColorCache();
                                 schedules = DatabaseController.getInstance().getSchedules();
                                 notifyDataSetChanged();
 

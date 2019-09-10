@@ -22,16 +22,18 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import androidx.collection.LruCache;
+
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 
 /**
  * A schedule app for students and teachers of Windesheim
  *
  * @author Giovanni Terlingen
  */
-public class ColorController {
+public class ColorUtils {
 
     public static final int[] colors = new int[]{
             0xFF9DCC25,

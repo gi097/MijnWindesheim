@@ -177,37 +177,84 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/activity_margin"
-                    android:paddingEnd="@dimen/activity_margin">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="@dimen/avatar_size"
-                        android:layout_height="@dimen/avatar_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/coen" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/activity_margin">
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/activity_margin"
+                        android:paddingEnd="@dimen/activity_margin">
 
-                        <TextView
-                            android:layout_width="fill_parent"
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/avatar_size"
+                            android:layout_height="@dimen/avatar_size"
+                            android:layout_gravity="center"
+                            android:src="@drawable/coen" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/title_coen"
-                            android:textColor="@color/colorTitle"
-                            android:textSize="@dimen/title_size" />
+                            android:orientation="vertical"
+                            android:padding="@dimen/activity_margin">
 
-                        <TextView
-                            android:layout_width="fill_parent"
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_coen"
+                                android:textColor="@color/colorTitle"
+                                android:textSize="@dimen/title_size" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/description_coen"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="@dimen/description_size" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/divider_height"
+                        android:background="?android:listDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/activity_margin"
+                        android:paddingEnd="@dimen/activity_margin">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/avatar_size"
+                            android:layout_height="@dimen/avatar_size"
+                            android:layout_gravity="center"
+                            android:src="@drawable/engbert" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/description_coen"
-                            android:textColor="@color/colorSecondaryText"
-                            android:textSize="@dimen/description_size" />
+                            android:orientation="vertical"
+                            android:padding="@dimen/activity_margin">
 
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_engbert"
+                                android:textColor="@color/colorTitle"
+                                android:textSize="@dimen/title_size" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/description_engbert"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="@dimen/description_size" />
+
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

@@ -46,10 +46,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CalendarController;
 import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -166,7 +166,7 @@ public class ScheduleActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         mPager = findViewById(R.id.pager);
 
-        Calendar calendar = CalendarController.getCalendar();
+        Calendar calendar = TimeUtils.getCalendar();
         int calendarDayIndex = calendar.get(GregorianCalendar.DAY_OF_WEEK);
 
         if (calendarDayIndex <= GregorianCalendar.FRIDAY) {
@@ -273,7 +273,7 @@ public class ScheduleActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            Calendar calendar = CalendarController.getCalendar();
+            Calendar calendar = TimeUtils.getCalendar();
             if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
                 calendar.add(GregorianCalendar.DATE, 2);
             } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SUNDAY) {

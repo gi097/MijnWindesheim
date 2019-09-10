@@ -36,7 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.PermissionController;
+import com.giovanniterlingen.windesheim.utils.PermissionUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ContentsFragment;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -61,7 +61,7 @@ public class NatschoolActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
-        new PermissionController().verifyStoragePermissions(this);
+        PermissionUtils.verifyStoragePermissions(this);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.contents_fragment, new ContentsFragment());

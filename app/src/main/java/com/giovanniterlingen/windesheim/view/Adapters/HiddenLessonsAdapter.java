@@ -35,9 +35,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
+import com.giovanniterlingen.windesheim.utils.ColorUtils;
 import com.giovanniterlingen.windesheim.view.HiddenLessonsActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +76,7 @@ public class HiddenLessonsAdapter extends RecyclerView.Adapter<HiddenLessonsAdap
         lessonComponent.setText(lesson.getScheduleType() == Constants.SCHEDULE_TYPE.SUBJECT ? lesson.getClassName() : lesson.getTeacher());
         lessonComponent.setSelected(true);
 
-        scheduleIdentifier.setBackgroundColor(ColorController.getColorById(lesson.getScheduleId()));
+        scheduleIdentifier.setBackgroundColor(ColorUtils.getColorById(lesson.getScheduleId()));
 
         Button button = holder.itemView.findViewById(R.id.restore_button);
         button.setOnClickListener(new View.OnClickListener() {

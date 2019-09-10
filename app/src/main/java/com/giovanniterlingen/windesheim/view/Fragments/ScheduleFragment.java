@@ -42,11 +42,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CalendarController;
-import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
+import com.giovanniterlingen.windesheim.utils.ColorUtils;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
@@ -90,9 +90,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        calendar = CalendarController.getCalendar();
+        calendar = TimeUtils.getCalendar();
         date = (Date) getArguments().getSerializable("date");
-        dayDateFormat = CalendarController.getDayDateFormat();
+        dayDateFormat = TimeUtils.getDayDateFormat();
     }
 
     @Override
@@ -104,12 +104,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 return;
             }
-            if (recyclerView != null && recyclerView.getAdapter() == null) {
-                new ScheduleFetcher(this, false, true, false)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                return;
-            }
-            new ScheduleFetcher(this, false, false, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new ScheduleFetcher(this, false, false,
+                    false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -148,7 +144,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_schedule, container, false);
         swipeRefreshLayout = viewGroup.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeColors(ColorController.colors);
+        swipeRefreshLayout.setColorSchemeColors(ColorUtils.colors);
         emptyTextView = viewGroup.findViewById(R.id.schedule_not_found);
         spinner = viewGroup.findViewById(R.id.progress_bar);
         recyclerView = viewGroup.findViewById(R.id.schedule_recyclerview);

@@ -49,11 +49,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.ColorController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
+import com.giovanniterlingen.windesheim.utils.ColorUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
@@ -252,7 +252,7 @@ public class ChooseScheduleFragment extends Fragment {
 
                             DatabaseController.getInstance().addSchedule(id, name, fragment.type);
 
-                            ColorController.invalidateColorCache();
+                            ColorUtils.invalidateColorCache();
 
                             SharedPreferences preferences = PreferenceManager
                                     .getDefaultSharedPreferences(fragment.context);

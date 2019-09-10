@@ -35,6 +35,7 @@ import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Schedule;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import java.util.Date;
 
@@ -104,7 +105,7 @@ public class DatabaseController extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(LessonEntry.COLUMN_NAME_LESSON_ID, lesson.getId());
         values.put(LessonEntry.COLUMN_NAME_SUBJECT, lesson.getSubject());
-        values.put(LessonEntry.COLUMN_NAME_DATE, CalendarController.getYearMonthDayDateFormat()
+        values.put(LessonEntry.COLUMN_NAME_DATE, TimeUtils.getYearMonthDayDateFormat()
                 .format(lesson.getStartTime()));
         values.put(LessonEntry.COLUMN_NAME_START_TIME, lesson.getStartTime().getTime());
         values.put(LessonEntry.COLUMN_NAME_END_TIME, lesson.getEndTime().getTime());
@@ -159,7 +160,7 @@ public class DatabaseController extends SQLiteOpenHelper {
 
         String selection = LessonEntry.COLUMN_NAME_DATE + " = ? AND " +
                 LessonEntry.COLUMN_NAME_VISIBLE + " = ?";
-        String[] selectionArgs = {CalendarController.getYearMonthDayDateFormat().format(date),
+        String[] selectionArgs = {TimeUtils.getYearMonthDayDateFormat().format(date),
                 Integer.toString(1)};
         String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
                 LessonEntry.COLUMN_NAME_END_TIME + ", " + LessonEntry.COLUMN_NAME_SUBJECT;
@@ -246,7 +247,7 @@ public class DatabaseController extends SQLiteOpenHelper {
      * Get lessons for this week to check if they are changed
      */
     Lesson[] getLessonsForCompare(String scheduleId) {
-        String[] weekDates = CalendarController.getWeekDates(new Date());
+        String[] weekDates = TimeUtils.getWeekDates(TimeUtils.getCalendar().getTime());
         String[] projection = {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
@@ -457,7 +458,7 @@ public class DatabaseController extends SQLiteOpenHelper {
         return lessons;
     }
 
-    int getPositionByScheduleId(String id) {
+    public int getPositionByScheduleId(String id) {
         String[] projection = {ScheduleEntry.COLUMN_NAME_SCHEDULE_ID};
         Cursor cursor = database.query(
                 ScheduleEntry.TABLE_NAME,

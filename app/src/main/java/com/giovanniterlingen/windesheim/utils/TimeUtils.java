@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,9 +36,9 @@ import java.util.TimeZone;
  *
  * @author Giovanni Terlingen
  */
-public class CalendarController {
+public class TimeUtils {
 
-    static SimpleDateFormat getYearMonthDayDateFormat() {
+    public static SimpleDateFormat getYearMonthDayDateFormat() {
         SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
         yearMonthDayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return yearMonthDayDateFormat;
@@ -60,7 +60,7 @@ public class CalendarController {
         return GregorianCalendar.getInstance(Locale.FRANCE);
     }
 
-    static String[] getWeekDates(Date date) {
+    public static String[] getWeekDates(Date date) {
         SimpleDateFormat yearMonthDateFormat = getYearMonthDayDateFormat();
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -70,5 +70,11 @@ public class CalendarController {
         calendar.add(GregorianCalendar.DATE, 6);
         String highestDate = yearMonthDateFormat.format(calendar.getTime());
         return new String[]{lowestDate, highestDate};
+    }
+
+    public static long currentTimeWithOffset() {
+        long currentTime = System.currentTimeMillis();
+        currentTime += TimeZone.getDefault().getOffset(currentTime);
+        return currentTime;
     }
 }

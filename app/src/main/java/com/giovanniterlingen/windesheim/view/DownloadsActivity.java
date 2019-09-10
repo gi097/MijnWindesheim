@@ -41,8 +41,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.PermissionController;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
+import com.giovanniterlingen.windesheim.utils.PermissionUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -92,7 +92,7 @@ public class DownloadsActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (!new PermissionController().verifyStoragePermissions(this)) {
+        if (!PermissionUtils.verifyStoragePermissions(this)) {
             if (view != null) {
                 Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_permission),
                         Snackbar.LENGTH_LONG);

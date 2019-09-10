@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -37,7 +37,7 @@ import androidx.core.app.ActivityCompat;
  * @author Giovanni Terlingen
  */
 @TargetApi(23)
-public class PermissionController {
+public class PermissionUtils {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String[] PERMISSIONS_STORAGE = {
@@ -45,7 +45,7 @@ public class PermissionController {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public boolean verifyStoragePermissions(Activity activity) {
+    public static boolean verifyStoragePermissions(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
