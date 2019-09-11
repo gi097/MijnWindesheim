@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -44,11 +44,11 @@ import java.io.File;
  *
  * @author Giovanni Terlingen
  */
-public class WebViewController {
+public class WebViewUtils {
 
     private final Activity activity;
 
-    public WebViewController(Activity activity) {
+    public WebViewUtils(Activity activity) {
         this.activity = activity;
     }
 
@@ -69,7 +69,7 @@ public class WebViewController {
                 DownloadManager downloadManager = (DownloadManager) activity
                         .getSystemService(Context.DOWNLOAD_SERVICE);
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                request.addRequestHeader("Cookie", CookieController.getNatSchoolCookie())
+                request.addRequestHeader("Cookie", CookieUtils.getNatSchoolCookie())
                         .setTitle(fileName)
                         .setDescription(activity.getResources().getString(R.string.downloading))
                         .setDestinationInExternalPublicDir(File.separator +

@@ -45,11 +45,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.DownloadController;
-import com.giovanniterlingen.windesheim.controllers.WebViewController;
 import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
+import com.giovanniterlingen.windesheim.utils.CookieUtils;
+import com.giovanniterlingen.windesheim.utils.WebViewUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.giovanniterlingen.windesheim.view.AuthenticationActivity;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
@@ -140,8 +140,8 @@ public class ContentsFragment extends Fragment
                     .commit();
             return;
         }
-        WebViewController webViewController = new WebViewController(getActivity());
-        webViewController.intentCustomTab(url);
+        WebViewUtils webviewUtils = new WebViewUtils(getActivity());
+        webviewUtils.intentCustomTab(url);
     }
 
     @Override
@@ -273,7 +273,7 @@ public class ContentsFragment extends Fragment
                 connection.setRequestProperty("Content-Length", Integer
                         .toString(urlParameters.getBytes().length));
                 connection.setRequestProperty("Content-Language", "en-US");
-                connection.setRequestProperty("Cookie", CookieController.getNatSchoolCookie());
+                connection.setRequestProperty("Cookie", CookieUtils.getNatSchoolCookie());
 
                 connection.setUseCaches(false);
                 connection.setDoInput(true);

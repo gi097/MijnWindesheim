@@ -47,7 +47,7 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -115,7 +115,7 @@ public class ApplicationLoader extends Application {
     public static void restartNotificationThread() {
         if (notificationThread != null) {
             notificationThread.interrupt();
-            NotificationController.getInstance().clearNotification();
+            NotificationUtils.getInstance().clearNotification();
         }
         notificationThread = new NotificationThread();
         notificationThread.start();
@@ -160,7 +160,7 @@ public class ApplicationLoader extends Application {
 
         registerReceiver(new TimeReceiver(), intentFilter);
 
-        NotificationController.getInstance().initNotificationChannels();
+        NotificationUtils.getInstance().initNotificationChannels();
         startPushService();
 
         setDarkMode();

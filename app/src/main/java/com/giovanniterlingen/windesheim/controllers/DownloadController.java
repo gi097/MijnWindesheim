@@ -41,6 +41,7 @@ import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.Download;
+import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.view.NatschoolActivity;
 
 import java.io.File;
@@ -107,7 +108,7 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
             downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(encodedUrl));
-            request.addRequestHeader("Cookie", CookieController.getNatSchoolCookie())
+            request.addRequestHeader("Cookie", CookieUtils.getNatSchoolCookie())
                     .setTitle(fileName)
                     .setDescription(activity.getResources().getString(R.string.downloading))
                     .setDestinationUri(Uri.fromFile(file));

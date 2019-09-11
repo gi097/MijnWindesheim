@@ -32,9 +32,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import java.text.NumberFormat;
@@ -57,7 +57,7 @@ class NotificationThread extends Thread {
         int notificationType;
         String notificationText;
         while ((notificationType = preferences.getInt("notifications_type",
-                NotificationController.NOTIFICATION_NOT_SET)) != 0) {
+                NotificationUtils.NOTIFICATION_NOT_SET)) != 0) {
             try {
                 Date date = TimeUtils.getCalendar().getTime();
                 if (!DatabaseController.getInstance().allSchedulesFetched()) {
@@ -95,16 +95,16 @@ class NotificationThread extends Thread {
                                     .getString(R.string.single_lesson_notification, lessonName,
                                             timeReadable, lessonLocation);
                         }
-                        if (notificationType == NotificationController.NOTIFICATION_ALWAYS_ON) {
-                            NotificationController.getInstance()
+                        if (notificationType == NotificationUtils.NOTIFICATION_ALWAYS_ON) {
+                            NotificationUtils.getInstance()
                                     .createNotification(notificationText, true, false);
                         } else if (hours == 1 && minutes == 0 && notificationType ==
-                                NotificationController.NOTIFICATION_1_HOUR ||
+                                NotificationUtils.NOTIFICATION_1_HOUR ||
                                 hours == 0 && minutes == 30 && notificationType ==
-                                        NotificationController.NOTIFICATION_30_MIN ||
+                                        NotificationUtils.NOTIFICATION_30_MIN ||
                                 hours == 0 && minutes == 15 && notificationType ==
-                                        NotificationController.NOTIFICATION_15_MIN) {
-                            NotificationController.getInstance()
+                                        NotificationUtils.NOTIFICATION_15_MIN) {
+                            NotificationUtils.getInstance()
                                     .createNotification(notificationText, false, true);
                         }
                         synchronized (minuteLock) {
@@ -115,14 +115,14 @@ class NotificationThread extends Thread {
                     NotificationCenter.getInstance()
                             .postNotificationName(NotificationCenter.scheduleReload);
                 }
-                NotificationController.getInstance().clearNotification();
+                NotificationUtils.getInstance().clearNotification();
                 synchronized (dateLock) {
                     dateLock.wait();
                 }
             } catch (InterruptedException e) {
                 break;
             } catch (Exception e) {
-                NotificationController.getInstance()
+                NotificationUtils.getInstance()
                         .createNotification(ApplicationLoader.applicationContext.getResources()
                                 .getString(R.string.connection_problem), false, false);
                 break;

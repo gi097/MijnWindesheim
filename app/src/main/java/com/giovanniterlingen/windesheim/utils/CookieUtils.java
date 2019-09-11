@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,7 +44,7 @@ import com.giovanniterlingen.windesheim.view.NatschoolActivity;
  *
  * @author Giovanni Terlingen
  */
-public class CookieController {
+public class CookieUtils {
 
     public static void checkCookieAndIntent(final Context context, final boolean educator) {
         if (ApplicationLoader.isConnected()) {
@@ -96,7 +96,7 @@ public class CookieController {
         return cookieManager.getCookie("https://elo.windesheim.nl");
     }
 
-    static String getEducatorCookie() {
+    public static String getEducatorCookie() {
         CookieManager cookieManager = CookieManager.getInstance();
         if (Build.VERSION.SDK_INT < 21) {
             CookieSyncManager.createInstance(ApplicationLoader.applicationContext);

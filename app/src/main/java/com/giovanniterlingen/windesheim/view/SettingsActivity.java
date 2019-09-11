@@ -44,8 +44,8 @@ import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CookieController;
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.giovanniterlingen.windesheim.utils.CookieUtils;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.google.android.material.snackbar.Snackbar;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -62,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
     private SwitchCompat lessonStart;
     private SwitchCompat darkMode;
     private CharSequence[] items;
-    private int notificationId = NotificationController.NOTIFICATION_NOT_SET;
+    private int notificationId = NotificationUtils.NOTIFICATION_NOT_SET;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +87,9 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = preferences.edit();
                 if (lessonStart.isChecked()) {
-                    editor.putInt("notifications_type", NotificationController.NOTIFICATION_ALWAYS_ON);
+                    editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_ALWAYS_ON);
                 } else {
-                    editor.putInt("notifications_type", NotificationController.NOTIFICATION_OFF);
+                    editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_OFF);
                 }
                 editor.apply();
 
@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         int pref = preferences.getInt("notifications_type", 0);
-        lessonStart.setChecked(pref != 0 && pref != NotificationController.NOTIFICATION_OFF);
+        lessonStart.setChecked(pref != 0 && pref != NotificationUtils.NOTIFICATION_OFF);
 
         darkMode = findViewById(R.id.dark_mode_switch);
         darkMode.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity {
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CookieController.deleteCookies();
+                CookieUtils.deleteCookies();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.remove("username");
                 editor.remove("password");
@@ -162,26 +162,26 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void updateIntervalTextView() {
         int interval = preferences.getInt("notifications_type",
-                NotificationController.NOTIFICATION_NOT_SET);
-        if (interval == NotificationController.NOTIFICATION_OFF) {
+                NotificationUtils.NOTIFICATION_NOT_SET);
+        if (interval == NotificationUtils.NOTIFICATION_OFF) {
             intervalTextview.setText(getResources().getString(R.string.interval_off));
-        } else if (interval != NotificationController.NOTIFICATION_NOT_SET) {
+        } else if (interval != NotificationUtils.NOTIFICATION_NOT_SET) {
             intervalTextview.setText(items[interval - 2]);
         }
     }
 
     private void updateLessonSwitch() {
         int interval = preferences.getInt("notifications_type",
-                NotificationController.NOTIFICATION_NOT_SET);
-        lessonStart.setChecked(interval != NotificationController.NOTIFICATION_NOT_SET &&
-                interval != NotificationController.NOTIFICATION_OFF);
+                NotificationUtils.NOTIFICATION_NOT_SET);
+        lessonStart.setChecked(interval != NotificationUtils.NOTIFICATION_NOT_SET &&
+                interval != NotificationUtils.NOTIFICATION_OFF);
     }
 
     private void createNotificationPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.settings_interval))
                 .setSingleChoiceItems(items, preferences.getInt("notifications_type",
-                        NotificationController.NOTIFICATION_OFF) - 2,
+                        NotificationUtils.NOTIFICATION_OFF) - 2,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 notificationId = item;

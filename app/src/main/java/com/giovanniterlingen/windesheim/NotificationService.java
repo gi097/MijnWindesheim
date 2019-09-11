@@ -30,7 +30,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -47,9 +47,9 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (Build.VERSION.SDK_INT >= 26) {
-            Notification notification = NotificationController.getInstance()
+            Notification notification = NotificationUtils.getInstance()
                     .getServiceNotification();
-            this.startForeground(NotificationController.SERVICE_NOTIFICATION_ID, notification);
+            this.startForeground(NotificationUtils.SERVICE_NOTIFICATION_ID, notification);
         }
         return START_STICKY;
     }

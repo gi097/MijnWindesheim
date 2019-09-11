@@ -225,7 +225,7 @@ public class DatabaseController extends SQLiteOpenHelper {
         );
         boolean result = cursor.getCount() > 0;
         cursor.close();
-        return  result;
+        return result;
     }
 
     /**

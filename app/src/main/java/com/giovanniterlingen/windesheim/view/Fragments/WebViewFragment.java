@@ -36,7 +36,7 @@ import android.widget.RelativeLayout;
 import androidx.fragment.app.Fragment;
 
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.WebViewController;
+import com.giovanniterlingen.windesheim.utils.WebViewUtils;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -52,13 +52,13 @@ class WebViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_webview, container, false);
 
-        final WebViewController webViewController = new WebViewController(getActivity());
-        this.webView = webViewController.createWebView();
+        final WebViewUtils webviewUtils = new WebViewUtils(getActivity());
+        this.webView = webviewUtils.createWebView();
         this.webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (isAdded() && !url.contains("elo.windesheim.nl")) {
-                    webViewController.intentCustomTab(url);
+                    webviewUtils.intentCustomTab(url);
                     closeWebView();
                     if (getActivity() != null) {
                         getActivity().onBackPressed();

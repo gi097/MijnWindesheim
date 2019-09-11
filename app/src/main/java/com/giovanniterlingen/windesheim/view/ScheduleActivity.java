@@ -46,9 +46,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.controllers.CookieController;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
+import com.giovanniterlingen.windesheim.utils.CookieUtils;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -85,9 +85,9 @@ public class ScheduleActivity extends AppCompatActivity
         }
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (sharedPreferences.getInt("notifications_type", NotificationController
-                .NOTIFICATION_NOT_SET) == NotificationController.NOTIFICATION_NOT_SET) {
-            editor.putInt("notifications_type", NotificationController.NOTIFICATION_ALWAYS_ON);
+        if (sharedPreferences.getInt("notifications_type", NotificationUtils
+                .NOTIFICATION_NOT_SET) == NotificationUtils.NOTIFICATION_NOT_SET) {
+            editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_ALWAYS_ON);
             editor.apply();
         }
         super.onCreate(savedInstanceState);
@@ -129,10 +129,10 @@ public class ScheduleActivity extends AppCompatActivity
                                 finish();
                                 break;
                             case R.id.natschool:
-                                CookieController.checkCookieAndIntent(ScheduleActivity.this, false);
+                                CookieUtils.checkCookieAndIntent(ScheduleActivity.this, false);
                                 break;
                             case R.id.educator:
-                                CookieController.checkCookieAndIntent(ScheduleActivity.this, true);
+                                CookieUtils.checkCookieAndIntent(ScheduleActivity.this, true);
                                 break;
                             case R.id.downloads:
                                 Intent intent1 = new Intent(ScheduleActivity.this,

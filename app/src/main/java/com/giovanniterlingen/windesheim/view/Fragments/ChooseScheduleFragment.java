@@ -50,10 +50,10 @@ import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
-import com.giovanniterlingen.windesheim.controllers.NotificationController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
 import com.giovanniterlingen.windesheim.utils.ColorUtils;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
@@ -259,7 +259,7 @@ public class ChooseScheduleFragment extends Fragment {
                             SharedPreferences.Editor editor = preferences.edit();
                             if (!hasSchedules) {
                                 editor.putInt("notifications_type",
-                                        NotificationController.NOTIFICATION_ALWAYS_ON);
+                                        NotificationUtils.NOTIFICATION_ALWAYS_ON);
                             }
                             editor.apply();
 

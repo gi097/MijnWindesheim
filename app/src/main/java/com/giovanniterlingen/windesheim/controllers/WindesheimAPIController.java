@@ -29,6 +29,8 @@ import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
+import com.giovanniterlingen.windesheim.utils.CookieUtils;
+import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,7 +77,7 @@ public class WindesheimAPIController {
                 continue;
             }
             if (oldLessons.length != newLessons.length) {
-                NotificationController.getInstance().createScheduleChangedNotification();
+                NotificationUtils.getInstance().createScheduleChangedNotification();
                 continue;
             }
             for (int i = 0; i < oldLessons.length; i++) {
@@ -87,7 +89,7 @@ public class WindesheimAPIController {
                         !oldLesson.getRoom().equals(newLesson.getRoom()) ||
                         !oldLesson.getTeacher().equals(newLesson.getTeacher()) ||
                         !oldLesson.getClassName().equals(newLesson.getClassName())) {
-                    NotificationController.getInstance().createScheduleChangedNotification();
+                    NotificationUtils.getInstance().createScheduleChangedNotification();
                 }
             }
         }
@@ -217,7 +219,7 @@ public class WindesheimAPIController {
         connection.setConnectTimeout(10000);
         connection.setRequestMethod("GET");
         if (authenticate) {
-            connection.setRequestProperty("Cookie", CookieController.getEducatorCookie());
+            connection.setRequestProperty("Cookie", CookieUtils.getEducatorCookie());
         }
         connection.setDoInput(true);
         connection.connect();

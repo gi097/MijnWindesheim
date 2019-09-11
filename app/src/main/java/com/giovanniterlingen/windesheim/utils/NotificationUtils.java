@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  **/
-package com.giovanniterlingen.windesheim.controllers;
+package com.giovanniterlingen.windesheim.utils;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -44,7 +44,7 @@ import com.giovanniterlingen.windesheim.view.ScheduleActivity;
  *
  * @author Giovanni Terlingen
  */
-public class NotificationController {
+public class NotificationUtils {
 
     public static final int SERVICE_NOTIFICATION_ID = 2;
     public static final int NOTIFICATION_1_HOUR = 2;
@@ -58,28 +58,28 @@ public class NotificationController {
     private static final String SERVICE_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.service";
     private static final int LESSON_NOTIFICATION_ID = 0;
     private static final int SCHEDULE_CHANGED_NOTIFICATION_ID = 1;
-    private static volatile NotificationController Instance = null;
+    private static volatile NotificationUtils Instance = null;
     private final NotificationManager mNotificationManager;
 
-    private NotificationController() {
+    private NotificationUtils() {
         this.mNotificationManager = (NotificationManager) ApplicationLoader.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public static NotificationController getInstance() {
-        NotificationController localInstance = Instance;
+    public static NotificationUtils getInstance() {
+        NotificationUtils localInstance = Instance;
         if (localInstance == null) {
-            synchronized (NotificationController.class) {
+            synchronized (NotificationUtils.class) {
                 localInstance = Instance;
                 if (localInstance == null) {
-                    Instance = localInstance = new NotificationController();
+                    Instance = localInstance = new NotificationUtils();
                 }
             }
         }
         return localInstance;
     }
 
-    void createScheduleChangedNotification() {
+    public void createScheduleChangedNotification() {
         Intent intent = new Intent(ApplicationLoader.applicationContext, ScheduleActivity.class);
         intent.putExtra("notification", true);
         PendingIntent pendingIntent = PendingIntent
