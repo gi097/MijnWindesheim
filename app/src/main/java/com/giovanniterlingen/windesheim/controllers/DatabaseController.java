@@ -196,51 +196,36 @@ public class DatabaseController extends SQLiteOpenHelper {
         return lessons;
     }
 
-    public Lesson[] getAllLessons() {
+    public boolean allSchedulesFetched() {
+        Schedule[] schedules = getSchedules();
+        for (Schedule schedule : schedules) {
+            if (!isScheduleFetched(schedule)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isScheduleFetched(Schedule schedule) {
         String[] projection = {
-                LessonEntry._ID,
-                LessonEntry.COLUMN_NAME_LESSON_ID,
-                LessonEntry.COLUMN_NAME_SUBJECT,
-                LessonEntry.COLUMN_NAME_START_TIME,
-                LessonEntry.COLUMN_NAME_END_TIME,
-                LessonEntry.COLUMN_NAME_ROOM,
-                LessonEntry.COLUMN_NAME_TEACHER,
-                LessonEntry.COLUMN_NAME_CLASS_NAME,
-                LessonEntry.COLUMN_NAME_SCHEDULE_ID,
-                LessonEntry.COLUMN_NAME_SCHEDULE_TYPE,
-                LessonEntry.COLUMN_NAME_VISIBLE,
+                LessonEntry._ID
         };
-        String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
-                LessonEntry.COLUMN_NAME_END_TIME + ", " + LessonEntry.COLUMN_NAME_SUBJECT;
+
+        String selection = LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
+        String[] selectionArgs = {schedule.getId()};
 
         Cursor cursor = database.query(
                 LessonEntry.TABLE_NAME,
                 projection,
+                selection,
+                selectionArgs,
                 null,
                 null,
-                null,
-                null,
-                sortOrder
+                null
         );
-        Lesson[] lessons = new Lesson[cursor.getCount()];
-        int i = 0;
-        while (cursor.moveToNext()) {
-            Lesson lesson = new Lesson();
-            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
-            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
-            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
-            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
-            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
-            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
-            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
-            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
-            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
-            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
-            lessons[i] = lesson;
-            i++;
-        }
+        boolean result = cursor.getCount() > 0;
         cursor.close();
-        return lessons;
+        return  result;
     }
 
     /**
@@ -478,33 +463,16 @@ public class DatabaseController extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        deleteSchedule(id);
         return 0;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        if (oldVersion == 8 && newVersion == 9) {
-            database.execSQL("DROP TABLE IF EXISTS fetched_dates");
-            database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
-            database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
-            database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
-        } else if (oldVersion == 7 && newVersion == 8) {
-            database.execSQL("ALTER TABLE schedules RENAME TO tmp_schedules");
-            database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
-            database.execSQL("INSERT INTO " + ScheduleEntry.TABLE_NAME + " (" +
-                    ScheduleEntry.COLUMN_NAME_SCHEDULE_ID + ", " +
-                    ScheduleEntry.COLUMN_NAME_SCHEDULE_NAME + ", " +
-                    ScheduleEntry.COLUMN_NAME_SCHEDULE_TYPE + ") " +
-                    "SELECT schedule_id, schedule_name, schedule_type FROM tmp_schedules");
-            database.execSQL("DROP TABLE IF EXISTS tmp_schedules");
-        } else {
-            database.execSQL("DROP TABLE IF EXISTS schedules");
-            database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
-        }
-        database.execSQL("DROP TABLE IF EXISTS subject");
         database.execSQL("DROP TABLE IF EXISTS fetched_dates");
+        database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
+        database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
 
+        database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
         database.execSQL(SQL_CREATE_LESSON_ENTRIES);
     }
 

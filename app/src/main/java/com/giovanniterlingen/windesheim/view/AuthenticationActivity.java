@@ -112,7 +112,6 @@ public class AuthenticationActivity extends AppCompatActivity {
                     return;
                 }
                 if (isValid) {
-                    headerTextView.setText(getString(R.string.auth_loading));
                     usernameTextLayout.setErrorEnabled(false);
                     passwordTextLayout.setErrorEnabled(false);
                     progressBar.setVisibility(View.VISIBLE);
@@ -143,6 +142,8 @@ public class AuthenticationActivity extends AppCompatActivity {
             return;
         }
         isBusy = true;
+
+        headerTextView.setText(getString(R.string.auth_loading));
 
         if (webView != null) {
             webView.destroy();
@@ -200,6 +201,9 @@ public class AuthenticationActivity extends AppCompatActivity {
                     view.loadUrl(getJavascriptString(username, password));
                     loginUrl = url;
                 } else if (url.startsWith("https://windesheimapi.azurewebsites.net")) {
+                    usernameTextLayout.setErrorEnabled(false);
+                    passwordTextLayout.setErrorEnabled(false);
+
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("username", username);
                     editor.putString("password", password);

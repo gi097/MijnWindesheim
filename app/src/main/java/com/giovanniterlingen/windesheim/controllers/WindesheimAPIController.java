@@ -195,13 +195,13 @@ public class WindesheimAPIController {
     public static String getResults(String studentNumber, String isat) throws Exception {
         URL url = new URL(WINDESHEIM_AZURE_API_URL + "/Persons/"
                 + studentNumber + "/Study/" + isat
-                + "/CourseResults?onlydata=true&$orderby=lastmodified");
+                + "/CourseResults?onlydata=true");
         return makeRequest(url, true);
     }
 
     public static Result[] getResultArray(JSONArray resultsJSON) throws Exception {
         ArrayList<Result> results = new ArrayList<>();
-        for (int i = resultsJSON.length() - 1; i >= 0; i--) {
+        for (int i = 0; i < resultsJSON.length(); i++) {
             JSONObject current = resultsJSON.getJSONObject(i);
             String result = current.getString("grade");
             String name = current.getJSONObject("course").getString("name");

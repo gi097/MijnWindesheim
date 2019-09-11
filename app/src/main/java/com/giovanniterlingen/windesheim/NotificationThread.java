@@ -60,7 +60,9 @@ class NotificationThread extends Thread {
                 NotificationController.NOTIFICATION_NOT_SET)) != 0) {
             try {
                 Date date = TimeUtils.getCalendar().getTime();
-                WindesheimAPIController.getAndSaveLessons(false);
+                if (!DatabaseController.getInstance().allSchedulesFetched()) {
+                    WindesheimAPIController.getAndSaveLessons(false);
+                }
 
                 Lesson[] lessons = DatabaseController.getInstance().getLessons(date);
                 for (int i = 0; i < lessons.length; i++) {

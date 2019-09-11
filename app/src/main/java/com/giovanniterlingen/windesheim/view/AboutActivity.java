@@ -72,7 +72,7 @@ public class AboutActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://giovanniterlingen.com")));
+                            Uri.parse("https://giovanniterlingen.com")));
                 }
             });
         }
@@ -82,7 +82,7 @@ public class AboutActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://www.thomasvisch.nl")));
+                            Uri.parse("https://www.thomasvisch.nl")));
                 }
             });
         }
