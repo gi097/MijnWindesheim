@@ -71,10 +71,10 @@ public class TimeUtils {
     }
 
     /**
-     * Windesheim API server epoch timestamps, but not in UTC
+     * Windesheim API serves epoch timestamps, but not in UTC
      */
     public static long removeTimeOffset(long time) {
-        time -= TimeZone.getDefault().getOffset(time);
+        time -= TimeZone.getTimeZone("Europe/Amsterdam").getOffset(time);
         return time;
     }
 }

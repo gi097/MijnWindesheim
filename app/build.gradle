@@ -10,8 +10,8 @@ android {
         applicationId 'com.giovanniterlingen.windesheim'
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 192
-        versionName '3.2.6-' + hash
+        versionCode 193
+        versionName '3.2.7-' + hash
     }
     buildTypes {
         release {
