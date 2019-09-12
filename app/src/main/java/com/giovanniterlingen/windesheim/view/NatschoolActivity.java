@@ -24,10 +24,7 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -36,7 +33,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.giovanniterlingen.windesheim.R;
-import com.giovanniterlingen.windesheim.utils.PermissionUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ContentsFragment;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -61,7 +57,6 @@ public class NatschoolActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
-        PermissionUtils.verifyStoragePermissions(this);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.contents_fragment, new ContentsFragment());
@@ -87,23 +82,6 @@ public class NatschoolActivity extends AppCompatActivity {
     public void noSupportedApp() {
         Snackbar snackbar = Snackbar.make(view, getResources()
                 .getString(R.string.no_app_found), Snackbar.LENGTH_SHORT);
-        snackbar.show();
-    }
-
-    public void noPermission() {
-        Snackbar snackbar = Snackbar.make(view, getResources()
-                .getString(R.string.no_permission), Snackbar.LENGTH_LONG);
-        snackbar.setAction(getResources().getString(R.string.fix),
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                    }
-                });
         snackbar.show();
     }
 }

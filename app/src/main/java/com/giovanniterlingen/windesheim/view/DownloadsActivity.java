@@ -28,7 +28,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -42,7 +41,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
-import com.giovanniterlingen.windesheim.utils.PermissionUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -86,30 +84,7 @@ public class DownloadsActivity extends AppCompatActivity {
         }
 
         view = findViewById(R.id.coordinator_layout);
-        checkPermissions();
-
         updateFilesList();
-    }
-
-    private void checkPermissions() {
-        if (!PermissionUtils.verifyStoragePermissions(this)) {
-            if (view != null) {
-                Snackbar snackbar = Snackbar.make(view, getResources().getString(R.string.no_permission),
-                        Snackbar.LENGTH_LONG);
-                snackbar.setAction(getResources().getString(R.string.fix), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                    }
-                });
-                snackbar.show();
-            }
-            showEmptyTextview();
-        }
     }
 
     private void updateFilesList() {

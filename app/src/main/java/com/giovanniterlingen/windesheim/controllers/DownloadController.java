@@ -154,8 +154,6 @@ public class DownloadController extends AsyncTask<String, Object, String>
                 Thread.sleep(100);
             }
             return file.getAbsolutePath();
-        } catch (SecurityException e) {
-            return "permission";
         } catch (Exception e) {
             return null;
         }
@@ -188,11 +186,6 @@ public class DownloadController extends AsyncTask<String, Object, String>
 
         Activity activity = weakReference.get();
         if (activity == null || activity.isFinishing()) {
-            return;
-        }
-
-        if ("permission".equals(result)) {
-            ((NatschoolActivity) activity).noPermission();
             return;
         }
         if ("cancelled".equals(result)) {
