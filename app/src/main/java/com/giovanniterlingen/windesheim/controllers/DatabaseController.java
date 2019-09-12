@@ -46,7 +46,7 @@ import java.util.Date;
  */
 public class DatabaseController extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "schedulestore.db";
     private static final String SQL_CREATE_SCHEDULE_ENTRIES =
             "CREATE TABLE " + ScheduleEntry.TABLE_NAME + " (" +
@@ -178,7 +178,6 @@ public class DatabaseController extends SQLiteOpenHelper {
         int i = 0;
         while (cursor.moveToNext()) {
             Lesson lesson = new Lesson();
-            lesson.setRowId(cursor.getLong(cursor.getColumnIndex(LessonEntry._ID)));
             lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
             lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
             lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
@@ -350,49 +349,6 @@ public class DatabaseController extends SQLiteOpenHelper {
         return count;
     }
 
-    public Lesson getSingleLesson(long id) {
-        String[] projection = {
-                LessonEntry._ID,
-                LessonEntry.COLUMN_NAME_LESSON_ID,
-                LessonEntry.COLUMN_NAME_SUBJECT,
-                LessonEntry.COLUMN_NAME_START_TIME,
-                LessonEntry.COLUMN_NAME_END_TIME,
-                LessonEntry.COLUMN_NAME_ROOM,
-                LessonEntry.COLUMN_NAME_TEACHER,
-                LessonEntry.COLUMN_NAME_CLASS_NAME,
-                LessonEntry.COLUMN_NAME_SCHEDULE_ID,
-                LessonEntry.COLUMN_NAME_SCHEDULE_TYPE,
-                LessonEntry.COLUMN_NAME_VISIBLE,
-        };
-        String selection = LessonEntry._ID + " = ?";
-        String[] selectionArgs = {Long.toString(id)};
-
-        Cursor cursor = database.query(
-                LessonEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-        Lesson lesson = new Lesson();
-        if (cursor.moveToFirst()) {
-            lesson.setId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_LESSON_ID)));
-            lesson.setSubject(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SUBJECT)));
-            lesson.setStartTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_START_TIME))));
-            lesson.setEndTime(new Date(cursor.getLong(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_END_TIME))));
-            lesson.setRoom(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_ROOM)));
-            lesson.setTeacher(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_TEACHER)));
-            lesson.setClassName(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_CLASS_NAME)));
-            lesson.setScheduleId(cursor.getString(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_ID)));
-            lesson.setScheduleType(Constants.SCHEDULE_TYPE.values()[cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_SCHEDULE_TYPE))]);
-            lesson.setVisible(cursor.getInt(cursor.getColumnIndex(LessonEntry.COLUMN_NAME_VISIBLE)) == 1);
-        }
-        cursor.close();
-        return lesson;
-    }
-
     public Lesson[] getHiddenLessons() {
         String[] projection = {
                 LessonEntry._ID,
@@ -468,6 +424,11 @@ public class DatabaseController extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        if (oldVersion == 9 && newVersion == 10) {
+            database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
+            database.execSQL(SQL_CREATE_LESSON_ENTRIES);
+            return;
+        }
         database.execSQL("DROP TABLE IF EXISTS fetched_dates");
         database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
         database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);

@@ -38,21 +38,19 @@ import java.util.TimeZone;
  */
 public class TimeUtils {
 
+    private static final SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
+    private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
+    private static final SimpleDateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+
     public static SimpleDateFormat getYearMonthDayDateFormat() {
-        SimpleDateFormat yearMonthDayDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
-        yearMonthDayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return yearMonthDayDateFormat;
     }
 
     public static SimpleDateFormat getDayDateFormat() {
-        SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd", Locale.FRANCE);
-        dayDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return dayDateFormat;
     }
 
     public static SimpleDateFormat getHourMinuteFormat() {
-        SimpleDateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm", Locale.FRANCE);
-        hourMinuteFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return hourMinuteFormat;
     }
 
@@ -72,9 +70,11 @@ public class TimeUtils {
         return new String[]{lowestDate, highestDate};
     }
 
-    public static long currentTimeWithOffset() {
-        long currentTime = System.currentTimeMillis();
-        currentTime += TimeZone.getDefault().getOffset(currentTime);
-        return currentTime;
+    /**
+     * Windesheim API server epoch timestamps, but not in UTC
+     */
+    public static long removeTimeOffset(long time) {
+        time -= TimeZone.getDefault().getOffset(time);
+        return time;
     }
 }

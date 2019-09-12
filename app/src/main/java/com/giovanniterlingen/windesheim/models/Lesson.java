@@ -45,7 +45,6 @@ public class Lesson {
     private String className;
     private Constants.SCHEDULE_TYPE scheduleType;
     private boolean visible;
-    private long rowId;
 
     public String getId() {
         return id;
@@ -125,13 +124,5 @@ public class Lesson {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    public long getRowId() {
-        return rowId;
-    }
-
-    public void setRowId(long rowId) {
-        this.rowId = rowId;
     }
 }

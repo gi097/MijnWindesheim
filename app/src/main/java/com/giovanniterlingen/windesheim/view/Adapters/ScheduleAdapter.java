@@ -27,6 +27,7 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,7 +89,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         Lesson lesson = this.lessons[position];
         long startTime = lesson.getStartTime().getTime();
         long endTime = lesson.getEndTime().getTime();
-        long currentTime = TimeUtils.currentTimeWithOffset();
+        long currentTime = System.currentTimeMillis();
 
         lessonName.setText(lesson.getSubject());
         lessonRoom.setText(lesson.getRoom());
@@ -190,7 +191,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                             return true;
                         }
                         if (item.getItemId() == R.id.save_lesson) {
-                            showCalendarDialog(lesson.getRowId());
+                            addLessonToCalendar(lesson);
                         }
                         return true;
                     }
@@ -208,23 +209,20 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         scheduleIdentifier.setBackgroundColor(ColorUtils.getColorById(lesson.getScheduleId()));
     }
 
-    private void showCalendarDialog(final long rowId) {
-        Lesson lesson = DatabaseController.getInstance().getSingleLesson(rowId);
-        if (lesson != null) {
-            Intent intent = new Intent(Intent.ACTION_EDIT);
-            intent.setType("vnd.android.cursor.item/event");
-            intent.putExtra("beginTime", lesson.getStartTime());
-            intent.putExtra("allDay", false);
-            intent.putExtra("endTime", lesson.getEndTime());
-            intent.putExtra("title", lesson.getSubject());
-            intent.putExtra("eventLocation", lesson.getRoom());
+    private void addLessonToCalendar(Lesson lesson) {
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setDataAndType(CalendarContract.Events.CONTENT_URI, "vnd.android.cursor.dir/event");
+        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, lesson.getStartTime().getTime());
+        intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, lesson.getEndTime().getTime());
+        intent.putExtra(CalendarContract.Events.ALL_DAY, false);
+        intent.putExtra(CalendarContract.Events.TITLE, lesson.getSubject());
+        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, lesson.getRoom());
 
-            try {
-                activity.startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                activity.showSnackbar(activity.getResources()
-                        .getString(R.string.no_calendar_found));
-            }
+        try {
+            activity.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            activity.showSnackbar(activity.getResources()
+                    .getString(R.string.no_calendar_found));
         }
     }
 

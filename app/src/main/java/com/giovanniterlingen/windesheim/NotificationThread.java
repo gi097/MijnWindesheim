@@ -74,8 +74,9 @@ class NotificationThread extends Thread {
                     String lessonName = lesson.getSubject();
                     String lessonLocation = lesson.getRoom();
 
-                    while (TimeUtils.currentTimeWithOffset() < lessonStartTime) {
-                        long delta = lessonStartTime - TimeUtils.currentTimeWithOffset();
+                    long now;
+                    while ((now = System.currentTimeMillis()) < lessonStartTime) {
+                        long delta = lessonStartTime - now;
 
                         // Round delta upwards to the nearest whole minute. (e.g. 7m 58s -> 8m)
                         final long remainder = delta % DateUtils.MINUTE_IN_MILLIS;

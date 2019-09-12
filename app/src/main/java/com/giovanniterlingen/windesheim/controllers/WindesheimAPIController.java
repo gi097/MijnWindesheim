@@ -31,6 +31,7 @@ import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.NotificationUtils;
+import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -124,8 +125,11 @@ public class WindesheimAPIController {
                 lesson.setSubject(object.getString("commentaar"));
             }
 
-            lesson.setStartTime(new Date(object.getLong("starttijd")));
-            lesson.setEndTime(new Date(object.getLong("eindtijd")));
+            lesson.setStartTime(new Date(TimeUtils.removeTimeOffset(object
+                    .getLong("starttijd"))));
+            lesson.setEndTime(new Date(TimeUtils.removeTimeOffset(object
+                    .getLong("eindtijd"))));
+
             lesson.setRoom(object.getString("lokaal"));
             lesson.setClassName(object.getString("groepcode"));
             lesson.setScheduleType(type);
