@@ -30,6 +30,37 @@ package com.giovanniterlingen.windesheim;
  * @author Giovanni Terlingen
  */
 public class Constants {
+
+    public static final String PREFS_DARK_MODE = "dark_mode";
+    public static final String PREFS_TELEMETRY_ALLOWED = "telemetry_allowed";
+    public static final String PREFS_NOTIFICATIONS_TYPE = "notifications_type";
+    public static final String PREFS_INTRO_FINISHED = "intro_finished";
+    public static final String PREFS_SCHEDULE_CHANGE_NOTIFICATION = "schedule_change_notification";
+    public static final String PREFS_USERNAME = "username";
+    public static final String PREFS_PASSWORD = "password";
+
+    public static final String TELEMETRY_PROPERTY_NAME = "name";
+    public static final String TELEMETRY_PROPERTY_NOTIFICATION_TYPE = "notification_type";
+    public static final String TELEMETRY_PROPERTY_DARK_MODE_ENABLED = "dark_mode_enabled";
+    public static final String TELEMETRY_KEY_SCHEDULE_ADDED = "schedule_added";
+    public static final String TELEMETRY_KEY_SCHEDULE_DELETED = "schedule_deleted";
+    public static final String TELEMETRY_KEY_LESSON_RESTORED = "lesson_restored";
+    public static final String TELEMETRY_KEY_LESSON_HIDDEN = "lesson_hidden";
+    public static final String TELEMETRY_KEY_LESSON_ADDED_CALENDAR = "lesson_added_calendar";
+    public static final String TELEMETRY_KEY_DOWNLOAD_STARTED = "download_started";
+    public static final String TELEMETRY_LOGIN = "login";
+    public static final String TELEMETRY_PROPERTY_STUDENT_NUMBER = "student_number";
+    public static final String TELEMETRY_PROPERTY_LOGIN_SUCCESSFUL = "login_successful";
+    public static final String TELEMETRY_PROPERTY_INTRO_FINISHED = "intro_finished";
+    public static final String TELEMETRY_PROPERTY_SCHEDULE_CHANGE_NOTIFICATION = "schedule_change_notification";
+
+    public static final int NOTIFICATION_TYPE_1_HOUR = 2;
+    public static final int NOTIFICATION_TYPE_30_MIN = 3;
+    public static final int NOTIFICATION_TYPE_15_MIN = 4;
+    public static final int NOTIFICATION_TYPE_ALWAYS_ON = 5;
+    public static final int NOTIFICATION_TYPE_OFF = 6;
+    public static final int NOTIFICATION_TYPE_NOT_SET = -1;
+
     public enum SCHEDULE_TYPE {
         CLASS,
         TEACHER,

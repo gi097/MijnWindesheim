@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -146,7 +147,15 @@ public class DownloadsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "DownloadsActivity");
+
         updateFilesList();
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     @Override

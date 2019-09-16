@@ -3,7 +3,7 @@
     <string name="about">Over</string>
     <string name="about_contributors">Medewerkers</string>
     <string name="about_devs">Ontwikkelaars</string>
-    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Windesheim en ik kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is, loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\nWanneer je gebruik maakt van deze app ga je automatisch akkoord met deze disclaimer.</string>
+    <string name="about_disclaimer">Dit is een onofficiële app voor studenten en docenten van Windesheim. Ondanks zorgvuldig programmeerwerk kan ik niet garanderen dat de weergegeven gegevens correct en compleet zijn. Gebruik deze app dan ook op eigen risico. Windesheim en ik kunnen niet aansprakelijk worden gesteld voor onjuiste en incomplete gegevens. Je inloggegevens worden alleen lokaal op dit apparaat opgeslagen. Wanneer je apparaat geroot is, loop je een eventueel risico dat andere apps met roottoegang bij deze gegevens kunnen komen.\n\MijnWindesheim maakt gebruikt van Firebase Analytics om gegevens en crashes te tracken. Alleen je studentnummer wordt geregistreerd tijdens het inloggen. Je kunt je afmelden voor tracking in instellingen.\n\nWanneer je gebruik maakt van deze app ga je automatisch akkoord met deze voorwaarden.</string>
 
     <string name="alert_connection_description">De gegevens konden niet worden opgehaald. Controleer je internetverbinding en probeer het opnieuw.</string>
     <string name="alert_connection_title">Probleem met verbinden!</string>
@@ -208,6 +208,8 @@
     <string name="settings_notifications">Meldingen</string>
     <string name="settings_schedule_change">Roosterwijzigingen</string>
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
+    <string name="settings_telemetry">Tracking</string>
+    <string name="settings_telemetry_description">Sta tracking toe</string>
 
     <string name="single_lesson_notification">Je hebt %2$s %1$s in %3$s</string>
 

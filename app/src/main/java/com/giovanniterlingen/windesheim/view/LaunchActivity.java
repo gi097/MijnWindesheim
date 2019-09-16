@@ -32,6 +32,8 @@ import android.os.Handler;
 
 import androidx.preference.PreferenceManager;
 
+import com.giovanniterlingen.windesheim.Constants;
+
 /**
  * A schedule app for students and teachers of Windesheim
  *
@@ -48,7 +50,8 @@ public class LaunchActivity extends Activity {
             public void run() {
                 SharedPreferences sharedPreferences = PreferenceManager
                         .getDefaultSharedPreferences(LaunchActivity.this);
-                boolean introFinished = sharedPreferences.getBoolean("intro_finished", false);
+                boolean introFinished = sharedPreferences.getBoolean(Constants.PREFS_INTRO_FINISHED,
+                        false);
                 Intent intent;
                 if (introFinished) {
                     intent = new Intent(LaunchActivity.this, ScheduleActivity.class);

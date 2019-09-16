@@ -50,7 +50,7 @@ public class FetchService extends JobService {
                         SharedPreferences preferences = PreferenceManager
                                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
                         boolean notify = preferences
-                                .getBoolean("schedule_change_notification", true);
+                                .getBoolean(Constants.PREFS_SCHEDULE_CHANGE_NOTIFICATION, true);
                         WindesheimAPIController.getAndSaveLessons(notify);
                         jobFinished(job, false);
                     } catch (Exception e) {

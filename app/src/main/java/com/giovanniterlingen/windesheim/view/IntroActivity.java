@@ -33,7 +33,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
@@ -106,13 +108,25 @@ public class IntroActivity extends AppIntro {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "IntroActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
+    }
+
+    @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
 
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(IntroActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("intro_finished", true);
+        editor.putBoolean(Constants.PREFS_INTRO_FINISHED, true);
         editor.apply();
 
         Intent intent = new Intent(IntroActivity.this, LaunchActivity.class);

@@ -43,12 +43,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DownloadController;
 import com.giovanniterlingen.windesheim.models.Download;
 import com.giovanniterlingen.windesheim.models.NatschoolContent;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.utils.WebViewUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.NatschoolContentAdapter;
 import com.giovanniterlingen.windesheim.view.AuthenticationActivity;
@@ -253,6 +255,11 @@ public class ContentsFragment extends Fragment
                         return;
                     }
                     if (content.type == 10 && !content.downloading) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constants.TELEMETRY_PROPERTY_NAME, content.name);
+                        TelemetryUtils.getInstance()
+                                .logEvent(Constants.TELEMETRY_KEY_DOWNLOAD_STARTED, bundle);
+
                         new DownloadController(fragment.getActivity(), content.url,
                                 fragment.studyRouteId, content.id, position)
                                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -27,6 +27,7 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -51,6 +52,7 @@ import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.utils.ColorUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 import com.google.android.material.snackbar.Snackbar;
@@ -220,6 +222,12 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
         try {
             activity.startActivity(intent);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.TELEMETRY_PROPERTY_NAME,
+                    lesson.getSubject());
+            TelemetryUtils.getInstance()
+                    .logEvent(Constants.TELEMETRY_KEY_LESSON_ADDED_CALENDAR, bundle);
         } catch (ActivityNotFoundException e) {
             activity.showSnackbar(activity.getResources()
                     .getString(R.string.no_calendar_found));
@@ -234,6 +242,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseController.getInstance().hideLesson(lesson);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(Constants.TELEMETRY_PROPERTY_NAME,
+                                        lesson.getSubject());
+                                TelemetryUtils.getInstance()
+                                        .logEvent(Constants.TELEMETRY_KEY_LESSON_HIDDEN, bundle);
+
                                 updateLessons(DatabaseController.getInstance().getLessons(date));
                                 final boolean isEmpty = getItemCount() == 0;
                                 if (isEmpty) {
@@ -248,6 +263,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                     @Override
                                     public void onClick(View view) {
                                         DatabaseController.getInstance().restoreLesson(lesson);
+
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString(Constants.TELEMETRY_PROPERTY_NAME,
+                                                lesson.getSubject());
+                                        TelemetryUtils.getInstance()
+                                                .logEvent(Constants.TELEMETRY_KEY_LESSON_RESTORED, bundle);
+
                                         updateLessons(DatabaseController.getInstance().getLessons(date));
                                         if (isEmpty) {
                                             activity.updateFragmentView();

@@ -218,6 +218,60 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:padding="@dimen/activity_margin"
+                android:text="@string/settings_telemetry"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/material_title_size" />
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="@dimen/material_zero_radius">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/telemetry_title"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingLeft="@dimen/activity_margin"
+                        android:paddingTop="@dimen/activity_margin"
+                        android:paddingRight="@dimen/activity_margin"
+                        android:text="@string/settings_telemetry"
+                        android:textColor="@color/colorTitle"
+                        android:textSize="@dimen/title_size" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/telemetry_title"
+                        android:gravity="start"
+                        android:paddingLeft="@dimen/activity_margin"
+                        android:paddingRight="@dimen/activity_margin"
+                        android:paddingBottom="@dimen/activity_margin"
+                        android:text="@string/settings_telemetry_description"
+                        android:textColor="@color/colorSecondaryText"
+                        android:textSize="@dimen/description_size" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/telemetry_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="start"
+                        android:padding="@dimen/activity_margin" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/activity_margin"
                 android:text="@string/settings_account"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/material_title_size" />

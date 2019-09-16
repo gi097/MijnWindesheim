@@ -53,7 +53,7 @@ import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
 import com.giovanniterlingen.windesheim.utils.ColorUtils;
-import com.giovanniterlingen.windesheim.utils.NotificationUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ChooseScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
@@ -252,14 +252,19 @@ public class ChooseScheduleFragment extends Fragment {
 
                             DatabaseController.getInstance().addSchedule(id, name, fragment.type);
 
+                            Bundle bundle = new Bundle();
+                            bundle.putString(Constants.TELEMETRY_PROPERTY_NAME, name);
+                            TelemetryUtils.getInstance()
+                                    .logEvent(Constants.TELEMETRY_KEY_SCHEDULE_ADDED, bundle);
+
                             ColorUtils.invalidateColorCache();
 
                             SharedPreferences preferences = PreferenceManager
                                     .getDefaultSharedPreferences(fragment.context);
                             SharedPreferences.Editor editor = preferences.edit();
                             if (!hasSchedules) {
-                                editor.putInt("notifications_type",
-                                        NotificationUtils.NOTIFICATION_ALWAYS_ON);
+                                editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                                        Constants.NOTIFICATION_TYPE_ALWAYS_ON);
                             }
                             editor.apply();
 

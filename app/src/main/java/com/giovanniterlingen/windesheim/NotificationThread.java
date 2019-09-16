@@ -56,8 +56,8 @@ class NotificationThread extends Thread {
                 .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         int notificationType;
         String notificationText;
-        while ((notificationType = preferences.getInt("notifications_type",
-                NotificationUtils.NOTIFICATION_NOT_SET)) != 0) {
+        while ((notificationType = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                Constants.NOTIFICATION_TYPE_NOT_SET)) != 0) {
             try {
                 Date date = TimeUtils.getCalendar().getTime();
                 if (!DatabaseController.getInstance().allSchedulesFetched()) {
@@ -96,15 +96,15 @@ class NotificationThread extends Thread {
                                     .getString(R.string.single_lesson_notification, lessonName,
                                             timeReadable, lessonLocation);
                         }
-                        if (notificationType == NotificationUtils.NOTIFICATION_ALWAYS_ON) {
+                        if (notificationType == Constants.NOTIFICATION_TYPE_ALWAYS_ON) {
                             NotificationUtils.getInstance()
                                     .createNotification(notificationText, true, false);
                         } else if (hours == 1 && minutes == 0 && notificationType ==
-                                NotificationUtils.NOTIFICATION_1_HOUR ||
+                                Constants.NOTIFICATION_TYPE_1_HOUR ||
                                 hours == 0 && minutes == 30 && notificationType ==
-                                        NotificationUtils.NOTIFICATION_30_MIN ||
+                                        Constants.NOTIFICATION_TYPE_30_MIN ||
                                 hours == 0 && minutes == 15 && notificationType ==
-                                        NotificationUtils.NOTIFICATION_15_MIN) {
+                                        Constants.NOTIFICATION_TYPE_15_MIN) {
                             NotificationUtils.getInstance()
                                     .createNotification(notificationText, false, true);
                         }

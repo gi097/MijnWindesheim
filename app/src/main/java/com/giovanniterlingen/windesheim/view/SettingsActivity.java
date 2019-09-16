@@ -43,10 +43,12 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
-import com.giovanniterlingen.windesheim.utils.NotificationUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -61,8 +63,9 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView intervalTextview;
     private SwitchCompat lessonStart;
     private SwitchCompat darkMode;
+    private SwitchCompat telemetry;
     private CharSequence[] items;
-    private int notificationId = NotificationUtils.NOTIFICATION_NOT_SET;
+    private int notificationId = Constants.NOTIFICATION_TYPE_NOT_SET;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +90,9 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = preferences.edit();
                 if (lessonStart.isChecked()) {
-                    editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_ALWAYS_ON);
+                    editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE, Constants.NOTIFICATION_TYPE_ALWAYS_ON);
                 } else {
-                    editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_OFF);
+                    editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE, Constants.NOTIFICATION_TYPE_OFF);
                 }
                 editor.apply();
 
@@ -97,15 +100,15 @@ public class SettingsActivity extends AppCompatActivity {
                 updateIntervalTextView();
             }
         });
-        int pref = preferences.getInt("notifications_type", 0);
-        lessonStart.setChecked(pref != 0 && pref != NotificationUtils.NOTIFICATION_OFF);
+        int pref = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, 0);
+        lessonStart.setChecked(pref != 0 && pref != Constants.NOTIFICATION_TYPE_OFF);
 
         darkMode = findViewById(R.id.dark_mode_switch);
         darkMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("dark_mode", darkMode.isChecked());
+                editor.putBoolean(Constants.PREFS_DARK_MODE, darkMode.isChecked());
                 editor.commit(); // Make sure to use commit()
 
                 if (darkMode.isChecked()) {
@@ -117,8 +120,24 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        boolean useDarkMode = preferences.getBoolean("dark_mode", currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        boolean useDarkMode = preferences.getBoolean(Constants.PREFS_DARK_MODE,
+                currentNightMode == Configuration.UI_MODE_NIGHT_YES);
         darkMode.setChecked(useDarkMode);
+
+        telemetry = findViewById(R.id.telemetry_switch);
+        telemetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(Constants.PREFS_TELEMETRY_ALLOWED, telemetry.isChecked());
+                editor.apply();
+
+                FirebaseAnalytics.getInstance(SettingsActivity.this)
+                        .setAnalyticsCollectionEnabled(telemetry.isChecked());
+            }
+        });
+        boolean allowTelemetry = preferences.getBoolean(Constants.PREFS_TELEMETRY_ALLOWED, true);
+        telemetry.setChecked(allowTelemetry);
 
         Button deleteAccountButton = findViewById(R.id.logout_button);
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
@@ -126,8 +145,8 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CookieUtils.deleteCookies();
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.remove("username");
-                editor.remove("password");
+                editor.remove(Constants.PREFS_USERNAME);
+                editor.remove(Constants.PREFS_PASSWORD);
                 editor.apply();
 
                 CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
@@ -153,35 +172,48 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("schedule_change_notification", scheduleChangeSwitch.isChecked());
+                editor.putBoolean(Constants.PREFS_SCHEDULE_CHANGE_NOTIFICATION, scheduleChangeSwitch.isChecked());
                 editor.apply();
             }
         });
-        scheduleChangeSwitch.setChecked(preferences.getBoolean("schedule_change_notification", true));
+        scheduleChangeSwitch.setChecked(preferences.getBoolean(Constants.PREFS_SCHEDULE_CHANGE_NOTIFICATION, true));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "SettingsActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     private void updateIntervalTextView() {
-        int interval = preferences.getInt("notifications_type",
-                NotificationUtils.NOTIFICATION_NOT_SET);
-        if (interval == NotificationUtils.NOTIFICATION_OFF) {
+        int interval = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                Constants.NOTIFICATION_TYPE_NOT_SET);
+        if (interval == Constants.NOTIFICATION_TYPE_OFF) {
             intervalTextview.setText(getResources().getString(R.string.interval_off));
-        } else if (interval != NotificationUtils.NOTIFICATION_NOT_SET) {
+        } else if (interval != Constants.NOTIFICATION_TYPE_NOT_SET) {
             intervalTextview.setText(items[interval - 2]);
         }
     }
 
     private void updateLessonSwitch() {
-        int interval = preferences.getInt("notifications_type",
-                NotificationUtils.NOTIFICATION_NOT_SET);
-        lessonStart.setChecked(interval != NotificationUtils.NOTIFICATION_NOT_SET &&
-                interval != NotificationUtils.NOTIFICATION_OFF);
+        int interval = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                Constants.NOTIFICATION_TYPE_NOT_SET);
+        lessonStart.setChecked(interval != Constants.NOTIFICATION_TYPE_NOT_SET &&
+                interval != Constants.NOTIFICATION_TYPE_OFF);
     }
 
     private void createNotificationPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.settings_interval))
-                .setSingleChoiceItems(items, preferences.getInt("notifications_type",
-                        NotificationUtils.NOTIFICATION_OFF) - 2,
+                .setSingleChoiceItems(items,
+                        preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                                Constants.NOTIFICATION_TYPE_OFF) - 2,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 notificationId = item;
@@ -193,7 +225,7 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 if (notificationId > -1) {
                     int id = notificationId + 2;
-                    editor.putInt("notifications_type", id);
+                    editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE, id);
                     editor.apply();
 
                     ApplicationLoader.restartNotificationThread();

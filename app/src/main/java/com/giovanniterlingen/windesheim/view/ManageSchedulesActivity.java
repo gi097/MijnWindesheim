@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ManageSchedulesAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -119,7 +120,15 @@ public class ManageSchedulesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "ManageSchedulesActivity");
+
         setAdapter();
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     @Override

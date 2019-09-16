@@ -43,7 +43,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 /**
@@ -120,8 +122,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                 }
             }
         });
-        if ((username = preferences.getString("username", "")).length() > 0 &&
-                (password = preferences.getString("password", "")).length() > 0) {
+        if ((username = preferences.getString(Constants.PREFS_USERNAME, "")).length() > 0 &&
+                (password = preferences.getString(Constants.PREFS_PASSWORD, "")).length() > 0) {
             isRedirected = true;
             usernameEditText.setText(username);
             usernameEditText.setSelection(username.length());
@@ -164,8 +166,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                 if (!isEducator && url.equals("https://elo.windesheim.nl/pages/default.aspx") ||
                         url.equals("https://elo.windesheim.nl/Pages/Mobile/index.html")) {
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("username", username);
-                    editor.putString("password", password);
+                    editor.putString(Constants.PREFS_USERNAME, username);
+                    editor.putString(Constants.PREFS_PASSWORD, password);
                     editor.apply();
 
                     isBusy = false;
@@ -186,8 +188,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                         // second time the login page displays, wrong credentials
                         if (isRedirected) {
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.remove("username");
-                            editor.remove("password");
+                            editor.remove(Constants.PREFS_USERNAME);
+                            editor.remove(Constants.PREFS_PASSWORD);
                             editor.apply();
                         }
                         headerTextView.setText(getString(R.string.auth_add_account));
@@ -196,6 +198,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                         passwordTextLayout.setError(getString(R.string.auth_login_failed));
                         loginUrl = null;
                         isBusy = false;
+
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(Constants.TELEMETRY_PROPERTY_LOGIN_SUCCESSFUL, false);
+                        TelemetryUtils.getInstance()
+                                .logEvent(Constants.TELEMETRY_LOGIN, bundle);
+
                         return;
                     }
                     view.loadUrl(getJavascriptString(username, password));
@@ -205,11 +213,24 @@ public class AuthenticationActivity extends AppCompatActivity {
                     passwordTextLayout.setErrorEnabled(false);
 
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("username", username);
-                    editor.putString("password", password);
+                    editor.putString(Constants.PREFS_USERNAME, username);
+                    editor.putString(Constants.PREFS_PASSWORD, password);
                     editor.apply();
 
                     isBusy = false;
+
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constants.TELEMETRY_PROPERTY_LOGIN_SUCCESSFUL, true);
+                    TelemetryUtils.getInstance()
+                            .logEvent(Constants.TELEMETRY_LOGIN, bundle);
+
+                    if (username.startsWith("s") && username.endsWith("@student.windesheim.nl")) {
+                        String studentNumber = username.substring(1)
+                                .replace("@student.windesheim.nl", "");
+                        TelemetryUtils.getInstance()
+                                .setUserProperty(Constants.TELEMETRY_PROPERTY_STUDENT_NUMBER,
+                                        studentNumber);
+                    }
 
                     Intent intent = new Intent(AuthenticationActivity.this, EducatorActivity.class);
                     startActivity(intent);
@@ -238,6 +259,18 @@ public class AuthenticationActivity extends AppCompatActivity {
                                 dialog.cancel();
                             }
                         }).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "AuthenticationActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     @Override

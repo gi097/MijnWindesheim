@@ -3,7 +3,7 @@
     <string name="about">About</string>
     <string name="about_contributors">Contributors</string>
     <string name="about_devs">Developers</string>
-    <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Windesheim and I can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nWhen you are using this app you automatically agree with this disclaimer.</string>
+    <string name="about_disclaimer">This is an unofficial app for students and teachers of Windesheim. Despite careful programming I can not guarantee that the shown data is correct and complete. Therefore use this app at your own risk. Windesheim and I can not be held liable for incorrect and incomplete data. Your login data will only be saved locally on this device. When your device is rooted you might be vulnerable for other apps with root permission to read this data.\n\nMyWindesheim uses Firebase Analytics for tracking events and crashes in this app. Only your student number will be registered during login. You can opt out for tracking in settings.\n\nWhen you are using this app you automatically agree with this conditions.</string>
 
     <string name="alert_connection_description">The data could not be retrieved. Check your internet connection and try again.</string>
     <string name="alert_connection_title">Problem while connecting!</string>
@@ -212,6 +212,8 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_schedule_change">Schedule changes</string>
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
+    <string name="settings_telemetry">Tracking</string>
+    <string name="settings_telemetry_description">Allow tracking</string>
 
     <string name="single_lesson_notification">You have %1$s %2$s in %3$s</string>
 

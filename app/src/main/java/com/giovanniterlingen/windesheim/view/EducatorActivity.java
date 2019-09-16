@@ -38,11 +38,13 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.EC;
 import com.giovanniterlingen.windesheim.models.PropaedeuticEC;
 import com.giovanniterlingen.windesheim.models.Result;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ResultsAdapter;
 
 import org.json.JSONArray;
@@ -61,9 +63,10 @@ public class EducatorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EducatorActivity.this);
-        if (preferences.getString("username", "").length() == 0 ||
-                preferences.getString("password", "").length() == 0) {
-            Intent intent = new Intent(EducatorActivity.this, AuthenticationActivity.class);
+        if (preferences.getString(Constants.PREFS_USERNAME, "").length() == 0 ||
+                preferences.getString(Constants.PREFS_PASSWORD, "").length() == 0) {
+            Intent intent = new Intent(EducatorActivity.this,
+                    AuthenticationActivity.class);
             intent.putExtra("educator", true);
             startActivity(intent);
             finish();
@@ -86,6 +89,18 @@ public class EducatorActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "EducatorActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     @Override
@@ -126,7 +141,7 @@ public class EducatorActivity extends AppCompatActivity {
                 SharedPreferences preferences = PreferenceManager
                         .getDefaultSharedPreferences(activity);
 
-                String studentNumber = preferences.getString("username", "").split("@")[0];
+                String studentNumber = preferences.getString(Constants.PREFS_USERNAME, "").split("@")[0];
                 String response = WindesheimAPIController.getStudyInfo(studentNumber);
 
                 JSONArray studyJson = new JSONArray(response);

@@ -26,6 +26,7 @@ package com.giovanniterlingen.windesheim.view.Adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +37,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.utils.ColorUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.ManageSchedulesActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -93,6 +96,13 @@ public class ManageSchedulesAdapter extends RecyclerView.Adapter<ManageSchedules
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseController.getInstance()
                                         .deleteSchedule(schedules[holder.getAdapterPosition()].getId());
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(Constants.TELEMETRY_PROPERTY_NAME,
+                                        schedules[holder.getAdapterPosition()].getName());
+                                TelemetryUtils.getInstance()
+                                        .logEvent(Constants.TELEMETRY_KEY_SCHEDULE_DELETED, bundle);
+
                                 ApplicationLoader.restartNotificationThread();
 
                                 ColorUtils.invalidateColorCache();

@@ -44,11 +44,12 @@ import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
-import com.giovanniterlingen.windesheim.utils.NotificationUtils;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ScheduleFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -85,9 +86,10 @@ public class ScheduleActivity extends AppCompatActivity
         }
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (sharedPreferences.getInt("notifications_type", NotificationUtils
-                .NOTIFICATION_NOT_SET) == NotificationUtils.NOTIFICATION_NOT_SET) {
-            editor.putInt("notifications_type", NotificationUtils.NOTIFICATION_ALWAYS_ON);
+        if (sharedPreferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, Constants
+                .NOTIFICATION_TYPE_NOT_SET) == Constants.NOTIFICATION_TYPE_NOT_SET) {
+            editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE,
+                    Constants.NOTIFICATION_TYPE_ALWAYS_ON);
             editor.apply();
         }
         super.onCreate(savedInstanceState);
@@ -196,6 +198,8 @@ public class ScheduleActivity extends AppCompatActivity
     public void onPause() {
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.scheduleReload);
         onPauseMillis = System.currentTimeMillis();
+
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
         super.onPause();
     }
 
@@ -206,6 +210,8 @@ public class ScheduleActivity extends AppCompatActivity
             setViewPager();
         }
         super.onResume();
+
+        TelemetryUtils.getInstance().setCurrentScreen(this, "ScheduleActivity");
     }
 
     @Override

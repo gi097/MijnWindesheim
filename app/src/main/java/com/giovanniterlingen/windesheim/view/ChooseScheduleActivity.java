@@ -39,6 +39,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.view.Fragments.ChooseScheduleFragment;
 import com.google.android.material.tabs.TabLayout;
 
@@ -100,6 +101,18 @@ public class ChooseScheduleActivity extends AppCompatActivity {
             startActivity(intent);
         }
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TelemetryUtils.getInstance().setCurrentScreen(this, "ChooseScheduleActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        TelemetryUtils.getInstance().setCurrentScreen(this, null);
+        super.onPause();
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {

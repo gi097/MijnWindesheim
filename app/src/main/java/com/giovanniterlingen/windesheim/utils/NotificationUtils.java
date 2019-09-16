@@ -47,12 +47,6 @@ import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 public class NotificationUtils {
 
     public static final int SERVICE_NOTIFICATION_ID = 2;
-    public static final int NOTIFICATION_1_HOUR = 2;
-    public static final int NOTIFICATION_30_MIN = 3;
-    public static final int NOTIFICATION_15_MIN = 4;
-    public static final int NOTIFICATION_ALWAYS_ON = 5;
-    public static final int NOTIFICATION_OFF = 6;
-    public static final int NOTIFICATION_NOT_SET = -1;
     private static final String PERSISTENT_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.persistent";
     private static final String PUSH_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.push";
     private static final String SERVICE_NOTIFICATION_CHANNEL = "com.giovanniterlingen.windesheim.notification.service";
