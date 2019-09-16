@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "683692426861",
+    "firebase_url": "https://mywindesheim.firebaseio.com",
+    "project_id": "mywindesheim",
+    "storage_bucket": "mywindesheim.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683692426861:android:05dbaaa3d5b30dbf18a164",
+        "android_client_info": {
+          "package_name": "com.giovanniterlingen.windesheim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683692426861-0ia4mkojoum8lutolfmtkbqn388400cn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHsQnhMqjXs_0hBAnd-csiJdiJdgOzYN0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683692426861-0ia4mkojoum8lutolfmtkbqn388400cn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

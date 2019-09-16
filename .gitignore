@@ -8,4 +8,3 @@ local.properties
 .DS_Store
 *.aab
 keystore.jks
-google-services.json
