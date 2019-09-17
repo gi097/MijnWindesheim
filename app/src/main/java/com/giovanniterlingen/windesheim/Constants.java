@@ -49,7 +49,6 @@ public class Constants {
     public static final String TELEMETRY_KEY_LESSON_ADDED_CALENDAR = "lesson_added_calendar";
     public static final String TELEMETRY_KEY_DOWNLOAD_STARTED = "download_started";
     public static final String TELEMETRY_LOGIN = "login";
-    public static final String TELEMETRY_PROPERTY_STUDENT_NUMBER = "student_number";
     public static final String TELEMETRY_PROPERTY_LOGIN_SUCCESSFUL = "login_successful";
     public static final String TELEMETRY_PROPERTY_INTRO_FINISHED = "intro_finished";
     public static final String TELEMETRY_PROPERTY_SCHEDULE_CHANGE_NOTIFICATION = "schedule_change_notification";

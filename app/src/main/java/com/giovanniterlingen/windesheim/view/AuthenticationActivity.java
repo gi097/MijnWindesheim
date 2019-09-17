@@ -224,14 +224,6 @@ public class AuthenticationActivity extends AppCompatActivity {
                     TelemetryUtils.getInstance()
                             .logEvent(Constants.TELEMETRY_LOGIN, bundle);
 
-                    if (username.startsWith("s") && username.endsWith("@student.windesheim.nl")) {
-                        String studentNumber = username.substring(1)
-                                .replace("@student.windesheim.nl", "");
-                        TelemetryUtils.getInstance()
-                                .setUserProperty(Constants.TELEMETRY_PROPERTY_STUDENT_NUMBER,
-                                        studentNumber);
-                    }
-
                     Intent intent = new Intent(AuthenticationActivity.this, EducatorActivity.class);
                     startActivity(intent);
                     finish();
