@@ -60,7 +60,7 @@
     <string name="description_giovanni">Developer and maintainer</string>
     <string name="description_thomas">N@Tschool! implementation</string>
 
-    <string name="disable_notification_description">Long press this notification to turn it off</string>
+    <string name="disable_notification_description">Click this notification to turn it off</string>
 
     <string name="disclaimer">Disclaimer</string>
 

@@ -47,8 +47,9 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (Build.VERSION.SDK_INT >= 26) {
-            Notification notification = NotificationUtils.getInstance()
-                    .getServiceNotification();
+            NotificationUtils.getInstance().initNotificationChannels();
+
+            Notification notification = NotificationUtils.getInstance().getServiceNotification();
             this.startForeground(NotificationUtils.SERVICE_NOTIFICATION_ID, notification);
         }
         return START_STICKY;

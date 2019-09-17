@@ -30,6 +30,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -177,17 +178,33 @@ public class NotificationUtils {
             serviceChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             serviceChannel.setSound(null, null);
 
-            NotificationManager mManager = (NotificationManager) ApplicationLoader
+            NotificationManager manager = (NotificationManager) ApplicationLoader
                     .applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            mManager.createNotificationChannel(pushChannel);
-            mManager.createNotificationChannel(persistentChannel);
-            mManager.createNotificationChannel(serviceChannel);
+            if (manager == null) {
+                return;
+            }
+            if (manager.getNotificationChannel(PUSH_NOTIFICATION_CHANNEL) == null) {
+                manager.createNotificationChannel(pushChannel);
+            }
+            if (manager.getNotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL) == null) {
+                manager.createNotificationChannel(persistentChannel);
+            }
+            if (manager.getNotificationChannel(SERVICE_NOTIFICATION_CHANNEL) == null) {
+                manager.createNotificationChannel(serviceChannel);
+            }
         }
     }
 
     @RequiresApi(api = 26)
     public Notification getServiceNotification() {
+        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, ApplicationLoader.applicationContext.getPackageName());
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, SERVICE_NOTIFICATION_CHANNEL);
+
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(ApplicationLoader.applicationContext, (int) System.currentTimeMillis(),
+                        intent, 0);
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                 ApplicationLoader.applicationContext, SERVICE_NOTIFICATION_CHANNEL)
                 .setContentTitle(ApplicationLoader.applicationContext.getResources()
@@ -200,7 +217,8 @@ public class NotificationUtils {
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.notifybar)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setCategory(Notification.CATEGORY_SERVICE);
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setContentIntent(pendingIntent);
 
         return mBuilder.build();
     }

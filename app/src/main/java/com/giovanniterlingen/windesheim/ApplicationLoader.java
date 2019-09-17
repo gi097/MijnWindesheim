@@ -158,9 +158,9 @@ public class ApplicationLoader extends Application {
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        registerReceiver(new TimeReceiver(), intentFilter);
-
         NotificationUtils.getInstance().initNotificationChannels();
+
+        registerReceiver(new TimeReceiver(), intentFilter);
         startPushService();
 
         setDarkMode();
