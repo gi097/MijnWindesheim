@@ -215,7 +215,7 @@
     <string name="settings_telemetry">Anonymous tracking</string>
     <string name="settings_telemetry_description">Allow anonymous tracking</string>
     <string name="settings_week_count">Amount of weeks in overview</string>
-    <string name="settings_week_count_description">Select the amount of weeks to show in your schedule overview.</string>
+    <string name="settings_week_count_description">Select the amount of weeks to show in your schedule overview:</string>
     <string name="settings_week_count_current">%1$s shown in your schedule overview</string>
 
     <plurals name="week_count">

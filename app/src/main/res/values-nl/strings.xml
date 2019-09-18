@@ -211,7 +211,7 @@
     <string name="settings_telemetry">Anonieme tracking</string>
     <string name="settings_telemetry_description">Sta anonieme tracking toe</string>
     <string name="settings_week_count">Aantal weken</string>
-    <string name="settings_week_count_description">Kies het aantal weken om te tonen in het roosteroverzicht.</string>
+    <string name="settings_week_count_description">Kies het aantal weken om te tonen in het roosteroverzicht:</string>
     <string name="settings_week_count_current">%1$s in het roosteroverzicht getoond</string>
 
     <plurals name="week_count">
