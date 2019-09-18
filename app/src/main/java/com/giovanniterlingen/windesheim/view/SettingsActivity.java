@@ -119,8 +119,10 @@ public class SettingsActivity extends AppCompatActivity {
         int currentWeekCount = preferences.getInt(Constants.PREFS_WEEK_COUNT,
                 Constants.DEFAULT_WEEK_COUNT);
         weekCountTextView = findViewById(R.id.settings_weeks_to_show_text);
+        String weeks = getResources().getQuantityString(R.plurals.week_count, currentWeekCount,
+                currentWeekCount);
         weekCountTextView.setText(getResources().getString(R.string.settings_week_count_current,
-                currentWeekCount));
+                weeks));
 
         darkMode = findViewById(R.id.dark_mode_switch);
         darkMode.setOnClickListener(new View.OnClickListener() {
@@ -270,8 +272,10 @@ public class SettingsActivity extends AppCompatActivity {
                 (ViewGroup) findViewById(R.id.weeks_dialog));
 
         final TextView currentWeekCount = layout.findViewById(R.id.week_count_current);
+        String weeks = getResources().getQuantityString(R.plurals.week_count, storedCount,
+                storedCount);
         currentWeekCount.setText(getResources().getString(R.string.settings_week_count_current,
-                storedCount));
+                weeks));
 
         final AppCompatSeekBar seekBar = layout.findViewById(R.id.week_count_seekbar);
         seekBar.setMax(Constants.MAX_WEEK_COUNT);
@@ -285,8 +289,9 @@ public class SettingsActivity extends AppCompatActivity {
                     i = 1;
                     seekBar.setProgress(i);
                 }
+                String weeks = getResources().getQuantityString(R.plurals.week_count, i, i);
                 currentWeekCount.setText(getResources()
-                        .getString(R.string.settings_week_count_current, i));
+                        .getString(R.string.settings_week_count_current, weeks));
             }
 
             @Override
@@ -319,8 +324,10 @@ public class SettingsActivity extends AppCompatActivity {
                         .setUserProperty(Constants.TELEMETRY_PROPERTY_WEEK_COUNT,
                                 Integer.toString(weekCount));
 
+                String weeks = getResources().getQuantityString(R.plurals.week_count, weekCount,
+                        weekCount);
                 weekCountTextView.setText(getResources()
-                        .getString(R.string.settings_week_count_current, weekCount));
+                        .getString(R.string.settings_week_count_current, weeks));
 
                 dialog.dismiss();
             }

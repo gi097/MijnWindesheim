@@ -212,11 +212,16 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_schedule_change">Schedule changes</string>
     <string name="settings_schedule_change_description">Notify when the schedule changes</string>
-    <string name="settings_telemetry">Tracking</string>
-    <string name="settings_telemetry_description">Allow tracking</string>
-    <string name="settings_week_count">Amount of weeks to show</string>
-    <string name="settings_week_count_description">Select the amount of weeks to show in your schedule overview</string>
-    <string name="settings_week_count_current">Amount: %1$d</string>
+    <string name="settings_telemetry">Anonymous tracking</string>
+    <string name="settings_telemetry_description">Allow anonymous tracking</string>
+    <string name="settings_week_count">Amount of weeks in overview</string>
+    <string name="settings_week_count_description">Select the amount of weeks to show in your schedule overview.</string>
+    <string name="settings_week_count_current">%1$s shown in your schedule overview</string>
+
+    <plurals name="week_count">
+        <item quantity="other">%s weeks are</item>
+        <item quantity="one">1 week is</item>
+    </plurals>
 
     <string name="single_lesson_notification">You have %1$s %2$s in %3$s</string>
 
@@ -242,6 +247,4 @@
     <string name="undo">UNDO</string>
 
     <string name="wednesday">Wednesday</string>
-
-    <string name="week_count_announcement">You can now choose the amount of weeks to show in your schedule! Check it in settings.</string>
 </resources>

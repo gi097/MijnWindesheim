@@ -208,11 +208,16 @@
     <string name="settings_notifications">Meldingen</string>
     <string name="settings_schedule_change">Roosterwijzigingen</string>
     <string name="settings_schedule_change_description">Melden wanneer het rooster wijzigt</string>
-    <string name="settings_telemetry">Tracking</string>
-    <string name="settings_telemetry_description">Sta tracking toe</string>
-    <string name="settings_week_count">Aantal weken om te tonen</string>
-    <string name="settings_week_count_description">Kies het aantal weken om te tonen in het roosteroverzicht</string>
-    <string name="settings_week_count_current">Aantal: %1$d</string>
+    <string name="settings_telemetry">Anonieme tracking</string>
+    <string name="settings_telemetry_description">Sta anonieme tracking toe</string>
+    <string name="settings_week_count">Aantal weken</string>
+    <string name="settings_week_count_description">Kies het aantal weken om te tonen in het roosteroverzicht.</string>
+    <string name="settings_week_count_current">%1$s in het roosteroverzicht getoond</string>
+
+    <plurals name="week_count">
+        <item quantity="other">%s weken worden</item>
+        <item quantity="one">1 week wordt</item>
+    </plurals>
 
     <string name="single_lesson_notification">Je hebt %2$s %1$s in %3$s</string>
 
@@ -237,6 +242,4 @@
     <string name="undo">ONGEDAAN MAKEN</string>
 
     <string name="wednesday">woensdag</string>
-
-    <string name="week_count_announcement">Je kunt nu het aantal weken kiezen om te zien in je rooster! Zie het in instellingen.</string>
 </resources>

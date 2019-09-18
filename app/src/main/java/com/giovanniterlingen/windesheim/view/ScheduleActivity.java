@@ -118,10 +118,6 @@ public class ScheduleActivity extends AppCompatActivity
 
         view = findViewById(R.id.coordinator_layout);
         setViewPager();
-
-        if (!sharedPreferences.contains(Constants.PREFS_WEEK_COUNT)) {
-            showSnackbar(getResources().getString(R.string.week_count_announcement), false);
-        }
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
