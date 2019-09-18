@@ -71,9 +71,13 @@ public class ScheduleActivity extends AppCompatActivity
     private View view;
     private FragmentManager fragmentManager;
     private ViewPager mPager;
-    private long onPauseMillis;
     private DrawerLayout mDrawerLayout;
+
     private int currentDayIndex = -1;
+    private long onPauseMillis;
+    private int onPauseWeekCount;
+
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,7 @@ public class ScheduleActivity extends AppCompatActivity
             finish();
             return;
         }
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ScheduleActivity.this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (sharedPreferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, Constants
                 .NOTIFICATION_TYPE_NOT_SET) == Constants.NOTIFICATION_TYPE_NOT_SET) {
@@ -114,6 +118,10 @@ public class ScheduleActivity extends AppCompatActivity
 
         view = findViewById(R.id.coordinator_layout);
         setViewPager();
+
+        if (!sharedPreferences.contains(Constants.PREFS_WEEK_COUNT)) {
+            showSnackbar(getResources().getString(R.string.week_count_announcement), false);
+        }
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -198,6 +206,7 @@ public class ScheduleActivity extends AppCompatActivity
     public void onPause() {
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.scheduleReload);
         onPauseMillis = System.currentTimeMillis();
+        onPauseWeekCount = mPager.getAdapter().getCount();
 
         TelemetryUtils.getInstance().setCurrentScreen(this, null);
         super.onPause();
@@ -206,7 +215,8 @@ public class ScheduleActivity extends AppCompatActivity
     @Override
     public void onResume() {
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.scheduleReload);
-        if (!DateUtils.isToday(onPauseMillis)) {
+        if (!DateUtils.isToday(onPauseMillis) || onPauseWeekCount !=
+                mPager.getAdapter().getCount()) {
             setViewPager();
         }
         super.onResume();
@@ -234,8 +244,9 @@ public class ScheduleActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void showSnackbar(final String text) {
-        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+    public void showSnackbar(final String text, boolean shrt) {
+        Snackbar snackbar = Snackbar.make(view, text, shrt ? Snackbar.LENGTH_SHORT :
+                Snackbar.LENGTH_LONG);
         snackbar.show();
     }
 
@@ -287,11 +298,12 @@ public class ScheduleActivity extends AppCompatActivity
             } else {
                 calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
             }
-            if (position <= 4) {
-                calendar.add(GregorianCalendar.DATE, position);
-            } else {
-                calendar.add(GregorianCalendar.DATE, position + 2);
-            }
+
+            calendar.add(GregorianCalendar.DATE, position);
+
+            // Skip weekends
+            calendar.add(GregorianCalendar.DATE,
+                    (position / Constants.WEEKDAYS_COUNT) * Constants.WEEKEND_DAYS_COUNT);
 
             Fragment fragment = new ScheduleFragment();
             Bundle args = new Bundle();
@@ -303,7 +315,9 @@ public class ScheduleActivity extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return 10;
+            int weekCount = sharedPreferences.getInt(Constants.PREFS_WEEK_COUNT,
+                    Constants.DEFAULT_WEEK_COUNT);
+            return weekCount * Constants.WEEKDAYS_COUNT;
         }
 
         @Override
@@ -311,21 +325,19 @@ public class ScheduleActivity extends AppCompatActivity
             if (position == currentDayIndex) {
                 return getResources().getString(R.string.today);
             }
-            switch (position) {
-                case 0:
-                case 5:
+
+            int calendarIndex = (position % Constants.WEEKDAYS_COUNT) +
+                    Constants.WEEKEND_DAYS_COUNT;
+            switch (calendarIndex) {
+                case Calendar.MONDAY:
                     return getResources().getString(R.string.monday);
-                case 1:
-                case 6:
+                case Calendar.TUESDAY:
                     return getResources().getString(R.string.tuesday);
-                case 2:
-                case 7:
+                case Calendar.WEDNESDAY:
                     return getResources().getString(R.string.wednesday);
-                case 3:
-                case 8:
+                case Calendar.THURSDAY:
                     return getResources().getString(R.string.thursday);
-                case 4:
-                case 9:
+                case Calendar.FRIDAY:
                     return getResources().getString(R.string.friday);
                 default:
                     return "";

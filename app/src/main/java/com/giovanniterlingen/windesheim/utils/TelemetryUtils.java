@@ -33,6 +33,8 @@ import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
+import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.models.Schedule;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
@@ -109,7 +111,37 @@ public class TelemetryUtils {
         setUserProperty(Constants.TELEMETRY_PROPERTY_SCHEDULE_CHANGE_NOTIFICATION, Boolean.toString(scheduleChangeNotification));
 
         boolean allowTelemetry = preferences.getBoolean(Constants.PREFS_TELEMETRY_ALLOWED, true);
+        setUserProperty(Constants.TELEMETRY_KEY_TELEMETRY_ENABLED,
+                Boolean.toString(allowTelemetry));
         setAnalyticsCollectionEnabled(allowTelemetry);
+
+        int studentScheduleCount = 0;
+        int teacherScheduleCount = 0;
+        int subjectScheduleCount = 0;
+        Schedule[] schedules = DatabaseController.getInstance().getSchedules();
+        for (Schedule schedule : schedules) {
+            switch (schedule.getType()) {
+                case CLASS:
+                    studentScheduleCount++;
+                    break;
+                case TEACHER:
+                    teacherScheduleCount++;
+                    break;
+                case SUBJECT:
+                    subjectScheduleCount++;
+                    break;
+            }
+        }
+        setUserProperty(Constants.TELEMETRY_KEY_STUDENT_SCHEDULES_COUNT,
+                Integer.toString(studentScheduleCount));
+        setUserProperty(Constants.TELEMETRY_KEY_TEACHER_SCHEDULES_COUNT,
+                Integer.toString(teacherScheduleCount));
+        setUserProperty(Constants.TELEMETRY_KEY_SUBJECT_SCHEDULES_COUNT,
+                Integer.toString(subjectScheduleCount));
+
+        int weekCount = preferences.getInt(Constants.PREFS_WEEK_COUNT,
+                Constants.DEFAULT_WEEK_COUNT);
+        setUserProperty(Constants.TELEMETRY_PROPERTY_WEEK_COUNT, Integer.toString(weekCount));
     }
 
     public void setUserProperty(String key, String value) {

@@ -29,15 +29,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.preference.PreferenceManager;
@@ -61,6 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private TextView intervalTextview;
+    private TextView weekCountTextView;
     private SwitchCompat lessonStart;
     private SwitchCompat darkMode;
     private SwitchCompat telemetry;
@@ -102,6 +108,19 @@ public class SettingsActivity extends AppCompatActivity {
         });
         int pref = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, 0);
         lessonStart.setChecked(pref != 0 && pref != Constants.NOTIFICATION_TYPE_OFF);
+
+        LinearLayout weekCountRow = findViewById(R.id.settings_weeks_to_show_row);
+        weekCountRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWeekCountDialog();
+            }
+        });
+        int currentWeekCount = preferences.getInt(Constants.PREFS_WEEK_COUNT,
+                Constants.DEFAULT_WEEK_COUNT);
+        weekCountTextView = findViewById(R.id.settings_weeks_to_show_text);
+        weekCountTextView.setText(getResources().getString(R.string.settings_week_count_current,
+                currentWeekCount));
 
         darkMode = findViewById(R.id.dark_mode_switch);
         darkMode.setOnClickListener(new View.OnClickListener() {
@@ -237,6 +256,82 @@ public class SettingsActivity extends AppCompatActivity {
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    private void showWeekCountDialog() {
+        int storedCount = preferences.getInt(Constants.PREFS_WEEK_COUNT,
+                Constants.DEFAULT_WEEK_COUNT);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.settings_week_count));
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_weeks_seekbar,
+                (ViewGroup) findViewById(R.id.weeks_dialog));
+
+        final TextView currentWeekCount = layout.findViewById(R.id.week_count_current);
+        currentWeekCount.setText(getResources().getString(R.string.settings_week_count_current,
+                storedCount));
+
+        final AppCompatSeekBar seekBar = layout.findViewById(R.id.week_count_seekbar);
+        seekBar.setMax(Constants.MAX_WEEK_COUNT);
+        seekBar.setKeyProgressIncrement(1);
+        seekBar.setProgress(storedCount);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (i == 0) {
+                    i = 1;
+                    seekBar.setProgress(i);
+                }
+                currentWeekCount.setText(getResources()
+                        .getString(R.string.settings_week_count_current, i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        builder.setView(layout);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final int weekCount = seekBar.getProgress();
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt(Constants.PREFS_WEEK_COUNT, seekBar.getProgress());
+                editor.apply();
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(Constants.TELEMETRY_PROPERTY_WEEK_COUNT, weekCount);
+                TelemetryUtils.getInstance().logEvent(Constants.TELEMETRY_KEY_WEEK_COUNT_CHANGED,
+                        bundle);
+
+                TelemetryUtils.getInstance()
+                        .setUserProperty(Constants.TELEMETRY_PROPERTY_WEEK_COUNT,
+                                Integer.toString(weekCount));
+
+                weekCountTextView.setText(getResources()
+                        .getString(R.string.settings_week_count_current, weekCount));
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @Override

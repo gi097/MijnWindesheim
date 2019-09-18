@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/weeks_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin_half"
+        android:text="@string/settings_week_count_description"
+        android:textColor="@color/colorTitle"
+        android:textSize="@dimen/title_size" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/week_count_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/activity_margin_half"
+        android:paddingBottom="@dimen/activity_margin_half" />
+
+    <TextView
+        android:id="@+id/week_count_current"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin_half"
+        android:text="@string/settings_week_count_current"
+        android:textColor="@color/colorTitle"
+        android:textSize="@dimen/title_size" />
+
+</LinearLayout>

@@ -38,18 +38,25 @@ public class Constants {
     public static final String PREFS_SCHEDULE_CHANGE_NOTIFICATION = "schedule_change_notification";
     public static final String PREFS_USERNAME = "username";
     public static final String PREFS_PASSWORD = "password";
+    public static final String PREFS_WEEK_COUNT = "week_count";
 
     public static final String TELEMETRY_PROPERTY_NAME = "name";
     public static final String TELEMETRY_PROPERTY_NOTIFICATION_TYPE = "notification_type";
     public static final String TELEMETRY_PROPERTY_DARK_MODE_ENABLED = "dark_mode_enabled";
+    public static final String TELEMETRY_PROPERTY_WEEK_COUNT = "week_count";
     public static final String TELEMETRY_KEY_SCHEDULE_ADDED = "schedule_added";
     public static final String TELEMETRY_KEY_SCHEDULE_DELETED = "schedule_deleted";
     public static final String TELEMETRY_KEY_LESSON_RESTORED = "lesson_restored";
     public static final String TELEMETRY_KEY_LESSON_HIDDEN = "lesson_hidden";
     public static final String TELEMETRY_KEY_LESSON_ADDED_CALENDAR = "lesson_added_calendar";
     public static final String TELEMETRY_KEY_DOWNLOAD_STARTED = "download_started";
+    public static final String TELEMETRY_KEY_TELEMETRY_ENABLED = "telemetry_enabled";
+    public static final String TELEMETRY_KEY_TEACHER_SCHEDULES_COUNT = "teacher_schedules_count";
+    public static final String TELEMETRY_KEY_STUDENT_SCHEDULES_COUNT = "student_schedules_count";
+    public static final String TELEMETRY_KEY_SUBJECT_SCHEDULES_COUNT = "subject_schedules_count";
     public static final String TELEMETRY_LOGIN = "login";
     public static final String TELEMETRY_PROPERTY_LOGIN_SUCCESSFUL = "login_successful";
+    public static final String TELEMETRY_KEY_WEEK_COUNT_CHANGED = "week_count_changed";
     public static final String TELEMETRY_PROPERTY_INTRO_FINISHED = "intro_finished";
     public static final String TELEMETRY_PROPERTY_SCHEDULE_CHANGE_NOTIFICATION = "schedule_change_notification";
 
@@ -59,6 +66,12 @@ public class Constants {
     public static final int NOTIFICATION_TYPE_ALWAYS_ON = 5;
     public static final int NOTIFICATION_TYPE_OFF = 6;
     public static final int NOTIFICATION_TYPE_NOT_SET = -1;
+
+    public static final int MAX_SCHEDULES_COUNT = 5;
+    public static final int MAX_WEEK_COUNT = 5;
+    public static final int DEFAULT_WEEK_COUNT = 2;
+    public static final int WEEKDAYS_COUNT = 5;
+    public static final int WEEKEND_DAYS_COUNT = 2;
 
     public enum SCHEDULE_TYPE {
         CLASS,

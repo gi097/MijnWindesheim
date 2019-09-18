@@ -173,44 +173,85 @@
                 android:layout_height="wrap_content"
                 card_view:cardCornerRadius="@dimen/material_zero_radius">
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/dark_mode_title"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="start"
-                        android:paddingLeft="@dimen/activity_margin"
-                        android:paddingTop="@dimen/activity_margin"
-                        android:paddingRight="@dimen/activity_margin"
-                        android:text="@string/settings_dark_mode"
-                        android:textColor="@color/colorTitle"
-                        android:textSize="@dimen/title_size" />
-
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/dark_mode_title"
-                        android:gravity="start"
-                        android:paddingLeft="@dimen/activity_margin"
-                        android:paddingRight="@dimen/activity_margin"
-                        android:paddingBottom="@dimen/activity_margin"
-                        android:text="@string/settings_dark_mode_description"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="@dimen/description_size" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/dark_mode_switch"
+                    <LinearLayout
+                        android:id="@+id/settings_weeks_to_show_row"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="start"
-                        android:padding="@dimen/activity_margin" />
+                        android:layout_height="wrap_content"
+                        android:foreground="?selectableItemBackground"
+                        android:orientation="vertical">
 
-                </RelativeLayout>
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:text="@string/settings_week_count"
+                            android:textColor="@color/colorTitle"
+                            android:textSize="@dimen/title_size" />
+
+                        <TextView
+                            android:id="@+id/settings_weeks_to_show_text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/description_size" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/divider_height"
+                        android:background="?android:listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/dark_mode_title"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:text="@string/settings_dark_mode"
+                            android:textColor="@color/colorTitle"
+                            android:textSize="@dimen/title_size" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/dark_mode_title"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:text="@string/settings_dark_mode_description"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/description_size" />
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/dark_mode_switch"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="start"
+                            android:padding="@dimen/activity_margin" />
+
+                    </RelativeLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <TextView

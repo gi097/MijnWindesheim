@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
@@ -71,7 +72,7 @@ public class ManageSchedulesActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     int count = DatabaseController.getInstance().countSchedules();
-                    if (count >= 5) {
+                    if (count >= Constants.MAX_SCHEDULES_COUNT) {
                         alertTooMuchSchedules();
                         return;
                     }
