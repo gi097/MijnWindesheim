@@ -117,7 +117,9 @@ public class WindesheimAPIController {
             Lesson lesson = new Lesson();
             lesson.setId(object.getString("id"));
 
-            if (object.getString("vaknaam").length() > 0) {
+            if (type == Constants.SCHEDULE_TYPE.SUBJECT) {
+                lesson.setSubject(object.getString("commentaar"));
+            } else if (object.getString("vaknaam").length() > 0) {
                 lesson.setSubject(object.getString("vaknaam"));
             } else if (object.getString("vakcode").length() > 0) {
                 lesson.setSubject(object.getString("vakcode"));
@@ -187,7 +189,7 @@ public class WindesheimAPIController {
 
         for (int i = 0; i < items.length; i++) {
             JSONObject object = jsonArray.getJSONObject(i);
-            items[i] = new ScheduleItem(object.getString("id"), object.getString("naam"));
+            items[i] = new ScheduleItem(object.getString("id"), object.getString("code"));
         }
         return items;
     }
