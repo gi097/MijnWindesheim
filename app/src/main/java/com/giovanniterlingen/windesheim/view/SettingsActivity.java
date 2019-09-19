@@ -278,18 +278,15 @@ public class SettingsActivity extends AppCompatActivity {
                 weeks));
 
         final AppCompatSeekBar seekBar = layout.findViewById(R.id.week_count_seekbar);
-        seekBar.setMax(Constants.MAX_WEEK_COUNT);
+        seekBar.setMax(Constants.MAX_WEEK_COUNT - 1);
         seekBar.setKeyProgressIncrement(1);
-        seekBar.setProgress(storedCount);
+        seekBar.setProgress(storedCount - 1);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (i == 0) {
-                    i = 1;
-                    seekBar.setProgress(i);
-                }
-                String weeks = getResources().getQuantityString(R.plurals.week_count, i, i);
+                String weeks = getResources().getQuantityString(R.plurals.week_count,
+                        i + 1, i + 1);
                 currentWeekCount.setText(getResources()
                         .getString(R.string.settings_week_count_current, weeks));
             }
@@ -309,10 +306,10 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                final int weekCount = seekBar.getProgress();
+                final int weekCount = seekBar.getProgress() + 1;
 
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(Constants.PREFS_WEEK_COUNT, seekBar.getProgress());
+                editor.putInt(Constants.PREFS_WEEK_COUNT, weekCount);
                 editor.apply();
 
                 Bundle bundle = new Bundle();

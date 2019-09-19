@@ -30,6 +30,9 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -72,6 +75,7 @@ public class ScheduleActivity extends AppCompatActivity
     private FragmentManager fragmentManager;
     private ViewPager mPager;
     private DrawerLayout mDrawerLayout;
+    private RelativeLayout mBottomNavigation;
 
     private int currentDayIndex = -1;
     private long onPauseMillis;
@@ -110,6 +114,23 @@ public class ScheduleActivity extends AppCompatActivity
         }
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        mBottomNavigation = findViewById(R.id.bottom_navigation);
+        Button bottomButtonBack = findViewById(R.id.bottom_button_back);
+        bottomButtonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nearestMonday(false);
+            }
+        });
+
+        Button bottomButtonNext = findViewById(R.id.bottom_button_next);
+        bottomButtonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nearestMonday(true);
+            }
+        });
 
         NavigationView navigationView = findViewById(R.id.navigation_view);
         if (navigationView != null) {
@@ -186,6 +207,7 @@ public class ScheduleActivity extends AppCompatActivity
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                updateToolbarAndBottomBar(position);
                 ((ScheduleFragment) mPagerAdapter.getItem(position)).onVisible();
             }
         });
@@ -211,8 +233,15 @@ public class ScheduleActivity extends AppCompatActivity
     @Override
     public void onResume() {
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.scheduleReload);
-        if (!DateUtils.isToday(onPauseMillis) || onPauseWeekCount !=
-                mPager.getAdapter().getCount()) {
+
+        int weekCount = sharedPreferences.getInt(Constants.PREFS_WEEK_COUNT, Constants.DEFAULT_WEEK_COUNT);
+        if (weekCount > Constants.DEFAULT_WEEK_COUNT) {
+            mBottomNavigation.setVisibility(View.VISIBLE);
+        } else {
+            mBottomNavigation.setVisibility(View.GONE);
+        }
+
+        if (!DateUtils.isToday(onPauseMillis) || onPauseWeekCount != mPager.getAdapter().getCount()) {
             setViewPager();
         }
         super.onResume();
@@ -278,6 +307,58 @@ public class ScheduleActivity extends AppCompatActivity
         }
     }
 
+    private void updateToolbarAndBottomBar(int position) {
+        Calendar calendar = getCalendarByPosition(position);
+
+        int month = calendar.get(GregorianCalendar.MONTH);
+        int year = calendar.get(GregorianCalendar.YEAR);
+        String monthString = getResources().getString(Constants.MONTH_STRING_IDS[month]);
+        ActionBar toolbar = getSupportActionBar();
+        String title = getResources().getString(R.string.schedule_toolbar_text,
+                TimeUtils.getDayDateFormat().format(calendar.getTime()), monthString, year);
+        if (!title.contentEquals(toolbar.getTitle())) {
+            toolbar.setTitle(title);
+        }
+
+        // Calculate week offset
+        int currentWeek = (position / Constants.WEEKDAYS_COUNT) + 1;
+        int totalWeeks = sharedPreferences.getInt(Constants.PREFS_WEEK_COUNT,
+                Constants.DEFAULT_WEEK_COUNT);
+
+        TextView bottomText = findViewById(R.id.bottom_text);
+        bottomText.setText(getResources().getString(R.string.week_count_bottom_text,
+                currentWeek, totalWeeks));
+    }
+
+    private Calendar getCalendarByPosition(int position) {
+        Calendar calendar = TimeUtils.getCalendar();
+        if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
+            calendar.add(GregorianCalendar.DATE, 2);
+        } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SUNDAY) {
+            calendar.add(GregorianCalendar.DATE, 1);
+        } else {
+            calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
+        }
+
+        calendar.add(GregorianCalendar.DATE, position);
+
+        // Skip weekends
+        calendar.add(GregorianCalendar.DATE,
+                (position / Constants.WEEKDAYS_COUNT) * Constants.WEEKEND_DAYS_COUNT);
+
+        return calendar;
+    }
+
+    private void nearestMonday(boolean forward) {
+        int currentIndex = mPager.getCurrentItem();
+        int newIndex = (currentIndex / Constants.WEEKDAYS_COUNT + (forward ? 1 : -1)) *
+                Constants.WEEKDAYS_COUNT;
+
+        if (newIndex >= 0 && newIndex < mPager.getAdapter().getCount()) {
+            mPager.setCurrentItem(newIndex);
+        }
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
         ScreenSlidePagerAdapter(@NonNull FragmentManager fm, int behavior) {
@@ -286,24 +367,9 @@ public class ScheduleActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            Calendar calendar = TimeUtils.getCalendar();
-            if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SATURDAY) {
-                calendar.add(GregorianCalendar.DATE, 2);
-            } else if (calendar.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.SUNDAY) {
-                calendar.add(GregorianCalendar.DATE, 1);
-            } else {
-                calendar.set(GregorianCalendar.DAY_OF_WEEK, GregorianCalendar.MONDAY);
-            }
-
-            calendar.add(GregorianCalendar.DATE, position);
-
-            // Skip weekends
-            calendar.add(GregorianCalendar.DATE,
-                    (position / Constants.WEEKDAYS_COUNT) * Constants.WEEKEND_DAYS_COUNT);
-
             Fragment fragment = new ScheduleFragment();
             Bundle args = new Bundle();
-            args.putSerializable("date", calendar.getTime());
+            args.putSerializable("date", getCalendarByPosition(position).getTime());
             fragment.setArguments(args);
 
             return fragment;

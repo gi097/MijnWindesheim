@@ -9,6 +9,8 @@
 
     <dimen name="avatar_size">48.0dip</dimen>
 
+    <dimen name="bottom_bar_height">56.0dip</dimen>
+
     <dimen name="button_border_size">36.0dip</dimen>
     <dimen name="button_padding_end">4.0dip</dimen>
     <dimen name="button_size">24.0dip</dimen>

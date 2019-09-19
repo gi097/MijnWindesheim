@@ -72,6 +72,20 @@ public class Constants {
     public static final int DEFAULT_WEEK_COUNT = 2;
     public static final int WEEKDAYS_COUNT = 5;
     public static final int WEEKEND_DAYS_COUNT = 2;
+    public static final int[] MONTH_STRING_IDS = new int[]{
+            R.string.january,
+            R.string.february,
+            R.string.march,
+            R.string.april,
+            R.string.may,
+            R.string.june,
+            R.string.july,
+            R.string.august,
+            R.string.september,
+            R.string.october,
+            R.string.november,
+            R.string.december
+    };
 
     public enum SCHEDULE_TYPE {
         CLASS,

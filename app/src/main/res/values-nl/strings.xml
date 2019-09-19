@@ -189,6 +189,7 @@
     <string name="schedule_changed">Je rooster is gewijzigd!</string>
     <string name="schedule_deleted">Rooster is verwijderd</string>
     <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
+    <string name="schedule_toolbar_text">%1$s %2$s %3$d</string>
 
     <string name="september">september</string>
 
@@ -218,6 +219,7 @@
         <item quantity="other">%s weken worden</item>
         <item quantity="one">1 week wordt</item>
     </plurals>
+    <string name="week_count_bottom_text">Week %1$d van %2$d</string>
 
     <string name="single_lesson_notification">Je hebt %2$s %1$s in %3$s</string>
 

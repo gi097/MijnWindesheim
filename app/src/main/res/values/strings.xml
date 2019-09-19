@@ -193,6 +193,7 @@
     <string name="schedule_changed">Your schedule has been changed!</string>
     <string name="schedule_deleted">Schedule has been deleted</string>
     <string name="schedule_not_found">No schedule was found for this day</string>
+    <string name="schedule_toolbar_text">%1$s %2$s %3$d</string>
 
     <string name="september">September</string>
 
@@ -222,6 +223,7 @@
         <item quantity="other">%s weeks are</item>
         <item quantity="one">1 week is</item>
     </plurals>
+    <string name="week_count_bottom_text">Week %1$d of %2$d</string>
 
     <string name="single_lesson_notification">You have %1$s %2$s in %3$s</string>
 

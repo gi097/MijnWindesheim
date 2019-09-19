@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,15 +45,11 @@ import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.utils.ColorUtils;
-import com.giovanniterlingen.windesheim.utils.TimeUtils;
 import com.giovanniterlingen.windesheim.view.Adapters.ScheduleAdapter;
 import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -63,24 +58,7 @@ import java.util.GregorianCalendar;
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final int[] dateStrings = new int[]{
-            R.string.january,
-            R.string.february,
-            R.string.march,
-            R.string.april,
-            R.string.may,
-            R.string.june,
-            R.string.july,
-            R.string.august,
-            R.string.september,
-            R.string.october,
-            R.string.november,
-            R.string.december
-    };
-    private Calendar calendar;
     private Date date;
-    private SimpleDateFormat dayDateFormat;
-
     private ScheduleAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView emptyTextView;
@@ -90,9 +68,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        calendar = TimeUtils.getCalendar();
         date = (Date) getArguments().getSerializable("date");
-        dayDateFormat = TimeUtils.getDayDateFormat();
     }
 
     @Override
@@ -106,22 +82,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
             new ScheduleFetcher(this, false, false,
                     false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-    }
-
-    private void updateToolbar() {
-        if (this.isMenuVisible() && this.isVisible()) {
-            calendar.setTime(date);
-            int month = calendar.get(GregorianCalendar.MONTH);
-            int year = calendar.get(GregorianCalendar.YEAR);
-            String monthString = getResources().getString(dateStrings[month]);
-            ActionBar toolbar = ((ScheduleActivity) getActivity()).getSupportActionBar();
-            if (toolbar != null) {
-                String title = dayDateFormat.format(date) + " " + monthString + " " + year;
-                if (!title.contentEquals(toolbar.getTitle())) {
-                    toolbar.setTitle(title);
-                }
-            }
         }
     }
 
@@ -229,7 +189,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                 return;
             }
 
-            fragment.updateToolbar();
             if (fragment.adapter == null) {
                 if (showSpinner) {
                     fragment.emptyTextView.setVisibility(View.GONE);
