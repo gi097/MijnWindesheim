@@ -217,6 +217,9 @@ public class ScheduleActivity extends AppCompatActivity
 
         if (currentDayIndex >= 0) {
             mPager.setCurrentItem(currentDayIndex);
+            updateToolbarAndBottomBar(currentDayIndex);
+        } else {
+            updateToolbarAndBottomBar(0);
         }
     }
 
