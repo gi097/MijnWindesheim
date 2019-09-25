@@ -252,6 +252,12 @@ public class ChooseScheduleFragment extends Fragment {
 
                             DatabaseController.getInstance().addSchedule(id, name, fragment.type);
 
+                            SharedPreferences preferences = PreferenceManager
+                                    .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.remove(Constants.PREFS_LAST_FETCH_TIME);
+                            editor.apply();
+
                             Bundle bundle = new Bundle();
                             bundle.putString(Constants.TELEMETRY_PROPERTY_NAME, name);
                             TelemetryUtils.getInstance()
@@ -259,9 +265,6 @@ public class ChooseScheduleFragment extends Fragment {
 
                             ColorUtils.invalidateColorCache();
 
-                            SharedPreferences preferences = PreferenceManager
-                                    .getDefaultSharedPreferences(fragment.context);
-                            SharedPreferences.Editor editor = preferences.edit();
                             if (!hasSchedules) {
                                 editor.putInt(Constants.PREFS_NOTIFICATIONS_TYPE,
                                         Constants.NOTIFICATION_TYPE_ALWAYS_ON);

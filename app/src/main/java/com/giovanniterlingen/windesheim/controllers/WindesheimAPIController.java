@@ -24,6 +24,11 @@
  **/
 package com.giovanniterlingen.windesheim.controllers;
 
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Result;
@@ -61,7 +66,6 @@ public class WindesheimAPIController {
             Lesson[] hiddenLessons = DatabaseController.getInstance().getHiddenLessons();
             Lesson[] oldLessons = DatabaseController.getInstance().getLessonsForCompare(schedule.getId());
 
-            DatabaseController.getInstance().clearScheduleData(schedule.getId());
             Lesson[] lessons = getLessons(schedule.getId(), schedule.getType());
             for (Lesson hiddenLesson : hiddenLessons) {
                 for (Lesson lesson : lessons) {
@@ -71,6 +75,7 @@ public class WindesheimAPIController {
                     }
                 }
             }
+            DatabaseController.getInstance().clearScheduleData(schedule.getId());
             DatabaseController.getInstance().saveLessons(lessons);
 
             Lesson[] newLessons = DatabaseController.getInstance().getLessonsForCompare(schedule.getId());
@@ -94,6 +99,12 @@ public class WindesheimAPIController {
                 }
             }
         }
+
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(Constants.PREFS_LAST_FETCH_TIME, System.currentTimeMillis());
+        editor.apply();
     }
 
     private static Lesson[] getLessons(String id, Constants.SCHEDULE_TYPE type) throws Exception {

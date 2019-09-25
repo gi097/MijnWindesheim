@@ -25,6 +25,7 @@
 package com.giovanniterlingen.windesheim.view.Fragments;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -35,11 +36,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
+import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
@@ -50,6 +53,7 @@ import com.giovanniterlingen.windesheim.view.ScheduleActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -75,7 +79,20 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onResume() {
         super.onResume();
         if (this.isMenuVisible() && this.isVisible()) {
-            if (!DatabaseController.getInstance().allSchedulesFetched()) {
+            // Check padding for recyclerview (LTRB)
+            boolean hasBottomBar = ((ScheduleActivity) getActivity()).showBottomBar();
+            recyclerView.setPadding(
+                    recyclerView.getPaddingLeft(),
+                    recyclerView.getPaddingTop(),
+                    recyclerView.getPaddingRight(),
+                    hasBottomBar ? (int) getResources().getDimension(R.dimen.bottom_bar_height)
+                            : 0);
+
+            SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+            long lastFetchTime = preferences.getLong(Constants.PREFS_LAST_FETCH_TIME, 0);
+            if (lastFetchTime == 0 || System.currentTimeMillis() - lastFetchTime >
+                    TimeUnit.DAYS.toMillis(1)) {
                 new ScheduleFetcher(this, true, true, false)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 return;

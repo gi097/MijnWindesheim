@@ -182,13 +182,16 @@
     <string name="push_notification">Push meldingen</string>
     <string name="push_notification_description">Meldingen voor lessen en roosterwijzigingen</string>
 
+    <string name="rating_prompt_description">Steun MijnWindesheim en geef een beoordeling!</string>
+    <string name="rating_prompt_rate">BEOORDELEN</string>
+
     <string name="restore">Herstellen</string>
 
     <string name="save_lesson">Les opslaan in agenda</string>
 
     <string name="schedule_changed">Je rooster is gewijzigd!</string>
     <string name="schedule_deleted">Rooster is verwijderd</string>
-    <string name="schedule_not_found">Geen rooster gevonden voor deze dag</string>
+    <string name="schedule_not_found">Geen lessen gevonden voor deze dag</string>
     <string name="schedule_toolbar_text">%1$s %2$s %3$d</string>
 
     <string name="september">september</string>

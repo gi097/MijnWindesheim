@@ -195,38 +195,6 @@ public class DatabaseController extends SQLiteOpenHelper {
         return lessons;
     }
 
-    public boolean allSchedulesFetched() {
-        Schedule[] schedules = getSchedules();
-        for (Schedule schedule : schedules) {
-            if (!isScheduleFetched(schedule)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isScheduleFetched(Schedule schedule) {
-        String[] projection = {
-                LessonEntry._ID
-        };
-
-        String selection = LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
-        String[] selectionArgs = {schedule.getId()};
-
-        Cursor cursor = database.query(
-                LessonEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-        boolean result = cursor.getCount() > 0;
-        cursor.close();
-        return result;
-    }
-
     /**
      * Get lessons for this week to check if they are changed
      */

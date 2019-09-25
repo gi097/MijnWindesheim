@@ -24,8 +24,11 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
@@ -62,6 +65,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -80,6 +84,7 @@ public class ScheduleActivity extends AppCompatActivity
     private int currentDayIndex = -1;
     private long onPauseMillis;
     private int onPauseWeekCount;
+    private int onPauseIndex = -1;
 
     private SharedPreferences sharedPreferences;
 
@@ -215,7 +220,10 @@ public class ScheduleActivity extends AppCompatActivity
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mPager);
 
-        if (currentDayIndex >= 0) {
+        if (onPauseIndex > -1 && onPauseIndex < mPager.getAdapter().getCount()) {
+            mPager.setCurrentItem(onPauseIndex);
+            updateToolbarAndBottomBar(onPauseIndex);
+        } else if (currentDayIndex >= 0) {
             mPager.setCurrentItem(currentDayIndex);
             updateToolbarAndBottomBar(currentDayIndex);
         } else {
@@ -228,6 +236,7 @@ public class ScheduleActivity extends AppCompatActivity
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.scheduleReload);
         onPauseMillis = System.currentTimeMillis();
         onPauseWeekCount = mPager.getAdapter().getCount();
+        onPauseIndex = mPager.getCurrentItem();
 
         TelemetryUtils.getInstance().setCurrentScreen(this, null);
         super.onPause();
@@ -237,8 +246,7 @@ public class ScheduleActivity extends AppCompatActivity
     public void onResume() {
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.scheduleReload);
 
-        int weekCount = sharedPreferences.getInt(Constants.PREFS_WEEK_COUNT, Constants.DEFAULT_WEEK_COUNT);
-        if (weekCount > Constants.DEFAULT_WEEK_COUNT) {
+        if (showBottomBar()) {
             mBottomNavigation.setVisibility(View.VISIBLE);
         } else {
             mBottomNavigation.setVisibility(View.GONE);
@@ -250,6 +258,57 @@ public class ScheduleActivity extends AppCompatActivity
         super.onResume();
 
         TelemetryUtils.getInstance().setCurrentScreen(this, "ScheduleActivity");
+
+        // Check if we have asked for a rating already
+        long lastReviewPromptTime =
+                sharedPreferences.getLong(Constants.PREFS_LAST_REVIEW_PROMPT_TIME, 0);
+        if (lastReviewPromptTime == 0 || System.currentTimeMillis() - lastReviewPromptTime >
+                TimeUnit.DAYS.toMillis(3)) {
+            showRatingSnackbar();
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putLong(Constants.PREFS_LAST_REVIEW_PROMPT_TIME, System.currentTimeMillis());
+            editor.apply();
+        }
+    }
+
+    private void showRatingSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.rating_prompt_description), Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.rating_prompt_rate, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse("market://details?id=" +
+                        ScheduleActivity.this.getPackageName());
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+                if (Build.VERSION.SDK_INT >= 21) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                } else {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=" +
+                                    ScheduleActivity.this.getPackageName())));
+                }
+            }
+        });
+        snackbar.show();
+    }
+
+    public boolean showBottomBar() {
+        if (sharedPreferences == null) {
+            return false;
+        }
+        int weekCount = sharedPreferences.getInt(Constants.PREFS_WEEK_COUNT,
+                Constants.DEFAULT_WEEK_COUNT);
+        return weekCount > Constants.DEFAULT_WEEK_COUNT;
     }
 
     @Override

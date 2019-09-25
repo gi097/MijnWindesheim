@@ -186,13 +186,16 @@
     <string name="push_notification">Push notifications</string>
     <string name="push_notification_description">Notifications for lessons and schedule changes</string>
 
+    <string name="rating_prompt_description">Support MyWindesheim and give a rating!</string>
+    <string name="rating_prompt_rate">RATE</string>
+
     <string name="restore">Restore</string>
 
     <string name="save_lesson">Save lesson to calendar</string>
 
     <string name="schedule_changed">Your schedule has been changed!</string>
     <string name="schedule_deleted">Schedule has been deleted</string>
-    <string name="schedule_not_found">No schedule was found for this day</string>
+    <string name="schedule_not_found">No lessons are found for this day</string>
     <string name="schedule_toolbar_text">%1$s %2$s %3$d</string>
 
     <string name="september">September</string>

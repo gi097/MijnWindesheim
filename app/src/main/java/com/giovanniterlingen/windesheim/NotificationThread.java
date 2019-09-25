@@ -39,6 +39,7 @@ import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A schedule app for students and teachers of Windesheim
@@ -60,7 +61,9 @@ class NotificationThread extends Thread {
                 Constants.NOTIFICATION_TYPE_NOT_SET)) != 0) {
             try {
                 Date date = TimeUtils.getCalendar().getTime();
-                if (!DatabaseController.getInstance().allSchedulesFetched()) {
+                long lastFetchTime = preferences.getLong(Constants.PREFS_LAST_FETCH_TIME, 0);
+                if (lastFetchTime == 0 || System.currentTimeMillis() -
+                        lastFetchTime > TimeUnit.DAYS.toMillis(1)) {
                     WindesheimAPIController.getAndSaveLessons(false);
                 }
 
