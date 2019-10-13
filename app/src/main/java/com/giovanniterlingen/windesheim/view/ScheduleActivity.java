@@ -24,12 +24,16 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,8 +43,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -54,6 +61,7 @@ import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.utils.CalendarUtils;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
@@ -87,6 +95,8 @@ public class ScheduleActivity extends AppCompatActivity
     private int onPauseIndex = -1;
 
     private SharedPreferences sharedPreferences;
+
+    private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 0xFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -270,6 +280,111 @@ public class ScheduleActivity extends AppCompatActivity
             editor.putLong(Constants.PREFS_LAST_REVIEW_PROMPT_TIME, System.currentTimeMillis());
             editor.apply();
         }
+
+        if (!sharedPreferences.getBoolean(Constants.PREFS_SHOWN_SYNC_PROMPT, false)) {
+            showSyncPrompt();
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(Constants.PREFS_SHOWN_SYNC_PROMPT, true);
+            editor.apply();
+        }
+
+        if (sharedPreferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
+            checkCalendarPermissions();
+        }
+
+        if (sharedPreferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false) &&
+                sharedPreferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1) == -1) {
+            showCalendarDialog();
+        }
+    }
+
+    private void checkCalendarPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
+        }
+    }
+
+    private int checkedCalendarItem;
+
+    private void showCalendarDialog() {
+        final com.giovanniterlingen.windesheim.models.Calendar[] calendars = CalendarUtils.getCalendars();
+        if (calendars == null) {
+            return;
+        }
+        CharSequence[] items = new CharSequence[calendars.length];
+        for (int i = 0; i < calendars.length; i++) {
+            items[i] = calendars[i].getName();
+        }
+
+        checkedCalendarItem = 0;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.choose_calendar_title));
+        builder.setSingleChoiceItems(items, 0,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        checkedCalendarItem = item;
+                    }
+                });
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putLong(Constants.PREFS_SYNC_CALENDAR_ID,
+                        calendars[checkedCalendarItem].getId());
+                editor.apply();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_CALENDAR) {
+            if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                showPermissionRequestSnackbar();
+            }
+        }
+    }
+
+    private void showPermissionRequestSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.fix_calendar_permissions), Snackbar.LENGTH_SHORT);
+        snackbar.setAction(R.string.fix, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
+        snackbar.show();
+    }
+
+    private void showSyncPrompt() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.sync_calendar_prompt_title));
+        builder.setMessage(getString(R.string.sync_calendar_prompt_description));
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                editor.apply();
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                editor.apply();
+            }
+        });
+        builder.show();
     }
 
     private void showRatingSnackbar() {
@@ -331,9 +446,8 @@ public class ScheduleActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void showSnackbar(final String text, boolean shrt) {
-        Snackbar snackbar = Snackbar.make(view, text, shrt ? Snackbar.LENGTH_SHORT :
-                Snackbar.LENGTH_LONG);
+    public void showSnackbar(final String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 

@@ -34,6 +34,7 @@ import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
+import com.giovanniterlingen.windesheim.utils.CalendarUtils;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
@@ -77,6 +78,11 @@ public class WindesheimAPIController {
             }
             DatabaseController.getInstance().clearScheduleData(schedule.getId());
             DatabaseController.getInstance().saveLessons(lessons);
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+            if (preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
+                CalendarUtils.syncLessonsWithCalendar(lessons);
+            }
 
             Lesson[] newLessons = DatabaseController.getInstance().getLessonsForCompare(schedule.getId());
             if (!notify) {

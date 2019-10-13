@@ -50,6 +50,7 @@ import androidx.preference.PreferenceManager;
 import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
+import com.giovanniterlingen.windesheim.utils.CalendarUtils;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.google.android.material.snackbar.Snackbar;
@@ -108,6 +109,23 @@ public class SettingsActivity extends AppCompatActivity {
         });
         int pref = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, 0);
         lessonStart.setChecked(pref != 0 && pref != Constants.NOTIFICATION_TYPE_OFF);
+
+        SwitchCompat syncLessonsSwitch = findViewById(R.id.sync_calendar_switch);
+        syncLessonsSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = preferences.edit();
+                if (lessonStart.isChecked()) {
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                } else {
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                    CalendarUtils.deleteAllLessonsFromCalendar();
+                }
+                editor.apply();
+            }
+        });
+        boolean syncLessons = preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+        syncLessonsSwitch.setChecked(syncLessons);
 
         LinearLayout weekCountRow = findViewById(R.id.settings_weeks_to_show_row);
         weekCountRow.setOnClickListener(new View.OnClickListener() {

@@ -46,7 +46,7 @@ import java.util.Date;
  */
 public class DatabaseController extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     private static final String DATABASE_NAME = "schedulestore.db";
     private static final String SQL_CREATE_SCHEDULE_ENTRIES =
             "CREATE TABLE " + ScheduleEntry.TABLE_NAME + " (" +
@@ -68,6 +68,10 @@ public class DatabaseController extends SQLiteOpenHelper {
                     LessonEntry.COLUMN_NAME_SCHEDULE_ID + " INTEGER," +
                     LessonEntry.COLUMN_NAME_SCHEDULE_TYPE + " INTEGER," +
                     LessonEntry.COLUMN_NAME_VISIBLE + " INTEGER)";
+    private static final String SQL_CREATE_CALENDAR_ENTRIES =
+            "CREATE TABLE " + CalendarRowsEntry.TABLE_NAME + " (" +
+                    LessonEntry._ID + " INTEGER PRIMARY KEY," +
+                    CalendarRowsEntry.COLUMN_NAME_EVENT_ID + " INTEGER)";
     private static volatile DatabaseController Instance = null;
     private final SQLiteDatabase database;
 
@@ -93,6 +97,7 @@ public class DatabaseController extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
         database.execSQL(SQL_CREATE_LESSON_ENTRIES);
+        database.execSQL(SQL_CREATE_CALENDAR_ENTRIES);
     }
 
     void saveLessons(Lesson[] lessons) {
@@ -392,17 +397,57 @@ public class DatabaseController extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        if (oldVersion == 10 && newVersion == 11) {
+            database.execSQL(SQL_CREATE_CALENDAR_ENTRIES);
+            return;
+        }
         if (oldVersion == 9 && newVersion == 10) {
             database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
             database.execSQL(SQL_CREATE_LESSON_ENTRIES);
             return;
         }
-        database.execSQL("DROP TABLE IF EXISTS fetched_dates");
-        database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
-        database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
+        if (newVersion < 10) {
+            database.execSQL("DROP TABLE IF EXISTS fetched_dates");
+            database.execSQL("DROP TABLE IF EXISTS " + ScheduleEntry.TABLE_NAME);
+            database.execSQL("DROP TABLE IF EXISTS " + LessonEntry.TABLE_NAME);
 
-        database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
-        database.execSQL(SQL_CREATE_LESSON_ENTRIES);
+            database.execSQL(SQL_CREATE_SCHEDULE_ENTRIES);
+            database.execSQL(SQL_CREATE_LESSON_ENTRIES);
+        }
+    }
+
+    public void addCalendarRow(long id) throws SQLiteConstraintException {
+        ContentValues values = new ContentValues();
+        values.put(CalendarRowsEntry.COLUMN_NAME_EVENT_ID, id);
+        database.insertOrThrow(CalendarRowsEntry.TABLE_NAME, null, values);
+    }
+
+    public void deleteAllCalendarRows() throws SQLiteConstraintException {
+        database.delete(CalendarRowsEntry.TABLE_NAME, null, null);
+    }
+
+    public long[] getCalendarRows() throws SQLiteConstraintException {
+        String[] projection = {
+                CalendarRowsEntry.COLUMN_NAME_EVENT_ID
+        };
+        Cursor cursor = database.query(
+                CalendarRowsEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        long[] eventIds = new long[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()) {
+            eventIds[i] = cursor.getLong(cursor.getColumnIndex(CalendarRowsEntry
+                    .COLUMN_NAME_EVENT_ID));
+            i++;
+        }
+        cursor.close();
+        return eventIds;
     }
 
     private class ScheduleEntry implements BaseColumns {
@@ -425,5 +470,10 @@ public class DatabaseController extends SQLiteOpenHelper {
         static final String COLUMN_NAME_SCHEDULE_ID = "schedule_id";
         static final String COLUMN_NAME_SCHEDULE_TYPE = "schedule_type";
         static final String COLUMN_NAME_VISIBLE = "visible";
+    }
+
+    private class CalendarRowsEntry implements BaseColumns {
+        static final String TABLE_NAME = "calendar_rows";
+        static final String COLUMN_NAME_EVENT_ID = "event_id";
     }
 }
