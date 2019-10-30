@@ -79,10 +79,12 @@ public class SettingsActivity extends AppCompatActivity {
     private SwitchCompat lessonStart;
     private SwitchCompat darkMode;
     private SwitchCompat telemetry;
+    private SwitchCompat sync;
     private CharSequence[] items;
     private int notificationId = Constants.NOTIFICATION_TYPE_NOT_SET;
 
-    private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 0xFF;
+    private final int PERMISSIONS_REQUEST_WRITE_CALENDAR_TURN_ON_SYNC = 1;
+    private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,19 +122,18 @@ public class SettingsActivity extends AppCompatActivity {
         int pref = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, 0);
         lessonStart.setChecked(pref != 0 && pref != Constants.NOTIFICATION_TYPE_OFF);
 
-        final SwitchCompat syncLessonsSwitch = findViewById(R.id.sync_calendar_switch);
-        syncLessonsSwitch.setOnClickListener(new View.OnClickListener() {
+        sync = findViewById(R.id.sync_calendar_switch);
+        sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences.Editor editor = preferences.edit();
 
                 if (!hasCalendarPermissions()) {
-                    requestCalendarPermissions();
-                    syncLessonsSwitch.setChecked(false);
+                    requestCalendarPermissions(true);
+                    sync.setChecked(false);
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
-                } else if (syncLessonsSwitch.isChecked()) {
-                    long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID,
-                            -1);
+                } else if (sync.isChecked()) {
+                    long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
                     if (currentCalendar > -1) {
                         editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
                     } else {
@@ -145,23 +146,13 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.apply();
             }
         });
-        boolean syncLessons = preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false);
-        syncLessonsSwitch.setChecked(syncLessons);
-
-        if (syncLessons && !hasCalendarPermissions()) {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
-            editor.apply();
-
-            syncLessonsSwitch.setChecked(false);
-        }
 
         LinearLayout calendarRow = findViewById(R.id.settings_calendar);
         calendarRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!hasCalendarPermissions()) {
-                    requestCalendarPermissions();
+                    requestCalendarPermissions(false);
                     return;
                 }
                 showCalendarDialog(false);
@@ -169,29 +160,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         calendarNameTextView = findViewById(R.id.settings_calendar_name);
-        long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
-        if (currentCalendar > -1) {
-            if (hasCalendarPermissions()) {
-                if (CalendarUtils.calendarExists(currentCalendar)) {
-                    calendarNameTextView.setText(CalendarUtils.getCalendarNameById(currentCalendar));
-                } else {
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
-                    editor.apply();
-
-                    syncLessonsSwitch.setChecked(false);
-                }
-            } else {
-                calendarNameTextView.setText(getResources()
-                        .getString(R.string.settings_calendar_no_permissions));
-            }
-        } else {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
-            editor.apply();
-
-            syncLessonsSwitch.setChecked(false);
-        }
 
         LinearLayout weekCountRow = findViewById(R.id.settings_weeks_to_show_row);
         weekCountRow.setOnClickListener(new View.OnClickListener() {
@@ -288,12 +256,51 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         TelemetryUtils.getInstance().setCurrentScreen(this, "SettingsActivity");
+
+        boolean syncLessons = preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+        sync.setChecked(syncLessons);
+
+        if (syncLessons && !hasCalendarPermissions()) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+            editor.apply();
+
+            sync.setChecked(false);
+        }
+        updateCurrentCalendar();
     }
 
     @Override
     protected void onPause() {
         TelemetryUtils.getInstance().setCurrentScreen(this, null);
         super.onPause();
+    }
+
+    private void updateCurrentCalendar() {
+        long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
+        if (currentCalendar > -1) {
+            if (hasCalendarPermissions()) {
+                if (CalendarUtils.calendarExists(currentCalendar)) {
+                    calendarNameTextView.setText(CalendarUtils.getCalendarNameById(currentCalendar));
+                } else {
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                    editor.apply();
+
+                    sync.setChecked(false);
+                }
+            } else {
+                calendarNameTextView.setText(getResources()
+                        .getString(R.string.settings_calendar_no_permissions));
+            }
+        } else {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+            editor.apply();
+
+            sync.setChecked(false);
+            calendarNameTextView.setText(R.string.settings_sync_calendar_description);
+        }
     }
 
     private void updateIntervalTextView() {
@@ -427,22 +434,31 @@ public class SettingsActivity extends AppCompatActivity {
                 PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestCalendarPermissions() {
+    private void requestCalendarPermissions(boolean turnOnSync) {
         if (hasCalendarPermissions()) {
             return;
         }
         ActivityCompat.requestPermissions(this, new String[]{
                         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR},
-                PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                turnOnSync ? PERMISSIONS_REQUEST_WRITE_CALENDAR_TURN_ON_SYNC :
+                        PERMISSIONS_REQUEST_WRITE_CALENDAR);
         showPermissionRequestSnackbar();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_WRITE_CALENDAR) {
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_CALENDAR || requestCode ==
+                PERMISSIONS_REQUEST_WRITE_CALENDAR_TURN_ON_SYNC) {
             if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                calendarNameTextView.setText(getResources()
-                        .getString(R.string.settings_calendar_no_permissions));
+                updateCurrentCalendar();
+            } else if (requestCode == PERMISSIONS_REQUEST_WRITE_CALENDAR_TURN_ON_SYNC) {
+                updateCurrentCalendar();
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                editor.apply();
+
+                sync.setChecked(true);
             }
         }
     }
@@ -484,9 +500,8 @@ public class SettingsActivity extends AppCompatActivity {
                 if (turnOnSync) {
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
                 }
-                editor.apply();
-
-                calendarNameTextView.setText(calendars[checkedCalendarItem].getName());
+                editor.commit();
+                updateCurrentCalendar();
             }
         });
         AlertDialog alertDialog = builder.create();
