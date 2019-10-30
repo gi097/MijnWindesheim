@@ -133,8 +133,6 @@ public class CalendarUtils {
             return;
         }
 
-        deleteAllLessonsFromCalendar();
-
         ContentResolver contentResolver = ApplicationLoader.applicationContext.getContentResolver();
         for (Lesson lesson : lessons) {
             ContentValues values = new ContentValues();

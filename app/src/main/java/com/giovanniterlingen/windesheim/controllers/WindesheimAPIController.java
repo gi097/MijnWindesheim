@@ -62,6 +62,11 @@ public class WindesheimAPIController {
     private static final String WINDESHEIM_AZURE_API_URL = "https://windesheimapi.azurewebsites.net/api/v1";
 
     public static synchronized void getAndSaveLessons(boolean notify) throws Exception {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+        if (preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
+            CalendarUtils.deleteAllLessonsFromCalendar();
+        }
+
         Schedule[] schedules = DatabaseController.getInstance().getSchedules();
         for (Schedule schedule : schedules) {
             Lesson[] hiddenLessons = DatabaseController.getInstance().getHiddenLessons();
@@ -79,7 +84,6 @@ public class WindesheimAPIController {
             DatabaseController.getInstance().clearScheduleData(schedule.getId());
             DatabaseController.getInstance().saveLessons(lessons);
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
             if (preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
                 CalendarUtils.syncLessonsWithCalendar(lessons);
             }
@@ -105,9 +109,6 @@ public class WindesheimAPIController {
                 }
             }
         }
-
-        SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(Constants.PREFS_LAST_FETCH_TIME, System.currentTimeMillis());
         editor.apply();
