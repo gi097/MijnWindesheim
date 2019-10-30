@@ -133,8 +133,9 @@ public class WindesheimAPIController {
 
             Lesson lesson = new Lesson();
             lesson.setId(object.getString("id"));
+            lesson.setRoom(object.getString("lokaal"));
 
-            if (type == Constants.SCHEDULE_TYPE.SUBJECT) {
+            if (type == Constants.SCHEDULE_TYPE.SUBJECT || lesson.getRoom().length() == 0) {
                 lesson.setSubject(object.getString("commentaar"));
             } else if (object.getString("vaknaam").length() > 0) {
                 lesson.setSubject(object.getString("vaknaam"));
@@ -149,7 +150,6 @@ public class WindesheimAPIController {
             lesson.setEndTime(new Date(TimeUtils.removeTimeOffset(object
                     .getLong("eindtijd"))));
 
-            lesson.setRoom(object.getString("lokaal"));
             lesson.setClassName(object.getString("groepcode"));
             lesson.setScheduleType(type);
             lesson.setVisible(true);

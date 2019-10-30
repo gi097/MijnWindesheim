@@ -35,7 +35,6 @@ import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
 import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.utils.NotificationUtils;
-import com.giovanniterlingen.windesheim.utils.TimeUtils;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -60,7 +59,7 @@ class NotificationThread extends Thread {
         while ((notificationType = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE,
                 Constants.NOTIFICATION_TYPE_NOT_SET)) != 0) {
             try {
-                Date date = TimeUtils.getCalendar().getTime();
+                Date date = new Date();
                 long lastFetchTime = preferences.getLong(Constants.PREFS_LAST_FETCH_TIME, 0);
                 if (lastFetchTime == 0 || System.currentTimeMillis() -
                         lastFetchTime > TimeUnit.DAYS.toMillis(1)) {

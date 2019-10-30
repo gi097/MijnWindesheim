@@ -124,8 +124,15 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     void clearScheduleData(String id) {
-        String selection = LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
-        String[] selectionArgs = {id};
+        String selection = "(" + LessonEntry.COLUMN_NAME_DATE + " < ? OR " + LessonEntry.COLUMN_NAME_DATE
+                + " >= ?) AND " + LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
+        String[] weekDates = TimeUtils.getWeekDates(new Date());
+        String[] selectionArgs = {
+                weekDates[0], // Monday in the current week
+                TimeUtils.getYearMonthDayDateFormat()
+                        .format(new Date()), // Today
+                id
+        };
         database.delete(LessonEntry.TABLE_NAME, selection, selectionArgs);
     }
 
@@ -204,7 +211,7 @@ public class DatabaseController extends SQLiteOpenHelper {
      * Get lessons for this week to check if they are changed
      */
     Lesson[] getLessonsForCompare(String scheduleId) {
-        String[] weekDates = TimeUtils.getWeekDates(TimeUtils.getCalendar().getTime());
+        String[] weekDates = TimeUtils.getWeekDates(new Date());
         String[] projection = {
                 LessonEntry._ID,
                 LessonEntry.COLUMN_NAME_LESSON_ID,
@@ -218,8 +225,8 @@ public class DatabaseController extends SQLiteOpenHelper {
                 LessonEntry.COLUMN_NAME_SCHEDULE_TYPE,
                 LessonEntry.COLUMN_NAME_VISIBLE,
         };
-        String selection = LessonEntry.COLUMN_NAME_DATE + " >= ? AND " +
-                LessonEntry.COLUMN_NAME_DATE + " <= ? AND " +
+        String selection = "(" + LessonEntry.COLUMN_NAME_DATE + " >= ? OR " +
+                LessonEntry.COLUMN_NAME_DATE + " <= ?) AND " +
                 LessonEntry.COLUMN_NAME_SCHEDULE_ID + " = ?";
         String[] selectionArgs = {weekDates[0], weekDates[1], scheduleId};
         String sortOrder = LessonEntry.COLUMN_NAME_START_TIME + ", " +
