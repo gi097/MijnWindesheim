@@ -133,16 +133,19 @@ public class WindesheimAPIController {
 
             Lesson lesson = new Lesson();
             lesson.setId(object.getString("id"));
-            lesson.setRoom(object.getString("lokaal"));
+            lesson.setRoom(object.getString("lokaal").replace(";", ", "));
+            lesson.setSubject(object.getString("commentaar"));
 
-            if (type == Constants.SCHEDULE_TYPE.SUBJECT || lesson.getRoom().length() == 0) {
-                lesson.setSubject(object.getString("commentaar"));
-            } else if (object.getString("vaknaam").length() > 0) {
-                lesson.setSubject(object.getString("vaknaam"));
-            } else if (object.getString("vakcode").length() > 0) {
-                lesson.setSubject(object.getString("vakcode"));
-            } else {
-                lesson.setSubject(object.getString("commentaar"));
+            if (type != Constants.SCHEDULE_TYPE.SUBJECT && lesson.getRoom().length() > 0) {
+                if (object.getString("vakcode").length() > 0) {
+                    lesson.setSubject(lesson.getSubject() + " (" +
+                            object.getString("vakcode")
+                            + ")");
+                } else if (object.getString("vaknaam").length() > 0) {
+                    lesson.setSubject(lesson.getSubject() + " (" +
+                            object.getString("vaknaam")
+                            + ")");
+                }
             }
 
             lesson.setStartTime(new Date(TimeUtils.removeTimeOffset(object
