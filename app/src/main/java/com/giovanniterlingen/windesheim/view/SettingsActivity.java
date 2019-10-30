@@ -131,7 +131,13 @@ public class SettingsActivity extends AppCompatActivity {
                     syncLessonsSwitch.setChecked(false);
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
                 } else if (syncLessonsSwitch.isChecked()) {
-                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                    long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID,
+                            -1);
+                    if (currentCalendar > -1) {
+                        editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                    } else {
+                        showCalendarDialog(true);
+                    }
                 } else {
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
                     CalendarUtils.deleteAllLessonsFromCalendar();
@@ -158,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
                     requestCalendarPermissions();
                     return;
                 }
-                showCalendarDialog();
+                showCalendarDialog(false);
             }
         });
 
@@ -443,7 +449,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     int checkedCalendarItem = 0;
 
-    private void showCalendarDialog() {
+    private void showCalendarDialog(final boolean turnOnSync) {
         final com.giovanniterlingen.windesheim.models.Calendar[] calendars =
                 CalendarUtils.getCalendars();
         if (calendars == null) {
@@ -475,6 +481,9 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putLong(Constants.PREFS_SYNC_CALENDAR_ID,
                         calendars[checkedCalendarItem].getId());
+                if (turnOnSync) {
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
+                }
                 editor.apply();
 
                 calendarNameTextView.setText(calendars[checkedCalendarItem].getName());
