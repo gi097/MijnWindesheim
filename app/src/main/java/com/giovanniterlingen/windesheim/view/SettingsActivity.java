@@ -24,11 +24,15 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +50,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.giovanniterlingen.windesheim.ApplicationLoader;
@@ -68,11 +75,14 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private TextView intervalTextview;
     private TextView weekCountTextView;
+    private TextView calendarNameTextView;
     private SwitchCompat lessonStart;
     private SwitchCompat darkMode;
     private SwitchCompat telemetry;
     private CharSequence[] items;
     private int notificationId = Constants.NOTIFICATION_TYPE_NOT_SET;
+
+    private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 0xFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +120,17 @@ public class SettingsActivity extends AppCompatActivity {
         int pref = preferences.getInt(Constants.PREFS_NOTIFICATIONS_TYPE, 0);
         lessonStart.setChecked(pref != 0 && pref != Constants.NOTIFICATION_TYPE_OFF);
 
-        SwitchCompat syncLessonsSwitch = findViewById(R.id.sync_calendar_switch);
+        final SwitchCompat syncLessonsSwitch = findViewById(R.id.sync_calendar_switch);
         syncLessonsSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences.Editor editor = preferences.edit();
-                if (lessonStart.isChecked()) {
+
+                if (!hasCalendarPermissions()) {
+                    requestCalendarPermissions();
+                    syncLessonsSwitch.setChecked(false);
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                } else if (syncLessonsSwitch.isChecked()) {
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, true);
                 } else {
                     editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
@@ -126,6 +141,51 @@ public class SettingsActivity extends AppCompatActivity {
         });
         boolean syncLessons = preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false);
         syncLessonsSwitch.setChecked(syncLessons);
+
+        if (syncLessons && !hasCalendarPermissions()) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+            editor.apply();
+
+            syncLessonsSwitch.setChecked(false);
+        }
+
+        LinearLayout calendarRow = findViewById(R.id.settings_calendar);
+        calendarRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!hasCalendarPermissions()) {
+                    requestCalendarPermissions();
+                    return;
+                }
+                showCalendarDialog();
+            }
+        });
+
+        calendarNameTextView = findViewById(R.id.settings_calendar_name);
+        long currentCalendar = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
+        if (currentCalendar > -1) {
+            if (hasCalendarPermissions()) {
+                if (CalendarUtils.calendarExists(currentCalendar)) {
+                    calendarNameTextView.setText(CalendarUtils.getCalendarNameById(currentCalendar));
+                } else {
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                    editor.apply();
+
+                    syncLessonsSwitch.setChecked(false);
+                }
+            } else {
+                calendarNameTextView.setText(getResources()
+                        .getString(R.string.settings_calendar_no_permissions));
+            }
+        } else {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+            editor.apply();
+
+            syncLessonsSwitch.setChecked(false);
+        }
 
         LinearLayout weekCountRow = findViewById(R.id.settings_weeks_to_show_row);
         weekCountRow.setOnClickListener(new View.OnClickListener() {
@@ -354,6 +414,91 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private boolean hasCalendarPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) ==
+                PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestCalendarPermissions() {
+        if (hasCalendarPermissions()) {
+            return;
+        }
+        ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR},
+                PERMISSIONS_REQUEST_WRITE_CALENDAR);
+        showPermissionRequestSnackbar();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_CALENDAR) {
+            if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                calendarNameTextView.setText(getResources()
+                        .getString(R.string.settings_calendar_no_permissions));
+            }
+        }
+    }
+
+    int checkedCalendarItem = 0;
+
+    private void showCalendarDialog() {
+        final com.giovanniterlingen.windesheim.models.Calendar[] calendars =
+                CalendarUtils.getCalendars();
+        if (calendars == null) {
+            return;
+        }
+
+        checkedCalendarItem = 0;
+        long currentCalendarId = preferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
+
+        CharSequence[] items = new CharSequence[calendars.length];
+        for (int i = 0; i < calendars.length; i++) {
+            if (calendars[i].getId() == currentCalendarId) {
+                checkedCalendarItem = i;
+            }
+            items[i] = calendars[i].getName();
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.choose_calendar_title));
+        builder.setSingleChoiceItems(items, checkedCalendarItem,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        checkedCalendarItem = item;
+                    }
+                });
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putLong(Constants.PREFS_SYNC_CALENDAR_ID,
+                        calendars[checkedCalendarItem].getId());
+                editor.apply();
+
+                calendarNameTextView.setText(calendars[checkedCalendarItem].getName());
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void showPermissionRequestSnackbar() {
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, getResources()
+                .getString(R.string.fix_calendar_permissions), Snackbar.LENGTH_SHORT);
+        snackbar.setAction(R.string.fix, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
+        snackbar.show();
     }
 
     @Override

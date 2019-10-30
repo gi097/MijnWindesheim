@@ -173,6 +173,11 @@
                 android:layout_height="wrap_content"
                 card_view:cardCornerRadius="@dimen/material_zero_radius">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -211,6 +216,43 @@
                             android:padding="@dimen/activity_margin" />
 
                     </RelativeLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/divider_height"
+                        android:background="?android:listDivider" />
+
+                    <LinearLayout
+                        android:id="@+id/settings_calendar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:foreground="?selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingTop="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:text="@string/settings_calendar"
+                            android:textColor="@color/colorTitle"
+                            android:textSize="@dimen/title_size" />
+
+                        <TextView
+                            android:id="@+id/settings_calendar_name"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingLeft="@dimen/activity_margin"
+                            android:paddingRight="@dimen/activity_margin"
+                            android:paddingBottom="@dimen/activity_margin"
+                            android:text="@string/settings_calendar_description"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/description_size" />
+                    </LinearLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <TextView

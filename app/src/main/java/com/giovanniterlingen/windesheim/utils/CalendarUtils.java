@@ -73,6 +73,50 @@ public class CalendarUtils {
         return calendars;
     }
 
+    public static boolean calendarExists(long id) {
+        if (Build.VERSION.SDK_INT >= 23 && ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+
+        String[] projection = {CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME};
+        Uri contentUri = CalendarContract.Calendars.CONTENT_URI;
+
+        ContentResolver contentResolver = ApplicationLoader.applicationContext.getContentResolver();
+        Cursor cursor = contentResolver.query(contentUri, projection, null, null, null);
+
+        boolean exists = false;
+        while (cursor.moveToNext()) {
+            if (id == cursor.getLong(cursor.getColumnIndexOrThrow(CalendarContract.Calendars._ID))) {
+                exists = true;
+            }
+        }
+        cursor.close();
+        return exists;
+    }
+
+    public static String getCalendarNameById(long id) {
+        if (Build.VERSION.SDK_INT >= 23 && ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+
+        String[] projection = {CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME};
+        Uri contentUri = CalendarContract.Calendars.CONTENT_URI;
+
+        ContentResolver contentResolver = ApplicationLoader.applicationContext.getContentResolver();
+        Cursor cursor = contentResolver.query(contentUri, projection, null, null, null);
+
+        String name = null;
+        while (cursor.moveToNext()) {
+            if (id == cursor.getLong(cursor.getColumnIndexOrThrow(CalendarContract.Calendars._ID))) {
+                name = cursor.getString(cursor
+                        .getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME));
+                break;
+            }
+        }
+        cursor.close();
+        return name;
+    }
+
     public static synchronized void syncLessonsWithCalendar(Lesson[] lessons) {
         if (lessons == null) {
             return;
