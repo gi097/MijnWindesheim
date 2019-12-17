@@ -10,8 +10,8 @@ android {
         applicationId 'com.giovanniterlingen.windesheim'
         minSdkVersion 16
         targetSdkVersion 29
-        versionName '3.3.5-' + hash
-        versionCode 210
+        versionName '3.4.0-' + hash
+        versionCode 211
     }
     buildTypes {
         release {
@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation 'com.github.paolorotolo:appintro:v5.1.0'
 
-    implementation 'com.google.firebase:firebase-analytics:17.2.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

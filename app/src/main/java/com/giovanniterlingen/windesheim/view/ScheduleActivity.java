@@ -24,12 +24,15 @@
  **/
 package com.giovanniterlingen.windesheim.view;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -54,6 +58,7 @@ import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.NotificationCenter;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
+import com.giovanniterlingen.windesheim.utils.CalendarUtils;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
@@ -270,6 +275,30 @@ public class ScheduleActivity extends AppCompatActivity
             editor.putLong(Constants.PREFS_LAST_REVIEW_PROMPT_TIME, System.currentTimeMillis());
             editor.apply();
         }
+
+        // Check if calendar stuff is still correct
+        boolean syncCalendar = sharedPreferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+        if (syncCalendar && !hasCalendarPermissions()) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+            editor.apply();
+
+            showPermissionRequestSnackbar();
+        } else if (syncCalendar && hasCalendarPermissions()) {
+            long currentCalendarId = sharedPreferences.getLong(Constants.PREFS_SYNC_CALENDAR_ID, -1);
+            if (currentCalendarId > -1 && !CalendarUtils.calendarExists(currentCalendarId)) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Constants.PREFS_SYNC_CALENDAR, false);
+                editor.apply();
+
+                showSnackbar(getResources().getString(R.string.settings_calendar_incorrect));
+            }
+        }
+    }
+
+    private boolean hasCalendarPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) ==
+                PackageManager.PERMISSION_GRANTED;
     }
 
     private void showRatingSnackbar() {
@@ -331,9 +360,24 @@ public class ScheduleActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void showSnackbar(final String text, boolean shrt) {
-        Snackbar snackbar = Snackbar.make(view, text, shrt ? Snackbar.LENGTH_SHORT :
-                Snackbar.LENGTH_LONG);
+    private void showPermissionRequestSnackbar() {
+        Snackbar snackbar = Snackbar.make(view, getResources()
+                .getString(R.string.fix_calendar_permissions), Snackbar.LENGTH_SHORT);
+        snackbar.setAction(R.string.fix, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
+        snackbar.show();
+    }
+
+    public void showSnackbar(final String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 

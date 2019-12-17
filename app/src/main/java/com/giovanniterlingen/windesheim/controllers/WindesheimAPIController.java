@@ -34,6 +34,7 @@ import com.giovanniterlingen.windesheim.models.Lesson;
 import com.giovanniterlingen.windesheim.models.Result;
 import com.giovanniterlingen.windesheim.models.Schedule;
 import com.giovanniterlingen.windesheim.models.ScheduleItem;
+import com.giovanniterlingen.windesheim.utils.CalendarUtils;
 import com.giovanniterlingen.windesheim.utils.CookieUtils;
 import com.giovanniterlingen.windesheim.utils.NotificationUtils;
 import com.giovanniterlingen.windesheim.utils.TimeUtils;
@@ -61,6 +62,11 @@ public class WindesheimAPIController {
     private static final String WINDESHEIM_AZURE_API_URL = "https://windesheimapi.azurewebsites.net/api/v1";
 
     public static synchronized void getAndSaveLessons(boolean notify) throws Exception {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext);
+        if (preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
+            CalendarUtils.deleteAllLessonsFromCalendar();
+        }
+
         Schedule[] schedules = DatabaseController.getInstance().getSchedules();
         for (Schedule schedule : schedules) {
             Lesson[] hiddenLessons = DatabaseController.getInstance().getHiddenLessons();
@@ -77,6 +83,10 @@ public class WindesheimAPIController {
             }
             DatabaseController.getInstance().clearScheduleData(schedule.getId());
             DatabaseController.getInstance().saveLessons(lessons);
+
+            if (preferences.getBoolean(Constants.PREFS_SYNC_CALENDAR, false)) {
+                CalendarUtils.syncLessonsWithCalendar(lessons);
+            }
 
             Lesson[] newLessons = DatabaseController.getInstance().getLessonsForCompare(schedule.getId());
             if (!notify) {
@@ -99,9 +109,6 @@ public class WindesheimAPIController {
                 }
             }
         }
-
-        SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(ApplicationLoader.applicationContext);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(Constants.PREFS_LAST_FETCH_TIME, System.currentTimeMillis());
         editor.apply();
@@ -127,16 +134,19 @@ public class WindesheimAPIController {
 
             Lesson lesson = new Lesson();
             lesson.setId(object.getString("id"));
-            lesson.setRoom(object.getString("lokaal"));
+            lesson.setRoom(object.getString("lokaal").replace(";", ", "));
+            lesson.setSubject(object.getString("commentaar"));
 
-            if (type == Constants.SCHEDULE_TYPE.SUBJECT || lesson.getRoom().length() == 0) {
-                lesson.setSubject(object.getString("commentaar"));
-            } else if (object.getString("vaknaam").length() > 0) {
-                lesson.setSubject(object.getString("vaknaam"));
-            } else if (object.getString("vakcode").length() > 0) {
-                lesson.setSubject(object.getString("vakcode"));
-            } else {
-                lesson.setSubject(object.getString("commentaar"));
+            if (type != Constants.SCHEDULE_TYPE.SUBJECT && lesson.getRoom().length() > 0) {
+                if (object.getString("vakcode").length() > 0) {
+                    lesson.setSubject(lesson.getSubject() + " (" +
+                            object.getString("vakcode")
+                            + ")");
+                } else if (object.getString("vaknaam").length() > 0) {
+                    lesson.setSubject(lesson.getSubject() + " (" +
+                            object.getString("vaknaam")
+                            + ")");
+                }
             }
 
             lesson.setStartTime(new Date(TimeUtils.removeTimeOffset(object

@@ -252,4 +252,17 @@
     <string name="undo">UNDO</string>
 
     <string name="wednesday">Wednesday</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="settings_sync_calendar">Synchronize lessons</string>
+    <string name="settings_sync_calendar_description">Automatically save lessons to calendar</string>
+    <string name="fix_calendar_permissions">MyWindesheim needs permission to write to your calendar.</string>
+    <string name="choose_calendar_title">Choose a calendar</string>
+    <string name="allow">ALLOW</string>
+    <string name="settings_sync">Synchronisation</string>
+    <string name="settings_calendar">Calendar</string>
+    <string name="settings_calendar_description">Choose a calendar to save lessons to</string>
+    <string name="settings_calendar_no_permissions">Allow access to the calendar in order to sync lessons</string>
+    <string name="settings_calendar_incorrect">Synchronization settings are incorrect, check it in settings.</string>
 </resources>

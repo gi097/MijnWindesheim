@@ -247,4 +247,17 @@
     <string name="undo">ONGEDAAN MAKEN</string>
 
     <string name="wednesday">woensdag</string>
+
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
+    <string name="settings_sync_calendar">Synchroniseer lessen</string>
+    <string name="settings_sync_calendar_description">Sla automatisch lessen op in je agenda</string>
+    <string name="fix_calendar_permissions">MijnWindesheim heeft toestemming nodig om naar je agenda te schrijven.</string>
+    <string name="choose_calendar_title">Kies een agenda</string>
+    <string name="allow">TOESTAAN</string>
+    <string name="settings_sync">Synchronisatie</string>
+    <string name="settings_calendar">Agenda</string>
+    <string name="settings_calendar_description">Kies een agenda om te lessen in op te slaan</string>
+    <string name="settings_calendar_no_permissions">Sta toegang tot de agenda toe om lessen te synchroniseren</string>
+    <string name="settings_calendar_incorrect">Synchornisatie instellingen zijn onjuist, controleer het in instellingen.</string>
 </resources>

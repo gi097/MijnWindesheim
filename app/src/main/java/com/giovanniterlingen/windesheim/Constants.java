@@ -41,6 +41,8 @@ public class Constants {
     public static final String PREFS_WEEK_COUNT = "week_count";
     public static final String PREFS_LAST_REVIEW_PROMPT_TIME = "last_review_prompt_time";
     public static final String PREFS_LAST_FETCH_TIME = "last_fetch_time";
+    public static final String PREFS_SYNC_CALENDAR = "sync_calendar";
+    public static final String PREFS_SYNC_CALENDAR_ID = "calendar_id";
 
     public static final String TELEMETRY_PROPERTY_NAME = "name";
     public static final String TELEMETRY_PROPERTY_NOTIFICATION_TYPE = "notification_type";

@@ -229,8 +229,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             TelemetryUtils.getInstance()
                     .logEvent(Constants.TELEMETRY_KEY_LESSON_ADDED_CALENDAR, bundle);
         } catch (ActivityNotFoundException e) {
-            activity.showSnackbar(activity.getResources()
-                    .getString(R.string.no_calendar_found), true);
+            activity.showSnackbar(activity.getResources().getString(R.string.no_calendar_found));
         }
     }
 
