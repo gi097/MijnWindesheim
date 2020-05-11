@@ -77,7 +77,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Giovanni Terlingen
  */
-public class ScheduleActivity extends AppCompatActivity
+public class ScheduleActivity extends BaseActivity
         implements NotificationCenter.NotificationCenterDelegate {
 
     private View view;
@@ -149,7 +149,6 @@ public class ScheduleActivity extends AppCompatActivity
 
         view = findViewById(R.id.coordinator_layout);
         setViewPager();
-        ApplicationLoader.setDarkMode();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

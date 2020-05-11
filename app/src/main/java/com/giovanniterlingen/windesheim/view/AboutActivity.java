@@ -44,7 +44,7 @@ import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
  *
  * @author Giovanni Terlingen
  */
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,6 @@ public class AboutActivity extends AppCompatActivity {
                 }
             });
         }
-        ApplicationLoader.setDarkMode();
     }
 
     @Override

@@ -58,7 +58,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Giovanni Terlingen
  */
-public class EducatorActivity extends AppCompatActivity {
+public class EducatorActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,6 @@ public class EducatorActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         new ResultsFetcher(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        ApplicationLoader.setDarkMode();
     }
 
     @Override

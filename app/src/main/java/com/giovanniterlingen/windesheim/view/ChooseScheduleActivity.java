@@ -49,7 +49,7 @@ import com.google.android.material.tabs.TabLayout;
  *
  * @author Giovanni Terlingen
  */
-public class ChooseScheduleActivity extends AppCompatActivity {
+public class ChooseScheduleActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,6 @@ public class ChooseScheduleActivity extends AppCompatActivity {
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
         }
-        ApplicationLoader.setDarkMode();
     }
 
     @Override

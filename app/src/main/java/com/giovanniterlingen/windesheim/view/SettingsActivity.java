@@ -70,7 +70,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
  *
  * @author Giovanni Terlingen
  */
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private SharedPreferences preferences;
     private TextView intervalTextview;
@@ -250,7 +250,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         scheduleChangeSwitch.setChecked(preferences.getBoolean(Constants.PREFS_SCHEDULE_CHANGE_NOTIFICATION, true));
-        ApplicationLoader.setDarkMode();
     }
 
     @Override

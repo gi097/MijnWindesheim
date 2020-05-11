@@ -50,7 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
  *
  * @author Giovanni Terlingen
  */
-public class ManageSchedulesActivity extends AppCompatActivity {
+public class ManageSchedulesActivity extends BaseActivity {
 
     private View view;
 
@@ -83,7 +83,6 @@ public class ManageSchedulesActivity extends AppCompatActivity {
             });
         }
         setAdapter();
-        ApplicationLoader.setDarkMode();
     }
 
     @Override

@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author Giovanni Terlingen
  */
-public class DownloadsActivity extends AppCompatActivity {
+public class DownloadsActivity extends BaseActivity {
 
     private View view;
     private RecyclerView recyclerView;
@@ -86,7 +86,6 @@ public class DownloadsActivity extends AppCompatActivity {
 
         view = findViewById(R.id.coordinator_layout);
         updateFilesList();
-        ApplicationLoader.setDarkMode();
     }
 
     private void updateFilesList() {

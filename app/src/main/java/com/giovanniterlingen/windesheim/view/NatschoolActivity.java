@@ -43,7 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
  *
  * @author Giovanni Terlingen
  */
-public class NatschoolActivity extends AppCompatActivity {
+public class NatschoolActivity extends BaseActivity {
 
     private View view;
 
@@ -63,7 +63,6 @@ public class NatschoolActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.contents_fragment, new ContentsFragment());
         ft.commit();
-        ApplicationLoader.setDarkMode();
     }
 
     @Override
