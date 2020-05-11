@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
@@ -105,6 +106,7 @@ public class IntroActivity extends AppIntro {
 
         setVibrate(true);
         setVibrateIntensity(30);
+        ApplicationLoader.setDarkMode();
     }
 
     @Override

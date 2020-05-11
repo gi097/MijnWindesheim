@@ -149,6 +149,7 @@ public class ScheduleActivity extends AppCompatActivity
 
         view = findViewById(R.id.coordinator_layout);
         setViewPager();
+        ApplicationLoader.setDarkMode();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

@@ -86,6 +86,7 @@ public class DownloadsActivity extends AppCompatActivity {
 
         view = findViewById(R.id.coordinator_layout);
         updateFilesList();
+        ApplicationLoader.setDarkMode();
     }
 
     private void updateFilesList() {

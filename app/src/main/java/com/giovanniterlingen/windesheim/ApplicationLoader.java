@@ -24,6 +24,7 @@
  **/
 package com.giovanniterlingen.windesheim;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +72,7 @@ public class ApplicationLoader extends Application {
         intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
         intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
     }
+
 
     public static void startPushService() {
         Intent intent = new Intent(applicationContext, NotificationService.class);
@@ -154,7 +156,6 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
@@ -166,7 +167,7 @@ public class ApplicationLoader extends Application {
         setDarkMode();
     }
 
-    private void setDarkMode() {
+    public static void setDarkMode() {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(applicationContext);
         int currentNightMode = applicationContext.getResources().getConfiguration().uiMode &

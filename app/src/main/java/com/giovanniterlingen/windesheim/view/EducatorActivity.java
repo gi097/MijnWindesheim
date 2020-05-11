@@ -38,6 +38,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
@@ -79,6 +80,7 @@ public class EducatorActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         new ResultsFetcher(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        ApplicationLoader.setDarkMode();
     }
 
     @Override

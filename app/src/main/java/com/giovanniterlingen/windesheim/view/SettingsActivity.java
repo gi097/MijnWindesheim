@@ -250,6 +250,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         scheduleChangeSwitch.setChecked(preferences.getBoolean(Constants.PREFS_SCHEDULE_CHANGE_NOTIFICATION, true));
+        ApplicationLoader.setDarkMode();
     }
 
     @Override

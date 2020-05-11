@@ -73,6 +73,7 @@ public class HiddenLessonsActivity extends AppCompatActivity {
                 showEmptyTextView();
             }
         }
+        ApplicationLoader.setDarkMode();
     }
 
     @Override

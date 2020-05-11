@@ -83,6 +83,7 @@ public class ManageSchedulesActivity extends AppCompatActivity {
             });
         }
         setAdapter();
+        ApplicationLoader.setDarkMode();
     }
 
     @Override

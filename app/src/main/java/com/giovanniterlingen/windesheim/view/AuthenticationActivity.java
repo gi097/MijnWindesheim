@@ -131,6 +131,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             authenticate(username, password);
         }
+        ApplicationLoader.setDarkMode();
     }
 
     private void authenticate(final String username, final String password) {

@@ -35,6 +35,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 
@@ -87,6 +88,7 @@ public class AboutActivity extends AppCompatActivity {
                 }
             });
         }
+        ApplicationLoader.setDarkMode();
     }
 
     @Override
