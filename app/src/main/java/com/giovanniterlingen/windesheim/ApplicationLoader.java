@@ -73,7 +73,6 @@ public class ApplicationLoader extends Application {
         intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
     }
 
-
     public static void startPushService() {
         Intent intent = new Intent(applicationContext, NotificationService.class);
         if (Build.VERSION.SDK_INT >= 26) {
@@ -156,6 +155,7 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
