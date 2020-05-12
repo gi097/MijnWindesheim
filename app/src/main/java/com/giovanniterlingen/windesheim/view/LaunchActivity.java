@@ -32,6 +32,7 @@ import android.os.Handler;
 
 import androidx.preference.PreferenceManager;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 
 /**
@@ -62,5 +63,6 @@ public class LaunchActivity extends Activity {
                 finish();
             }
         });
+        ApplicationLoader.setDarkMode();
     }
 }

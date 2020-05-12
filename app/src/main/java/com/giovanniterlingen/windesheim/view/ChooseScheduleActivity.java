@@ -37,6 +37,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.DatabaseController;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
@@ -48,7 +49,7 @@ import com.google.android.material.tabs.TabLayout;
  *
  * @author Giovanni Terlingen
  */
-public class ChooseScheduleActivity extends AppCompatActivity {
+public class ChooseScheduleActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

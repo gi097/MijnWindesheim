@@ -24,6 +24,7 @@
  **/
 package com.giovanniterlingen.windesheim;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -166,7 +167,7 @@ public class ApplicationLoader extends Application {
         setDarkMode();
     }
 
-    private void setDarkMode() {
+    public static void setDarkMode() {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(applicationContext);
         int currentNightMode = applicationContext.getResources().getConfiguration().uiMode &

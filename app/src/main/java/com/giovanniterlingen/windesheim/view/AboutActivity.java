@@ -35,6 +35,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
 
@@ -43,7 +44,7 @@ import com.giovanniterlingen.windesheim.utils.TelemetryUtils;
  *
  * @author Giovanni Terlingen
  */
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -54,7 +54,7 @@ import com.google.android.material.textfield.TextInputLayout;
  * @author Giovanni Terlingen
  * @author Thomas Visch
  */
-public class AuthenticationActivity extends AppCompatActivity {
+public class AuthenticationActivity extends BaseActivity {
 
     private EditText usernameEditText;
     private EditText passwordEditText;

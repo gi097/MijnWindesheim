@@ -70,7 +70,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
  *
  * @author Giovanni Terlingen
  */
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private SharedPreferences preferences;
     private TextView intervalTextview;

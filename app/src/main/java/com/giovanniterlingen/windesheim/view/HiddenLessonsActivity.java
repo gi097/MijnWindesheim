@@ -47,7 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
  *
  * @author Giovanni Terlingen
  */
-public class HiddenLessonsActivity extends AppCompatActivity {
+public class HiddenLessonsActivity extends BaseActivity {
 
     private View view;
 

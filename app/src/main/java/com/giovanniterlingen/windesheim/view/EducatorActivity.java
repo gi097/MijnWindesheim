@@ -38,6 +38,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.giovanniterlingen.windesheim.ApplicationLoader;
 import com.giovanniterlingen.windesheim.Constants;
 import com.giovanniterlingen.windesheim.R;
 import com.giovanniterlingen.windesheim.controllers.WindesheimAPIController;
@@ -57,7 +58,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Giovanni Terlingen
  */
-public class EducatorActivity extends AppCompatActivity {
+public class EducatorActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
